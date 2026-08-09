@@ -91,16 +91,18 @@ independently-checkable factual claims. Each claim should be one discrete
 fact (one symptom, one medication + dose, one vital sign, one plan item,
 etc). Do not combine multiple facts into one claim.
 
-Do NOT include the clinician's overall diagnosis or assessment
-conclusion (e.g. an "Assessment:" line naming a condition) as a claim.
-A diagnosis is the clinician's synthesized clinical judgment, not
-something directly stated by the patient - it can be a reasonable
-conclusion from findings (like a positive test result) even when the
-diagnosis name itself is never spoken aloud in the transcript, so
-checking it against literal transcript wording produces false positives
-rather than catching real errors. Directly-reportable facts the
-diagnosis is BASED on (symptoms, exam findings, test results) should
-still be included as their own separate claims.
+Do NOT include the clinician's overall diagnosis or clinical impression
+as a claim - this applies regardless of which section it appears in or
+how it's phrased (an "Assessment:" line, a sentence describing what
+condition is suspected or confirmed, etc). A diagnosis is the
+clinician's synthesized judgment, not something directly stated by the
+patient - it can be a reasonable conclusion from findings (like a
+positive test result, or a symptom pattern) even when the diagnosis
+name itself is never spoken aloud in the transcript, so checking it
+against literal transcript wording produces false positives rather than
+catching real errors. Directly-reportable facts the diagnosis is BASED
+on (symptoms, exam findings, test results) should still be included as
+their own separate claims.
 
 NOTE:
 {note}
