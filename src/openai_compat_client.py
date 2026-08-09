@@ -99,13 +99,23 @@ def _status_code(exc) -> int | None:
 
 
 def call_model(prompt: str, model: str, base_url: str = None, api_key_env: str = None,
-                provider: str = None, max_retries: int = 2) -> str:
+                provider: str = None, max_retries: int = 2, max_tokens: int = 4096) -> str:
     """
     provider is the simple way to call this (looks up base_url/api_key_env
     from PROVIDER_SETTINGS); base_url/api_key_env let you override directly
     if ever needed. Same asymmetric error handling as gemini_client.py:
     429 fails fast, 503 gets a short bounded retry, everything else fails
     immediately.
+
+    max_tokens is set explicitly (not left to the provider's default) -
+    without it, a batched JSON-array response (e.g. the omission-check
+    prompt for a case with a dozen transcript facts) can get silently
+    truncated mid-string by a small provider default, which then surfaces
+    as a confusing JSONDecodeError with no indication that the real cause
+    was a token cap, not a malformed response. If a response IS still cut
+    off at 4096, that's detected via finish_reason == "length" and gets
+    one retry at double the token budget before giving up - a different,
+    explicit failure mode from a quota/availability error.
     """
     if provider:
         client = _get_client(provider)
@@ -114,13 +124,21 @@ def call_model(prompt: str, model: str, base_url: str = None, api_key_env: str =
                          timeout=20.0, max_retries=0)
 
     last_err = None
+    tokens_for_attempt = max_tokens
     for attempt in range(max_retries):
         try:
             response = client.chat.completions.create(
                 model=model,
                 messages=[{"role": "user", "content": prompt}],
+                max_tokens=tokens_for_attempt,
             )
-            return response.choices[0].message.content
+            choice = response.choices[0]
+            if choice.finish_reason == "length" and attempt < max_retries - 1:
+                tokens_for_attempt *= 2
+                print(f"    [openai_compat_client] response truncated at {model} "
+                      f"(finish_reason=length) - retrying with max_tokens={tokens_for_attempt}")
+                continue
+            return choice.message.content
         except Exception as e:
             last_err = e
             code = _status_code(e)
@@ -138,9 +156,9 @@ def call_model(prompt: str, model: str, base_url: str = None, api_key_env: str =
 
 
 def call_model_json(prompt: str, model: str, base_url: str = None, api_key_env: str = None,
-                     provider: str = None, max_retries: int = 2):
+                     provider: str = None, max_retries: int = 2, max_tokens: int = 4096):
     raw = call_model(prompt, model=model, base_url=base_url, api_key_env=api_key_env,
-                      provider=provider, max_retries=max_retries)
+                      provider=provider, max_retries=max_retries, max_tokens=max_tokens)
     cleaned = raw.strip()
     if cleaned.startswith("```"):
         parts = cleaned.split("```")

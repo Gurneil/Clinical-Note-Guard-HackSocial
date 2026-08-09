@@ -1,5 +1,5 @@
 """
-Tests for the two silent-failure bugs found in openai_compat_client.py:
+Tests for three silent-failure bugs found in openai_compat_client.py:
 
 1. Featherless's key used to be read from FEATHERLESS_API_KEY only, so a
    key set as FEATHERLESS_AI_API_KEY made the provider silently vanish
@@ -9,6 +9,12 @@ Tests for the two silent-failure bugs found in openai_compat_client.py:
    str(exception), which could misclassify an unrelated error (e.g. one
    that happens to mention a byte count or model name containing those
    digits) as that HTTP status.
+3. No max_tokens was ever set, so a long batched JSON-array response
+   (e.g. omission_check_batch on a case with a dozen transcript facts)
+   could get silently truncated mid-string by the provider's own default
+   token cap - discovered for real running run_eval.py against Groq,
+   surfacing as a confusing JSONDecodeError with finish_reason="length"
+   nowhere visible in the error message.
 
 Run:
     D:\\Python312\\python.exe -m unittest discover -s tests -v
@@ -81,6 +87,59 @@ class TestStatusCodeExtraction(unittest.TestCase):
     def test_connection_error_with_no_response_returns_none(self):
         err = Exception("Connection reset by peer")
         self.assertIsNone(openai_compat_client._status_code(err))
+
+
+def _fake_completion(content: str, finish_reason: str = "stop"):
+    choice = mock.Mock()
+    choice.finish_reason = finish_reason
+    choice.message.content = content
+    response = mock.Mock()
+    response.choices = [choice]
+    return response
+
+
+class TestTruncationRetry(ApiKeyEnvBase):
+    def setUp(self):
+        super().setUp()
+        os.environ["GROQ_API_KEY"] = "fake-key-for-this-test"
+        openai_compat_client._clients.pop("groq", None)  # don't reuse a cached client from another test
+
+    def tearDown(self):
+        openai_compat_client._clients.pop("groq", None)
+        super().tearDown()
+
+    def test_truncated_response_is_retried_with_doubled_max_tokens(self):
+        calls = []
+
+        def fake_create(**kwargs):
+            calls.append(kwargs["max_tokens"])
+            if len(calls) == 1:
+                return _fake_completion('["truncated, no closing brack', finish_reason="length")
+            return _fake_completion('["a", "b"]', finish_reason="stop")
+
+        fake_client = mock.Mock()
+        fake_client.chat.completions.create.side_effect = fake_create
+
+        with mock.patch.object(openai_compat_client, "_get_client", return_value=fake_client):
+            result = openai_compat_client.call_model("prompt", model="m", provider="groq", max_tokens=100)
+
+        self.assertEqual(result, '["a", "b"]')
+        self.assertEqual(calls, [100, 200])  # second attempt doubled the budget
+
+    def test_truncation_on_the_final_attempt_returns_the_truncated_text_rather_than_looping_forever(self):
+        # max_retries=1 means there is no "next attempt" to retry into - the
+        # truncated content is still returned (and will fail JSON parsing
+        # further up the stack, which is the correct, visible failure mode,
+        # rather than this function looping or hanging).
+        fake_client = mock.Mock()
+        fake_client.chat.completions.create.return_value = _fake_completion(
+            '["still truncated', finish_reason="length")
+
+        with mock.patch.object(openai_compat_client, "_get_client", return_value=fake_client):
+            result = openai_compat_client.call_model("prompt", model="m", provider="groq", max_retries=1)
+
+        self.assertEqual(result, '["still truncated')
+        self.assertEqual(fake_client.chat.completions.create.call_count, 1)
 
 
 if __name__ == "__main__":

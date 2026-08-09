@@ -45,9 +45,17 @@ def get_client():
     return _client
 
 
-def call_model(prompt: str, model: str, max_retries: int = 2) -> str:
+def call_model(prompt: str, model: str, max_retries: int = 2, max_output_tokens: int = 4096) -> str:
     """
     Call a Gemini model with a plain text prompt. Returns raw text.
+
+    max_output_tokens is set explicitly rather than left at the SDK
+    default - see the equivalent note in openai_compat_client.py, which
+    is where this was actually observed to matter (a batched JSON-array
+    response silently truncated by a small provider default surfaces as
+    a confusing JSONDecodeError with no hint the real cause was a token
+    cap). Set here too for consistency even though the failure was seen
+    on Groq, not Gemini.
 
     Error handling is deliberately asymmetric:
       - 429 (quota exhausted): fails IMMEDIATELY, no retry. Retrying a
@@ -64,9 +72,19 @@ def call_model(prompt: str, model: str, max_retries: int = 2) -> str:
     """
     client = get_client()
     last_err = None
+    tokens_for_attempt = max_output_tokens
     for attempt in range(max_retries):
         try:
-            response = client.models.generate_content(model=model, contents=prompt)
+            response = client.models.generate_content(
+                model=model, contents=prompt,
+                config=types.GenerateContentConfig(max_output_tokens=tokens_for_attempt),
+            )
+            if response.candidates and response.candidates[0].finish_reason == "MAX_TOKENS" \
+                    and attempt < max_retries - 1:
+                tokens_for_attempt *= 2
+                print(f"    [gemini_client] response truncated at {model} "
+                      f"(MAX_TOKENS) - retrying with max_output_tokens={tokens_for_attempt}")
+                continue
             return response.text
         except genai_errors.APIError as e:
             last_err = e
@@ -89,9 +107,9 @@ def call_model(prompt: str, model: str, max_retries: int = 2) -> str:
     raise RuntimeError(f"Gemini call failed after {max_retries} attempts: {last_err}")
 
 
-def call_model_json(prompt: str, model: str, max_retries: int = 2):
+def call_model_json(prompt: str, model: str, max_retries: int = 2, max_output_tokens: int = 4096):
     """Call a Gemini model and parse the response as JSON."""
-    raw = call_model(prompt, model=model, max_retries=max_retries)
+    raw = call_model(prompt, model=model, max_retries=max_retries, max_output_tokens=max_output_tokens)
     cleaned = raw.strip()
     if cleaned.startswith("```"):
         parts = cleaned.split("```")
