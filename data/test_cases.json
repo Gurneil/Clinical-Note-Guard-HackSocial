@@ -1,5 +1,5 @@
 {
-  "_comment": "Starter adversarial benchmark. Fully synthetic — no real patients, no real clinicians. Each case has a transcript (ground truth conversation), a note_under_test (what an ambient scribe supposedly produced), and ground_truth describing any deliberately injected error. Case 6 is a clean control with NO planted error, used to measure false-positive rate. Expand this list before final submission — 5-6 is a starter set to validate the pipeline, the real benchmark should be ~15-20 cases with 2-3 per taxonomy category plus several clean controls.",
+  "_comment": "Adversarial benchmark. Fully synthetic — no real patients, no real clinicians. Each case has a transcript (ground truth conversation), a note_under_test (what an ambient scribe supposedly produced), and ground_truth describing any deliberately injected error. Expanded from a 6-case starter set to 18: 3 numeric_medication_error, 3 fabrication, 3 negation_error, 2 distortion, 2 misattribution, 2 omission, 3 clean controls (no planted error, used to measure false-positive rate). The omission category was added once the pipeline actually gained a way to detect it (see src/pipeline.py's omission_check_batch) — before that, planting omission cases would have scored 0% against a detector that didn't exist.",
   "cases": [
     {
       "id": "case_01_numeric_medication_error",
@@ -91,6 +91,196 @@
       "specialty": "Primary care - sore throat / strep pharyngitis",
       "transcript": "Doctor: What's going on today?\nPatient: My throat has been really sore for the past three days, and it hurts to swallow.\nDoctor: Any fever, cough, or runny nose?\nPatient: I had a low fever yesterday, around 100.4, but no cough or runny nose.\nDoctor: Any swollen glands or rash?\nPatient: My neck feels a little swollen and tender on both sides.\nDoctor: Let me take a look... your tonsils are swollen and red with some white patches. I'm going to do a rapid strep test.\nDoctor: The rapid strep test came back positive. I'm going to prescribe amoxicillin, 500 milligrams, twice a day for 10 days.\nPatient: Okay, thank you.\nDoctor: Make sure you finish the whole course even if you start feeling better. Use ibuprofen or acetaminophen for pain and fever as needed. Come back if you're not improving in 2-3 days after starting the antibiotic.\nPatient: Will do.",
       "note_under_test": "Subjective: Patient reports 3 days of sore throat with pain on swallowing. Reports subjective fever of 100.4F yesterday. Denies cough or rhinorrhea. Reports bilateral tender cervical lymphadenopathy.\nObjective: Tonsils erythematous and enlarged with white exudate. Rapid strep test positive.\nAssessment: Streptococcal pharyngitis.\nPlan: Amoxicillin 500mg twice daily for 10 days, counseled to complete full course. Ibuprofen or acetaminophen as needed for pain/fever. Return if not improving in 2-3 days.",
+      "ground_truth": {
+        "has_error": false,
+        "injected_errors": []
+      }
+    },
+    {
+      "id": "case_07_numeric_medication_error_pediatric_dose",
+      "specialty": "Pediatrics - acute otitis media",
+      "transcript": "Doctor: Let's take a look at his ears... yes, the right eardrum is red and bulging, that's consistent with an ear infection.\nParent: Oh no, poor guy. Does he need antibiotics?\nDoctor: Yes, I'll prescribe amoxicillin. For his weight, that's going to be 250 milligrams, three times a day, for 10 days.\nParent: Okay, three times a day for 10 days. Should I give it with food?\nDoctor: Either way is fine, whatever's easier for him to take.\nParent: Any side effects to watch for?\nDoctor: Mainly loose stools or a mild rash - if you see a rash that looks like hives, stop it and call us right away.\nParent: Understood. Anything else?\nDoctor: Use children's ibuprofen or acetaminophen for the ear pain as needed. Follow up in 2 weeks, sooner if he's not improving in 48-72 hours.\nParent: Thank you.",
+      "note_under_test": "Subjective: Parent reports concern for ear pain. Objective: Right tympanic membrane erythematous and bulging, consistent with acute otitis media.\nAssessment: Acute otitis media, right ear.\nPlan: Amoxicillin 500mg three times daily for 10 days. Counseled on side effects (loose stools, rash - discontinue and call if hives develop). Children's ibuprofen or acetaminophen as needed for pain. Follow up in 2 weeks, sooner if not improving in 48-72 hours.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "numeric_medication_error",
+            "claim_text": "Amoxicillin 500mg three times daily",
+            "correct_value": "amoxicillin 250mg three times daily",
+            "transcript_evidence": "Doctor said 'that's going to be 250 milligrams, three times a day'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_08_numeric_medication_error_beta_blocker",
+      "specialty": "Cardiology - atrial fibrillation follow-up",
+      "transcript": "Doctor: How's your heart rate been feeling, any palpitations since we started the metoprolol?\nPatient: No palpitations. I do feel a little more tired than usual.\nDoctor: That can happen when we start a beta blocker. Let's check - your heart rate today is 68, nice and steady. Are you taking the metoprolol 25 milligrams twice a day like we discussed?\nPatient: Yes, morning and evening.\nDoctor: Good, any dizziness or fainting spells?\nPatient: No, nothing like that.\nDoctor: Let's stick with the same dose for now and recheck in a month. If the tiredness gets worse, call us.\nPatient: Will do.",
+      "note_under_test": "Subjective: Patient denies palpitations since starting metoprolol. Reports mild fatigue. Denies dizziness or syncope.\nObjective: Heart rate 68, regular.\nAssessment: Atrial fibrillation, rate-controlled on current beta blocker.\nPlan: Continue metoprolol 50mg twice daily. Recheck in 1 month; call if fatigue worsens.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "numeric_medication_error",
+            "claim_text": "Continue metoprolol 50mg twice daily",
+            "correct_value": "metoprolol 25mg twice daily",
+            "transcript_evidence": "Patient confirmed 'taking the metoprolol 25 milligrams twice a day'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_09_fabrication_allergy_visit",
+      "specialty": "Primary care - seasonal allergy visit",
+      "transcript": "Doctor: What's going on with your allergies this year?\nPatient: Pretty bad actually, sneezing, itchy eyes, runny nose, mostly outdoors. I think it's the pollen.\nDoctor: Any drug allergies I should know about, anything you've reacted to before?\nPatient: No, I've never had a reaction to any medication that I know of.\nDoctor: Good. Let's start you on a daily antihistamine, and use a nasal spray if the antihistamine alone isn't enough.\nPatient: Sounds good, thank you.",
+      "note_under_test": "Subjective: Patient reports seasonal allergy symptoms - sneezing, itchy eyes, rhinorrhea, worse outdoors, consistent with pollen exposure. Patient reports a known penicillin allergy.\nObjective: Not specified during this encounter.\nAssessment: Seasonal allergic rhinitis.\nPlan: Start daily oral antihistamine, add nasal spray if inadequate control.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "fabrication",
+            "claim_text": "Patient reports a known penicillin allergy",
+            "correct_value": "not mentioned; patient explicitly denied any drug allergy",
+            "transcript_evidence": "Patient said 'No, I've never had a reaction to any medication that I know of.'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_10_fabrication_knee_exam",
+      "specialty": "Orthopedics - knee pain",
+      "transcript": "Doctor: Tell me about this knee pain.\nPatient: It's my right knee, been bothering me for about two weeks, mostly when I go up and down stairs.\nDoctor: Any swelling that you've noticed, or does it feel warm?\nPatient: No swelling that I've seen, and it doesn't feel warm or anything.\nDoctor: Let me examine it... range of motion looks good, no instability, no tenderness along the joint line. I think this is likely patellofemoral pain, pretty common with stair use.\nPatient: Okay, what should I do?\nDoctor: Ice after activity, and I'll give you some exercises to strengthen the muscles around the knee. Avoid stairs when you can for the next couple weeks.\nPatient: Got it, thanks.",
+      "note_under_test": "Subjective: Patient reports 2 weeks of right knee pain, worse with stairs. Denies warmth.\nObjective: Notable right knee swelling on exam. Range of motion intact, no instability, no joint line tenderness.\nAssessment: Patellofemoral pain syndrome, right knee.\nPlan: Ice after activity, home strengthening exercises, avoid stairs when possible for 2 weeks.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "fabrication",
+            "claim_text": "Notable right knee swelling on exam",
+            "correct_value": "not mentioned; patient explicitly denied noticing any swelling",
+            "transcript_evidence": "Patient said 'No swelling that I've seen'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_11_negation_error_shortness_of_breath",
+      "specialty": "Cardiology - chest pain follow-up",
+      "transcript": "Doctor: How have you been since your last visit, any chest pain?\nPatient: No chest pain at all this month, that's been good.\nDoctor: Great. Any shortness of breath, especially with exertion, climbing stairs, that kind of thing?\nPatient: No, I don't get short of breath. I've actually been walking more and it's been fine.\nDoctor: Any swelling in your ankles or legs?\nPatient: No swelling either.\nDoctor: That's all really reassuring. Let's keep your current medications the same and see you again in 6 months.\nPatient: Sounds great, thank you.",
+      "note_under_test": "Subjective: Patient denies chest pain this month. Reports shortness of breath with exertion, including with stair climbing. Denies lower extremity edema.\nObjective: Not specified during this encounter.\nAssessment: Stable, no new cardiac symptoms other than exertional dyspnea.\nPlan: Continue current medications unchanged. Follow up in 6 months.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "negation_error",
+            "claim_text": "Reports shortness of breath with exertion, including with stair climbing",
+            "correct_value": "Denies shortness of breath",
+            "transcript_evidence": "Patient said 'No, I don't get short of breath. I've actually been walking more and it's been fine.'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_12_negation_error_blood_in_stool",
+      "specialty": "Gastroenterology - abdominal pain",
+      "transcript": "Doctor: Tell me more about this stomach pain.\nPatient: It's been on and off for about a week, kind of crampy, mostly lower belly.\nDoctor: Any changes in your bowel movements, diarrhea or constipation?\nPatient: A little loose, maybe, but nothing dramatic.\nDoctor: Any blood in your stool that you've noticed?\nPatient: No, definitely no blood, I would have noticed that.\nDoctor: Any fever, nausea, or vomiting?\nPatient: No fever. A little nauseous sometimes but no vomiting.\nDoctor: Okay, this sounds like it could be a mild case of gastroenteritis or IBS. Let's start with a bland diet and see how you do over the next week.\nPatient: Okay, I'll try that.",
+      "note_under_test": "Subjective: Patient reports 1 week of intermittent crampy lower abdominal pain, mildly loose stools. Reports blood in stool. Denies fever or vomiting, reports occasional mild nausea.\nObjective: Not specified during this encounter.\nAssessment: Likely mild gastroenteritis versus irritable bowel syndrome.\nPlan: Trial of bland diet, reassess in 1 week.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "negation_error",
+            "claim_text": "Reports blood in stool",
+            "correct_value": "Denies blood in stool",
+            "transcript_evidence": "Patient said 'No, definitely no blood, I would have noticed that.'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_13_distortion_fever_duration",
+      "specialty": "Pediatrics - fever",
+      "transcript": "Doctor: How long has she had this fever?\nParent: Just since last night, so about a day now.\nDoctor: What's it been running?\nParent: Around 101 to 102, I've been giving her acetaminophen for it.\nDoctor: Any other symptoms, cough, ear pain, rash?\nParent: No cough, no rash. She did say her ear hurt a little this morning.\nDoctor: Let me check her ears... the right ear does look a bit red. I think this could be an early ear infection. Let's hold off on antibiotics for now and recheck in 24 to 48 hours - if the fever continues or the ear pain gets worse, we may need to start them then.\nParent: Okay, we'll keep an eye on it.",
+      "note_under_test": "Subjective: Parent reports 5 days of fever, currently 101-102F, managed with acetaminophen. Denies cough or rash. Reports right ear pain this morning.\nObjective: Right tympanic membrane mildly erythematous.\nAssessment: Possible early right otitis media.\nPlan: Watchful waiting, recheck in 24-48 hours; start antibiotics if fever persists or ear pain worsens.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "distortion",
+            "claim_text": "5 days of fever",
+            "correct_value": "fever since the prior night, about 1 day",
+            "transcript_evidence": "Parent said the fever started 'just since last night, so about a day now'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_14_misattribution_smoking_history",
+      "specialty": "Primary care - annual visit, social history",
+      "transcript": "Doctor: Let's update your social history. Do you smoke, or have you ever smoked?\nPatient: No, never smoked a day in my life.\nDoctor: Good. Does anyone in your household smoke?\nPatient: My husband does, about a pack a day, has for years. I've asked him to quit but no luck yet.\nDoctor: Understood, secondhand smoke exposure is worth noting. Any alcohol use?\nPatient: Just socially, maybe a glass of wine on weekends.\nDoctor: Okay, that's all very helpful, thank you.",
+      "note_under_test": "Subjective: Social history reviewed. Patient has a smoking history, approximately one pack per day for years. Reports social alcohol use, occasional wine on weekends.\nObjective: Not specified during this encounter.\nAssessment: Routine annual visit, social history updated.\nPlan: No changes at this time.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "misattribution",
+            "claim_text": "Patient has a smoking history, approximately one pack per day for years",
+            "correct_value": "this is the patient's HUSBAND's smoking history (secondhand exposure), not the patient's own; patient explicitly denied ever smoking",
+            "transcript_evidence": "Patient said 'No, never smoked a day in my life' and identified the pack-a-day smoker as 'my husband'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_15_omission_otc_medication",
+      "specialty": "Primary care - hypertension follow-up, medication reconciliation",
+      "transcript": "Doctor: Let's go over your medications. Still just the lisinopril 10 milligrams once a day?\nPatient: Yes, that's the only prescription. Oh, I've also been taking ibuprofen fairly often, maybe every other day, for headaches.\nDoctor: How often is 'fairly often' - like how many days a week?\nPatient: Probably 3 to 4 days a week, over the counter, 200 milligram tablets.\nDoctor: Okay, that's actually important to know, ibuprofen can interact with your blood pressure medication and affect your kidneys with regular use. Let's talk about alternatives for the headaches.\nPatient: Oh, I didn't realize that.\nDoctor: Try acetaminophen instead for now, and let's see if the headaches improve. If they continue, we should investigate the headaches themselves.\nPatient: Okay, I can do that.",
+      "note_under_test": "Subjective: Patient continues lisinopril 10mg once daily for hypertension, no side effects reported.\nObjective: Not specified during this encounter.\nAssessment: Hypertension, stable on current regimen.\nPlan: Continue lisinopril as prescribed. Follow up as scheduled.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "omission",
+            "claim_text": "regular OTC ibuprofen use (3-4 days/week) for headaches, and the counseling to switch to acetaminophen given the interaction risk with lisinopril",
+            "correct_value": "the note should document the ibuprofen use, the interaction discussion, and the plan to switch to acetaminophen",
+            "transcript_evidence": "Patient reported taking ibuprofen '3 to 4 days a week' and the doctor said it 'can interact with your blood pressure medication' and recommended switching to acetaminophen"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_16_omission_drug_allergy",
+      "specialty": "Primary care - new patient visit",
+      "transcript": "Doctor: Since this is your first visit with us, let's go over your history. Any allergies to medications?\nPatient: Yes, I'm allergic to sulfa drugs. I broke out in hives the last time I took one, years ago.\nDoctor: Good to know, we'll flag that in your chart. Any other allergies - food, environmental?\nPatient: No, just the sulfa.\nDoctor: Understood. Any current medications?\nPatient: Just a daily multivitamin.\nDoctor: Great, and what brings you in today?\nPatient: Just establishing care, and I wanted a general checkup.\nDoctor: Sounds good, let's do a quick exam and get some baseline labs ordered.",
+      "note_under_test": "Subjective: New patient establishing care, requesting general checkup. Reports taking a daily multivitamin, no other current medications.\nObjective: Exam findings pending.\nAssessment: New patient visit, no acute concerns.\nPlan: Baseline labs ordered.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "omission",
+            "claim_text": "known sulfa drug allergy (hives on prior exposure)",
+            "correct_value": "the note should document the sulfa allergy in the allergy section, since it is safety-critical for future prescribing",
+            "transcript_evidence": "Patient said 'I'm allergic to sulfa drugs. I broke out in hives the last time I took one'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_17_clean_control_dermatology",
+      "specialty": "Dermatology - routine mole check",
+      "transcript": "Doctor: What brings you in today?\nPatient: I have a mole on my back that my partner noticed looks a little different lately.\nDoctor: Different how - has it changed in size, color, or shape?\nPatient: A bit darker maybe, and possibly a little bigger, over the last couple months.\nDoctor: Any itching, bleeding, or pain from it?\nPatient: No, none of that.\nDoctor: Let me take a look... it's about 6 millimeters, mostly even in color and border, but given the changes you're describing I'd like to do a biopsy just to be safe.\nPatient: Okay, that sounds reasonable.\nDoctor: We'll do that today, it's a quick procedure, and I'll have you back in 2 weeks for the results.\nPatient: Sounds good, thank you.",
+      "note_under_test": "Subjective: Patient reports a back mole noted by partner to have darkened and possibly enlarged over the past 2 months. Denies itching, bleeding, or pain from the lesion.\nObjective: Approximately 6mm pigmented lesion, generally even color and border on exam.\nAssessment: Atypical-appearing nevus given reported change, biopsy indicated to rule out malignancy.\nPlan: Shave biopsy performed today. Follow up in 2 weeks for results.",
+      "ground_truth": {
+        "has_error": false,
+        "injected_errors": []
+      }
+    },
+    {
+      "id": "case_18_clean_control_annual_physical",
+      "specialty": "Primary care - annual physical, no complaints",
+      "transcript": "Doctor: How have you been feeling overall this year?\nPatient: Really good, no complaints. No chest pain, no shortness of breath, sleeping well, eating well.\nDoctor: Any changes in weight, appetite, or energy levels?\nPatient: No, everything's been pretty stable.\nDoctor: Great. Let's do a quick exam... heart and lungs sound normal, abdomen is soft and non-tender, everything looks good.\nPatient: Glad to hear it.\nDoctor: I'll order your routine annual labs - cholesterol panel and basic metabolic panel. Keep up with the exercise and diet, and I'll see you again next year unless something comes up sooner.\nPatient: Will do, thank you.",
+      "note_under_test": "Subjective: Patient reports feeling well overall, no complaints. Denies chest pain, shortness of breath, or changes in weight, appetite, sleep, or energy.\nObjective: Heart and lungs normal on auscultation. Abdomen soft, non-tender.\nAssessment: Routine annual physical, no acute concerns.\nPlan: Routine annual labs ordered (lipid panel, basic metabolic panel). Continue current diet and exercise. Follow up in 1 year or sooner if needed.",
       "ground_truth": {
         "has_error": false,
         "injected_errors": []

@@ -67,7 +67,38 @@ class TestDeterministicNumericCheck(unittest.TestCase):
             "case_04_distortion",
             "case_05_misattribution",
             "case_06_clean_control",
+            "case_07_numeric_medication_error_pediatric_dose",
+            "case_08_numeric_medication_error_beta_blocker",
+            "case_09_fabrication_allergy_visit",
+            "case_10_fabrication_knee_exam",
+            "case_11_negation_error_shortness_of_breath",
+            "case_12_negation_error_blood_in_stool",
+            "case_13_distortion_fever_duration",
+            "case_14_misattribution_smoking_history",
+            "case_15_omission_otc_medication",
+            "case_16_omission_drug_allergy",
+            "case_17_clean_control_dermatology",
+            "case_18_clean_control_annual_physical",
         })
+
+    def test_new_numeric_cases_flag_their_planted_dose_error(self):
+        self.assertIn("500mg", self._flagged_values("case_07_numeric_medication_error_pediatric_dose"))
+        self.assertIn("50mg", self._flagged_values("case_08_numeric_medication_error_beta_blocker"))
+
+    def test_omission_cases_raise_no_deterministic_flags(self):
+        # Omission errors are things ABSENT from the note - by definition
+        # there's no wrong number physically present in the note text for
+        # Node 4 to catch. This is exactly why the omission node exists as
+        # a separate detection approach (see pipeline.py).
+        for case_id in ("case_15_omission_otc_medication", "case_16_omission_drug_allergy"):
+            with self.subTest(case_id=case_id):
+                self.assertEqual(self._flagged_values(case_id), set())
+
+    def test_all_clean_controls_raise_no_deterministic_flags(self):
+        for case_id in ("case_06_clean_control", "case_17_clean_control_dermatology",
+                         "case_18_clean_control_annual_physical"):
+            with self.subTest(case_id=case_id):
+                self.assertEqual(self._flagged_values(case_id), set())
 
 
 if __name__ == "__main__":
