@@ -107,9 +107,7 @@ def call_model(prompt: str, model: str, max_retries: int = 2, max_output_tokens:
     raise RuntimeError(f"Gemini call failed after {max_retries} attempts: {last_err}")
 
 
-def call_model_json(prompt: str, model: str, max_retries: int = 2, max_output_tokens: int = 4096):
-    """Call a Gemini model and parse the response as JSON."""
-    raw = call_model(prompt, model=model, max_retries=max_retries, max_output_tokens=max_output_tokens)
+def _strip_markdown_fence(raw: str) -> str:
     cleaned = raw.strip()
     if cleaned.startswith("```"):
         parts = cleaned.split("```")
@@ -117,7 +115,30 @@ def call_model_json(prompt: str, model: str, max_retries: int = 2, max_output_to
         if cleaned.startswith("json"):
             cleaned = cleaned[4:]
         cleaned = cleaned.strip()
-    try:
-        return json.loads(cleaned)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Model did not return valid JSON.\nError: {e}\nRaw output:\n{raw}")
+    return cleaned
+
+
+def call_model_json(prompt: str, model: str, max_retries: int = 2, max_output_tokens: int = 4096,
+                     json_retries: int = 2):
+    """
+    Call a Gemini model and parse the response as JSON.
+
+    json_retries is separate from max_retries - see the equivalent note
+    in openai_compat_client.py. A complete, non-truncated response can
+    still be malformed JSON (a missing comma or bracket); each retry here
+    is a fresh generation, not a reparse of the same broken text.
+    """
+    last_err = None
+    last_raw = None
+    for attempt in range(json_retries):
+        raw = call_model(prompt, model=model, max_retries=max_retries, max_output_tokens=max_output_tokens)
+        last_raw = raw
+        try:
+            return json.loads(_strip_markdown_fence(raw))
+        except json.JSONDecodeError as e:
+            last_err = e
+            if attempt < json_retries - 1:
+                print(f"    [gemini_client] {model} returned malformed JSON "
+                      f"(attempt {attempt + 1}/{json_retries}) - retrying with a fresh generation")
+    raise ValueError(f"Model did not return valid JSON after {json_retries} attempts.\n"
+                      f"Error: {last_err}\nRaw output:\n{last_raw}")

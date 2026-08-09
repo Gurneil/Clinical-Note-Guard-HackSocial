@@ -155,10 +155,7 @@ def call_model(prompt: str, model: str, base_url: str = None, api_key_env: str =
     raise RuntimeError(f"Call failed after {max_retries} attempts: {last_err}")
 
 
-def call_model_json(prompt: str, model: str, base_url: str = None, api_key_env: str = None,
-                     provider: str = None, max_retries: int = 2, max_tokens: int = 4096):
-    raw = call_model(prompt, model=model, base_url=base_url, api_key_env=api_key_env,
-                      provider=provider, max_retries=max_retries, max_tokens=max_tokens)
+def _strip_markdown_fence(raw: str) -> str:
     cleaned = raw.strip()
     if cleaned.startswith("```"):
         parts = cleaned.split("```")
@@ -166,7 +163,36 @@ def call_model_json(prompt: str, model: str, base_url: str = None, api_key_env: 
         if cleaned.startswith("json"):
             cleaned = cleaned[4:]
         cleaned = cleaned.strip()
-    try:
-        return json.loads(cleaned)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Model did not return valid JSON.\nError: {e}\nRaw output:\n{raw}")
+    return cleaned
+
+
+def call_model_json(prompt: str, model: str, base_url: str = None, api_key_env: str = None,
+                     provider: str = None, max_retries: int = 2, max_tokens: int = 4096,
+                     json_retries: int = 2):
+    """
+    json_retries is a SEPARATE retry budget from max_retries (which
+    handles 429/503/truncation inside call_model). This one exists
+    because a model can return a complete, non-truncated response that is
+    still malformed JSON (a missing comma or bracket) - observed for real
+    running the full eval against Groq/Featherless on a short ~750-char
+    response, nowhere near the 4096-token budget, so this genuinely isn't
+    the truncation case above; it's ordinary LLM output variance on a
+    formatting-sensitive task. Each retry is a FRESH generation (not a
+    reparse of the same broken text), since the same malformed output
+    would just fail the same way again.
+    """
+    last_err = None
+    last_raw = None
+    for attempt in range(json_retries):
+        raw = call_model(prompt, model=model, base_url=base_url, api_key_env=api_key_env,
+                          provider=provider, max_retries=max_retries, max_tokens=max_tokens)
+        last_raw = raw
+        try:
+            return json.loads(_strip_markdown_fence(raw))
+        except json.JSONDecodeError as e:
+            last_err = e
+            if attempt < json_retries - 1:
+                print(f"    [openai_compat_client] {model} returned malformed JSON "
+                      f"(attempt {attempt + 1}/{json_retries}) - retrying with a fresh generation")
+    raise ValueError(f"Model did not return valid JSON after {json_retries} attempts.\n"
+                      f"Error: {last_err}\nRaw output:\n{last_raw}")

@@ -142,5 +142,57 @@ class TestTruncationRetry(ApiKeyEnvBase):
         self.assertEqual(fake_client.chat.completions.create.call_count, 1)
 
 
+class TestJsonRetry(ApiKeyEnvBase):
+    """
+    Regression tests for the malformed-JSON retry found running the real
+    eval: a COMPLETE (non-truncated, finish_reason="stop") response can
+    still be invalid JSON - a missing comma or bracket - which is a
+    distinct failure mode from truncation and needs its own retry budget
+    (call_model_json's json_retries), with each retry a fresh generation.
+    """
+
+    def setUp(self):
+        super().setUp()
+        os.environ["GROQ_API_KEY"] = "fake-key-for-this-test"
+        openai_compat_client._clients.pop("groq", None)
+
+    def tearDown(self):
+        openai_compat_client._clients.pop("groq", None)
+        super().tearDown()
+
+    def test_malformed_json_on_a_complete_response_is_retried_with_a_fresh_call(self):
+        responses = [
+            '["missing closing bracket, complete response, still bad json',
+            '["a", "b"]',
+        ]
+        call_count = {"n": 0}
+
+        def fake_create(**kwargs):
+            content = responses[call_count["n"]]
+            call_count["n"] += 1
+            return _fake_completion(content, finish_reason="stop")
+
+        fake_client = mock.Mock()
+        fake_client.chat.completions.create.side_effect = fake_create
+
+        with mock.patch.object(openai_compat_client, "_get_client", return_value=fake_client):
+            result = openai_compat_client.call_model_json("prompt", model="m", provider="groq")
+
+        self.assertEqual(result, ["a", "b"])
+        self.assertEqual(call_count["n"], 2)
+
+    def test_malformed_json_on_every_attempt_raises_with_the_last_raw_output(self):
+        fake_client = mock.Mock()
+        fake_client.chat.completions.create.return_value = _fake_completion(
+            "not json at all", finish_reason="stop")
+
+        with mock.patch.object(openai_compat_client, "_get_client", return_value=fake_client):
+            with self.assertRaises(ValueError) as ctx:
+                openai_compat_client.call_model_json("prompt", model="m", provider="groq", json_retries=2)
+
+        self.assertIn("not json at all", str(ctx.exception))
+        self.assertEqual(fake_client.chat.completions.create.call_count, 2)
+
+
 if __name__ == "__main__":
     unittest.main()
