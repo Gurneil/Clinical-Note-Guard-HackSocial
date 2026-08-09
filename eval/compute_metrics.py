@@ -28,13 +28,14 @@ KEY_PATH = os.path.join(BASE, "blind_key.json")
 
 
 def main():
-    with open(DATA_PATH) as f:
+    # encoding="utf-8" everywhere - see the note in run_eval.py.
+    with open(DATA_PATH, encoding="utf-8") as f:
         cases = {c["id"]: c for c in json.load(f)["cases"]}
-    with open(TAXONOMY_PATH) as f:
+    with open(TAXONOMY_PATH, encoding="utf-8") as f:
         taxonomy = {c["id"]: c for c in json.load(f)["categories"]}
-    with open(KEY_PATH) as f:
+    with open(KEY_PATH, encoding="utf-8") as f:
         blind_key = json.load(f)
-    with open(SCORECARD_PATH) as f:
+    with open(SCORECARD_PATH, encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
 
     results = {"pipeline": {"hits": 0, "possible": 0, "weighted_hits": 0.0,

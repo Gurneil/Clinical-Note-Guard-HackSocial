@@ -1,40 +1,69 @@
 """
-Central place for 'which model does which job, and why'. Change a node's
-model here rather than hunting through pipeline.py — this file is also
-what backs the required 'which LLM model is used at each stage' section
-of the submission documentation.
+Central place for 'which model/provider does which job, and why'.
 
-All models below are free-tier Gemini models (no cost, no credit card).
+Extended to support automatic failover across providers, because Gemini's
+free tier turned out to be only 5 requests/minute for gemini-3.6-flash -
+tight enough that a single case's worth of calls can exhaust it. Two
+different kinds of node, handled differently:
+
+1. CORE_REASONING_CHAIN - used by BOTH the entailment-check node AND the
+   single-prompt baseline. These two are FAIRNESS-LINKED (see
+   llm_router.py): for any given case, they always end up using the same
+   provider/model as each other. If Gemini's quota is hit, both drop to
+   the next tier together and stay there for the rest of the run - it
+   only ever downgrades, never flaps back and forth mid-run - and
+   whichever tier was actually used for a given case gets logged, not
+   hidden. This is what keeps "pipeline vs. baseline" a fair comparison
+   even after a provider switch: both sides are always tested against
+   the same underlying model capability.
+
+2. EXTRACT_CHAIN / CLASSIFY_CHAIN - mechanical, structural tasks with no
+   fairness constraint (the baseline has no extraction or classification
+   step to match against). Deliberately NOT using Gemini at all - Gemini's
+   5 RPM free tier is the tightest constraint in this whole project, so
+   it's reserved entirely for the fairness-critical comparison above.
+   These run on Groq first (30 RPM free tier, much more headroom), with
+   Featherless as backup.
+
+Order within each chain = failover priority, left to right.
+
+Set GROQ_API_KEY and/or FEATHERLESS_AI_API_KEY as environment variables
+if you want those providers available - NEVER hardcode a key here. If a
+key isn't set, that provider is skipped (with a loud warning) - see
+llm_router.py.
 """
 import json
 import os
 
 _TAXONOMY_PATH = os.path.join(os.path.dirname(__file__), "..", "taxonomy.json")
-with open(_TAXONOMY_PATH) as f:
+with open(_TAXONOMY_PATH, encoding="utf-8") as f:
     TAXONOMY = json.load(f)
 
-# --- Model assignment per node -------------------------------------------
-# Flash-Lite is used for structural, low-ambiguity tasks (pulling claims
-# out of text, picking one label from a fixed list) where speed matters
-# more than deep reasoning. Flash is used for the two steps that need
-# more careful judgment: drafting the note in the first place, and
-# deciding whether a specific claim is actually supported by the
-# transcript (this is the step doing the real verification work).
-#
-# NOTE: gemini-2.5-flash is no longer issued to new API keys as of when
-# this was tested (confirmed via a live 404 from the API) - Google has
-# moved new accounts onto the 3.x generation. gemini-3.6-flash and
-# gemini-3.5-flash-lite are both still free-tier (Flash-family models
-# stay free; only the Pro tier requires billing).
-MODEL_DRAFT = "gemini-3.6-flash"
-MODEL_EXTRACT = "gemini-3.5-flash-lite"
-MODEL_ENTAILMENT = "gemini-3.6-flash"
-MODEL_CLASSIFY = "gemini-3.5-flash-lite"
+# Fairness-critical. Both the entailment node and the baseline draw from this
+# one chain via llm_router.call_core_reasoning(), so they can never diverge.
+CORE_REASONING_CHAIN = [
+    {"provider": "gemini", "model": "gemini-3.6-flash"},
+    {"provider": "groq", "model": "llama-3.3-70b-versatile"},
+    {"provider": "featherless", "model": "Qwen/Qwen2.5-7B-Instruct"},
+]
 
-# IMPORTANT: the single-prompt baseline uses the SAME model as the
-# pipeline's strongest node (Flash), not a weaker model. This is
-# deliberate - if the baseline used a worse model, any improvement from
-# the pipeline could just be "we used a better model," not "the workflow
-# helps." Comparing workflow vs. single-prompt on the SAME underlying
-# model is what makes the comparison actually mean something.
-MODEL_BASELINE = "gemini-3.6-flash"
+# Mechanical nodes - no fairness constraint, and deliberately Gemini-free so
+# the whole 5 RPM Gemini budget stays available to the comparison above.
+EXTRACT_CHAIN = [
+    {"provider": "groq", "model": "llama-3.1-8b-instant"},
+    {"provider": "featherless", "model": "Qwen/Qwen2.5-7B-Instruct"},
+]
+CLASSIFY_CHAIN = [
+    {"provider": "groq", "model": "llama-3.1-8b-instant"},
+    {"provider": "featherless", "model": "Qwen/Qwen2.5-7B-Instruct"},
+]
+
+# Node 1 (drafting the note) only runs in the live demo, never in eval, and
+# has no fairness constraint - it is routed through DRAFT_CHAIN so the demo
+# survives a Gemini outage. MODEL_DRAFT is kept as the preferred draft model.
+MODEL_DRAFT = "gemini-3.6-flash"
+DRAFT_CHAIN = [
+    {"provider": "gemini", "model": MODEL_DRAFT},
+    {"provider": "groq", "model": "llama-3.3-70b-versatile"},
+    {"provider": "featherless", "model": "Qwen/Qwen2.5-7B-Instruct"},
+]

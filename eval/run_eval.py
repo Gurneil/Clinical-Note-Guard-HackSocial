@@ -57,7 +57,10 @@ def summarize_baseline_flags(baseline_result: list) -> str:
 
 
 def main():
-    with open(DATA_PATH) as f:
+    # encoding="utf-8" is not optional here: these files contain em dashes,
+    # and Windows defaults to cp1252, which silently mojibakes them into the
+    # prompts rather than failing.
+    with open(DATA_PATH, encoding="utf-8") as f:
         dataset = json.load(f)["cases"]
 
     raw_outputs = []
@@ -118,18 +121,18 @@ def main():
             "notes": "",
         })
 
-    with open(RAW_OUT_PATH, "w") as f:
+    with open(RAW_OUT_PATH, "w", encoding="utf-8") as f:
         json.dump(raw_outputs, f, indent=2)
     print(f"\nWrote raw outputs -> {RAW_OUT_PATH}")
 
-    with open(SCORECARD_PATH, "w", newline="") as f:
+    with open(SCORECARD_PATH, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=list(blind_rows[0].keys()))
         writer.writeheader()
         writer.writerows(blind_rows)
     print(f"Wrote blind scorecard -> {SCORECARD_PATH}")
     print("  -> Fill in the 4 blank columns by hand, WITHOUT looking at blind_key.json first.")
 
-    with open(KEY_PATH, "w") as f:
+    with open(KEY_PATH, "w", encoding="utf-8") as f:
         json.dump(blind_key, f, indent=2)
     print(f"Wrote blind key -> {KEY_PATH}  (don't peek until scorecard is filled in!)")
 

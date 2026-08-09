@@ -48,11 +48,27 @@ def _is_quota_or_unavailable(exc: Exception) -> bool:
     return any(s in msg for s in ("429", "503", "rate limit", "quota", "resource_exhausted", "unavailable"))
 
 
+_warned_missing_key = set()
+
+
 def _key_available(provider: str) -> bool:
+    """A provider with no key is skipped rather than treated as an error -
+    that is intended (optional providers), but it is warned about ONCE per
+    process, loudly. A silently-absent provider looks identical to a working
+    one from the outside, which is exactly how a chain can quietly degrade to
+    a single provider without anyone noticing."""
     if provider == "gemini":
-        return bool(os.environ.get("GEMINI_API_KEY"))
-    settings = openai_compat_client.PROVIDER_SETTINGS.get(provider)
-    return bool(settings and os.environ.get(settings["api_key_env"]))
+        available = bool(os.environ.get("GEMINI_API_KEY"))
+        names = "GEMINI_API_KEY"
+    else:
+        settings = openai_compat_client.PROVIDER_SETTINGS.get(provider)
+        available = bool(settings and openai_compat_client.resolve_api_key(provider))
+        names = " or ".join(settings["api_key_envs"]) if settings else "(unknown provider)"
+    if not available and provider not in _warned_missing_key:
+        _warned_missing_key.add(provider)
+        print(f"    [llm_router] WARNING: provider '{provider}' has no API key "
+              f"({names} not set) - it is being SKIPPED in every failover chain.")
+    return available
 
 
 def _dispatch(provider: str, model: str, prompt: str, json_mode: bool):
@@ -78,11 +94,12 @@ def call_core_reasoning(prompt: str, json_mode: bool = False, chain=None):
     chain = chain or CORE_REASONING_CHAIN
 
     last_err = None
+    attempted = 0
     for i in range(_core_tier_index, len(chain)):
         provider, model = chain[i]["provider"], chain[i]["model"]
         if not _key_available(provider):
-            print(f"    [llm_router] skipping {provider} (no API key set)")
-            continue
+            continue  # _key_available already warned, once, loudly
+        attempted += 1
         try:
             result = _dispatch(provider, model, prompt, json_mode)
             if i > _core_tier_index:
@@ -95,6 +112,15 @@ def call_core_reasoning(prompt: str, json_mode: bool = False, chain=None):
                 last_err = e
                 continue
             raise  # not a quota/availability issue - surface immediately, don't mask a real bug
+    if attempted == 0:
+        # Distinct from "everything failed": nothing was even tried, because
+        # no provider had a key. Worth its own message - the two look the same
+        # from the outside but need completely different fixes.
+        raise RuntimeError(
+            "No core-reasoning provider could be tried: none of the configured "
+            "providers has an API key set. Set GEMINI_API_KEY, GROQ_API_KEY, "
+            "and/or FEATHERLESS_AI_API_KEY."
+        )
     raise RuntimeError(f"All core-reasoning providers exhausted or unavailable. Last error: {last_err}")
 
 

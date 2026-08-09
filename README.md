@@ -57,11 +57,22 @@ clinical-note-guard/
    a key in any file:
    ```
    export GEMINI_API_KEY="your-key-here"
-   export GROQ_API_KEY="your-key-here"          # optional
-   export FEATHERLESS_API_KEY="your-key-here"   # optional
+   export GROQ_API_KEY="your-key-here"             # optional
+   export FEATHERLESS_AI_API_KEY="your-key-here"   # optional
    ```
    Windows PowerShell: `$env:GEMINI_API_KEY="your-key-here"` (same for the others)
    Windows Command Prompt: `set GEMINI_API_KEY=your-key-here` (same for the others)
+
+   (`FEATHERLESS_API_KEY` is also accepted as an alias for
+   `FEATHERLESS_AI_API_KEY` — both names work.)
+
+**Verify your keys actually work before running the eval:**
+```
+D:\Python312\python.exe smoke_test.py
+```
+One minimal call per provider (so confirming Gemini costs 1 of its 5
+requests/minute), plus a test of the failover router itself. Providers
+with no key set are reported as SKIPPED — never silently omitted.
 
    Note: if `python` isn't recognized on PATH (common when Python is
    installed somewhere like `D:\Python312`), use the full path to your

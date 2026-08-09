@@ -25,23 +25,44 @@ from openai import OpenAI
 PROVIDER_SETTINGS = {
     "groq": {
         "base_url": "https://api.groq.com/openai/v1",
-        "api_key_env": "GROQ_API_KEY",
+        # Tuple, not a single string: Featherless in particular is documented
+        # under two different env-var names in the wild, and a key set under
+        # the "wrong" one used to make the provider vanish from every failover
+        # chain silently (a missing key is treated as "skip", not "error").
+        # Accepting every plausible name removes that whole failure mode.
+        "api_key_envs": ("GROQ_API_KEY",),
     },
     "featherless": {
         "base_url": "https://api.featherless.ai/v1",
-        "api_key_env": "FEATHERLESS_API_KEY",
+        "api_key_envs": ("FEATHERLESS_AI_API_KEY", "FEATHERLESS_API_KEY"),
     },
 }
 
 _clients = {}  # one cached client per provider
 
 
+def resolve_api_key(provider: str) -> str | None:
+    """The single place that decides whether a provider has a usable key.
+    Returns the first env var that is set, or None. llm_router uses this too,
+    so 'is this provider available?' and 'what key do we call it with?' can
+    never disagree."""
+    settings = PROVIDER_SETTINGS.get(provider)
+    if not settings:
+        return None
+    for env_name in settings["api_key_envs"]:
+        value = os.environ.get(env_name)
+        if value:
+            return value
+    return None
+
+
 def _get_client(provider: str) -> OpenAI:
     if provider not in _clients:
         settings = PROVIDER_SETTINGS[provider]
-        api_key = os.environ.get(settings["api_key_env"])
+        api_key = resolve_api_key(provider)
         if not api_key:
-            raise RuntimeError(f"{settings['api_key_env']} is not set.")
+            names = " or ".join(settings["api_key_envs"])
+            raise RuntimeError(f"No API key for {provider}: set {names}.")
         _clients[provider] = OpenAI(
             base_url=settings["base_url"],
             api_key=api_key,

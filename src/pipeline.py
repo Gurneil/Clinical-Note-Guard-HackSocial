@@ -3,7 +3,8 @@ Clinical Note Hallucination Guard - main pipeline.
 
 Six nodes:
   0. Input          - transcript + (in the live product) an AI-drafted note.
-  1. draft_note              - transcript -> SOAP note draft (LLM, Gemini)
+  1. draft_note              - transcript -> SOAP note draft (LLM, routed
+                                via DRAFT_CHAIN: Gemini, then Groq/Featherless)
   2. extract_claims          - note -> list of atomic factual claims
                                 (LLM, mechanical tier - Groq/Featherless)
   3. entailment_check_batch  - ALL claims for one case, checked in a
@@ -41,8 +42,7 @@ equivalent structural guarantee that it looked at every fact.
 import re
 
 import llm_router
-from config import EXTRACT_CHAIN, CLASSIFY_CHAIN, MODEL_DRAFT, TAXONOMY
-import gemini_client
+from config import EXTRACT_CHAIN, CLASSIFY_CHAIN, DRAFT_CHAIN, TAXONOMY
 
 
 # ---------------------------------------------------------------------------
@@ -58,7 +58,12 @@ TRANSCRIPT:
 {transcript}
 
 Return only the SOAP note, no preamble."""
-    return gemini_client.call_model(prompt, model=MODEL_DRAFT)
+    # Routed through a chain rather than calling Gemini directly: drafting has
+    # no fairness constraint (the baseline has no drafting step), so there is
+    # no reason for a Gemini quota exhaustion to take the live demo down with
+    # it. Uses call_mechanical, which fails over per-call and never touches
+    # the sticky core-reasoning tier.
+    return llm_router.call_mechanical(DRAFT_CHAIN, prompt)
 
 
 # ---------------------------------------------------------------------------
