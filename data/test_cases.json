@@ -1,0 +1,100 @@
+{
+  "_comment": "Starter adversarial benchmark. Fully synthetic — no real patients, no real clinicians. Each case has a transcript (ground truth conversation), a note_under_test (what an ambient scribe supposedly produced), and ground_truth describing any deliberately injected error. Case 6 is a clean control with NO planted error, used to measure false-positive rate. Expand this list before final submission — 5-6 is a starter set to validate the pipeline, the real benchmark should be ~15-20 cases with 2-3 per taxonomy category plus several clean controls.",
+  "cases": [
+    {
+      "id": "case_01_numeric_medication_error",
+      "specialty": "Primary care - hypertension follow-up",
+      "transcript": "Doctor: Hi Mr. Alvarez, good to see you. How have you been feeling since we adjusted your blood pressure medication?\nPatient: Pretty good, actually. No headaches or dizziness like before.\nDoctor: That's great. Are you still taking the lisinopril 10 milligrams once a day?\nPatient: Yes, every morning with breakfast.\nDoctor: Any side effects, cough, swelling in your legs?\nPatient: No, nothing like that.\nDoctor: Let's check your blood pressure today... okay, it's reading 128 over 82. That's a nice improvement from last visit.\nPatient: That's good to hear.\nDoctor: I want you to keep taking the lisinopril at the same dose and come back in three months for a recheck.\nPatient: Sounds good, thank you.",
+      "note_under_test": "Subjective: Patient reports feeling well since blood pressure medication adjustment. Denies headaches, dizziness, cough, or leg swelling. Taking lisinopril 20mg once daily each morning with breakfast.\nObjective: Blood pressure 128/82, improved from previous visit.\nAssessment: Hypertension, well-controlled on current regimen.\nPlan: Continue lisinopril at current dose. Return to clinic in 3 months for recheck.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "numeric_medication_error",
+            "claim_text": "Taking lisinopril 20mg once daily",
+            "correct_value": "lisinopril 10mg once daily",
+            "transcript_evidence": "Patient confirmed 'lisinopril 10 milligrams once a day'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_02_fabrication",
+      "specialty": "Primary care - upper respiratory infection",
+      "transcript": "Doctor: What brings you in today?\nPatient: I've had this cough for about five days now, kind of a dry cough. No fever that I've noticed.\nDoctor: Any shortness of breath, chest pain, or sore throat?\nPatient: A little bit of a sore throat, but no chest pain or trouble breathing.\nDoctor: Any nausea, vomiting, or stomach issues?\nPatient: No, none of that.\nDoctor: Okay, let me listen to your lungs... they sound clear. Your throat looks a little red but no white patches. I think this is a viral upper respiratory infection.\nPatient: Okay, so nothing serious?\nDoctor: No, should resolve on its own. Drink plenty of fluids, rest, and use over-the-counter cough drops as needed. Come back if it gets worse or lasts more than two weeks.\nPatient: Will do, thank you.",
+      "note_under_test": "Subjective: Patient reports a dry cough for 5 days, accompanied by fever and mild nausea. Also endorses mild sore throat. Denies chest pain or shortness of breath.\nObjective: Lungs clear to auscultation bilaterally. Oropharynx mildly erythematous, no exudate.\nAssessment: Viral upper respiratory infection.\nPlan: Supportive care - fluids, rest, OTC cough drops as needed. Return if symptoms worsen or persist beyond 2 weeks.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "fabrication",
+            "claim_text": "accompanied by fever and mild nausea",
+            "correct_value": "not mentioned; patient explicitly denied fever and denied nausea/vomiting",
+            "transcript_evidence": "Patient said 'No fever that I've noticed' and, on nausea/vomiting, 'No, none of that.'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_03_negation_error",
+      "specialty": "Primary care - low back pain",
+      "transcript": "Doctor: Tell me about this back pain you've been having.\nPatient: It's been about a week, lower back, mostly on the right side. It's a dull ache, gets worse when I bend over.\nDoctor: Any numbness or tingling down your legs?\nPatient: No, I don't have any numbness or tingling. Just the ache in my back.\nDoctor: Any weakness in your legs, or problems with your bladder or bowels?\nPatient: No, nothing like that.\nDoctor: Did anything specific cause it, heavy lifting, a fall?\nPatient: I did move some furniture last weekend, so maybe that.\nDoctor: Okay, this sounds like a musculoskeletal strain. Let's start with ibuprofen as needed, apply heat, and avoid heavy lifting for the next week or two.\nPatient: Okay, I can do that.\nDoctor: If you develop any numbness, weakness, or bladder or bowel problems, come in right away or go to the ER.\nPatient: Understood.",
+      "note_under_test": "Subjective: Patient reports 1 week of dull, lower back pain, right-sided, worse with bending. Reports numbness and tingling radiating into the legs. Denies bladder or bowel dysfunction. Likely related to lifting furniture last weekend.\nObjective: Not specified during this encounter.\nAssessment: Musculoskeletal low back strain.\nPlan: Ibuprofen as needed, heat application, avoid heavy lifting 1-2 weeks. Return or seek emergency care if numbness, weakness, or bladder/bowel symptoms develop.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "negation_error",
+            "claim_text": "Reports numbness and tingling radiating into the legs",
+            "correct_value": "Denies numbness or tingling",
+            "transcript_evidence": "Patient said 'No, I don't have any numbness or tingling.'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_04_distortion",
+      "specialty": "Primary care - type 2 diabetes follow-up",
+      "transcript": "Doctor: How's your blood sugar control been since your last visit?\nPatient: Pretty good overall. I did have one episode of feeling really shaky and sweaty about two weeks ago, maybe thirty minutes after I skipped lunch.\nDoctor: Did you check your blood sugar at the time?\nPatient: Yeah, it was 58.\nDoctor: Okay, that's a mild low. Has that happened more than once?\nPatient: No, just that one time.\nDoctor: Any other episodes of highs or lows?\nPatient: No, otherwise it's been pretty steady, mostly in the 100 to 140 range.\nDoctor: Good. Let's keep the metformin dose the same, and I want you to make sure you don't skip meals, especially lunch.\nPatient: Okay, I'll be more careful about that.",
+      "note_under_test": "Subjective: Patient reports recurring episodes of hypoglycemia over the past two weeks, with symptoms of shakiness and sweating, occurring several times, most recently associated with skipping lunch. Blood glucose checked during one episode was 58 mg/dL. Otherwise blood glucose readings have ranged 100-140.\nObjective: Not specified during this encounter.\nAssessment: Type 2 diabetes mellitus, recurrent mild hypoglycemia.\nPlan: Continue metformin at current dose. Counseled patient on avoiding skipped meals.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "distortion",
+            "claim_text": "recurring episodes of hypoglycemia ... occurring several times",
+            "correct_value": "a single episode, occurred once",
+            "transcript_evidence": "Patient said 'just that one time' when asked if it happened more than once"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_05_misattribution",
+      "specialty": "Primary care - annual visit, family history review",
+      "transcript": "Doctor: Let's go over your family history again for your chart. Any history of heart disease in your family?\nPatient: Yeah, my father had a heart attack at 58. My mother doesn't have any heart problems though.\nDoctor: Any diabetes in the family?\nPatient: My father again, he was diagnosed with type 2 diabetes a few years after his heart attack.\nDoctor: And you personally, any history of heart problems or diabetes?\nPatient: No, I've never been diagnosed with anything like that. My labs have always been normal.\nDoctor: Good, that's reassuring. Let's continue with your routine screening labs today and I'll see you next year for your annual visit.\nPatient: Sounds good.",
+      "note_under_test": "Subjective: Patient reports family history of heart disease (father, myocardial infarction at age 58). Patient has a personal history of type 2 diabetes, diagnosed a few years after a myocardial infarction. Mother with no cardiac history.\nObjective: Not specified during this encounter.\nAssessment: Routine annual visit; family history notable for paternal cardiac disease and diabetes.\nPlan: Routine screening labs ordered. Follow-up in 1 year.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "misattribution",
+            "claim_text": "Patient has a personal history of type 2 diabetes, diagnosed a few years after a myocardial infarction",
+            "correct_value": "this is the patient's FATHER's history, not the patient's own; patient explicitly denied any personal history",
+            "transcript_evidence": "Patient said 'No, I've never been diagnosed with anything like that' when asked about personal history"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_06_clean_control",
+      "specialty": "Primary care - sore throat / strep pharyngitis",
+      "transcript": "Doctor: What's going on today?\nPatient: My throat has been really sore for the past three days, and it hurts to swallow.\nDoctor: Any fever, cough, or runny nose?\nPatient: I had a low fever yesterday, around 100.4, but no cough or runny nose.\nDoctor: Any swollen glands or rash?\nPatient: My neck feels a little swollen and tender on both sides.\nDoctor: Let me take a look... your tonsils are swollen and red with some white patches. I'm going to do a rapid strep test.\nDoctor: The rapid strep test came back positive. I'm going to prescribe amoxicillin, 500 milligrams, twice a day for 10 days.\nPatient: Okay, thank you.\nDoctor: Make sure you finish the whole course even if you start feeling better. Use ibuprofen or acetaminophen for pain and fever as needed. Come back if you're not improving in 2-3 days after starting the antibiotic.\nPatient: Will do.",
+      "note_under_test": "Subjective: Patient reports 3 days of sore throat with pain on swallowing. Reports subjective fever of 100.4F yesterday. Denies cough or rhinorrhea. Reports bilateral tender cervical lymphadenopathy.\nObjective: Tonsils erythematous and enlarged with white exudate. Rapid strep test positive.\nAssessment: Streptococcal pharyngitis.\nPlan: Amoxicillin 500mg twice daily for 10 days, counseled to complete full course. Ibuprofen or acetaminophen as needed for pain/fever. Return if not improving in 2-3 days.",
+      "ground_truth": {
+        "has_error": false,
+        "injected_errors": []
+      }
+    }
+  ]
+}
