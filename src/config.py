@@ -2,9 +2,14 @@
 Central place for 'which model/provider does which job, and why'.
 
 Extended to support automatic failover across providers, because Gemini's
-free tier turned out to be only 5 requests/minute for gemini-3.6-flash -
-tight enough that a single case's worth of calls can exhaust it. Two
-different kinds of node, handled differently:
+free tier turned out to be tight enough that a single case's worth of
+calls can exhaust it. (Earlier notes here said "5 requests/minute" -
+that was never directly confirmed; a real 429 later showed a DAILY cap
+of 20 requests/day for gemini-3.6-flash instead. See docs/ARCHITECTURE.md
+for the full correction - the failover logic below doesn't depend on
+which one it actually is, since it reacts to whatever error comes back
+rather than pre-counting requests.) Two different kinds of node, handled
+differently:
 
 1. CORE_REASONING_CHAIN - used by BOTH the entailment-check node AND the
    single-prompt baseline. These two are FAIRNESS-LINKED (see
@@ -17,13 +22,13 @@ different kinds of node, handled differently:
    even after a provider switch: both sides are always tested against
    the same underlying model capability.
 
-2. EXTRACT_CHAIN / CLASSIFY_CHAIN - mechanical, structural tasks with no
-   fairness constraint (the baseline has no extraction or classification
-   step to match against). Deliberately NOT using Gemini at all - Gemini's
-   5 RPM free tier is the tightest constraint in this whole project, so
-   it's reserved entirely for the fairness-critical comparison above.
-   These run on Groq first (30 RPM free tier, much more headroom), with
-   Featherless as backup.
+2. EXTRACT_CHAIN / CLASSIFY_CHAIN / OMISSION_CHAIN - mechanical,
+   structural tasks with no fairness constraint (the baseline has no
+   extraction, classification, or omission-check step to match against).
+   Deliberately NOT using Gemini at all - Gemini's free tier is the
+   tightest constraint in this whole project, so it's reserved entirely
+   for the fairness-critical comparison above. These run on Groq first
+   (much more free-tier headroom), with Featherless as backup.
 
 Order within each chain = failover priority, left to right.
 
@@ -48,7 +53,8 @@ CORE_REASONING_CHAIN = [
 ]
 
 # Mechanical nodes - no fairness constraint, and deliberately Gemini-free so
-# the whole 5 RPM Gemini budget stays available to the comparison above.
+# the whole (tight) Gemini free-tier budget stays available to the
+# comparison above.
 EXTRACT_CHAIN = [
     {"provider": "groq", "model": "llama-3.1-8b-instant"},
     {"provider": "featherless", "model": "Qwen/Qwen2.5-7B-Instruct"},

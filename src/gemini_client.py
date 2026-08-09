@@ -51,9 +51,12 @@ def call_model(prompt: str, model: str, max_retries: int = 2) -> str:
 
     Error handling is deliberately asymmetric:
       - 429 (quota exhausted): fails IMMEDIATELY, no retry. Retrying a
-        per-minute quota error a second later almost never helps, and
-        every second spent retrying here is a second not spent trying
-        the next provider in the failover chain (see llm_router.py).
+        quota error a second later almost never helps - regardless of
+        whether the underlying window is per-minute or per-day (this
+        project's free tier turned out to be a 20/day cap, not the
+        per-minute limit originally assumed - see docs/ARCHITECTURE.md)
+        - and every second spent retrying here is a second not spent
+        trying the next provider in the failover chain (see llm_router.py).
       - 503 (transiently overloaded): short bounded retry (2 attempts,
         1s/2s backoff) - this one genuinely is often transient.
       - anything else (400, 401, 404...): fails immediately. Retrying a

@@ -26,19 +26,28 @@ note and hoping they catch what's wrong.
 ```
 clinical-note-guard/
 ├── taxonomy.json          # error categories, grounded in the literature
+├── .env.example            # API key variable names (copy to .env, fill in, never commit)
+├── smoke_test.py            # verifies every provider + the failover router, no eval cost
 ├── data/
 │   └── test_cases.json    # synthetic benchmark: transcripts + notes +
-│                           # ground truth for planted errors
+│                           # ground truth for planted errors (18 cases)
 ├── src/
-│   ├── config.py               # provider/model failover chains, and why
-│   ├── llm_router.py            # dispatch + automatic failover + fairness-linking
-│   ├── gemini_client.py         # Gemini API wrapper
-│   ├── openai_compat_client.py  # shared Groq + Featherless wrapper (both OpenAI-compatible)
-│   ├── pipeline.py              # the 6-node guard pipeline
-│   └── baseline.py              # single-prompt comparison baseline
+│   ├── _env.py                   # loads .env once, imported by the three files below
+│   ├── config.py                 # provider/model failover chains, and why
+│   ├── llm_router.py             # dispatch + automatic failover + fairness-linking
+│   ├── gemini_client.py          # Gemini API wrapper
+│   ├── openai_compat_client.py   # shared Groq + Featherless wrapper (both OpenAI-compatible)
+│   ├── pipeline.py               # the 7-node guard pipeline (commission + omission + human checkpoint)
+│   └── baseline.py               # single-prompt comparison baseline
+├── tests/                   # stdlib unittest, no real API calls, run before every change
+│   ├── test_deterministic_check.py
+│   ├── test_llm_router.py
+│   ├── test_omission_check.py
+│   └── test_openai_compat_client.py
 ├── eval/
 │   ├── run_eval.py         # runs both systems, writes a BLINDED scorecard
-│   └── compute_metrics.py  # scores the filled-in scorecard
+│   ├── compute_metrics.py  # scores the filled-in blind scorecard by hand
+│   └── auto_score.py       # automated (non-blind) scoring proxy - see ARCHITECTURE.md
 └── docs/
     └── ARCHITECTURE.md     # reasoning behind every node (submission doc)
 ```
@@ -53,8 +62,23 @@ clinical-note-guard/
    runs out mid-run:
    - Groq: free key (no card) at https://console.groq.com
    - Featherless: key from your account dashboard at https://featherless.ai
-5. Set whichever keys you have as environment variables - never hardcode
-   a key in any file:
+5. Set whichever keys you have. Two ways to do this - never hardcode a
+   key in any source file either way:
+
+   **Recommended: a `.env` file.** Copy `.env.example` to `.env` in the
+   project root and fill in whichever keys you have:
+   ```
+   GEMINI_API_KEY=your-key-here
+   GROQ_API_KEY=your-key-here
+   FEATHERLESS_AI_API_KEY=your-key-here
+   ```
+   `.env` is already in `.gitignore` and is never committed. It's loaded
+   automatically (see `src/_env.py`) regardless of which directory you
+   run a command from, so this is the easiest option if you're running
+   commands from different folders (`src/`, `eval/`, project root).
+
+   **Alternative: shell environment variables**, if you'd rather not use
+   a file:
    ```
    export GEMINI_API_KEY="your-key-here"
    export GROQ_API_KEY="your-key-here"             # optional
@@ -63,16 +87,18 @@ clinical-note-guard/
    Windows PowerShell: `$env:GEMINI_API_KEY="your-key-here"` (same for the others)
    Windows Command Prompt: `set GEMINI_API_KEY=your-key-here` (same for the others)
 
-   (`FEATHERLESS_API_KEY` is also accepted as an alias for
-   `FEATHERLESS_AI_API_KEY` — both names work.)
+   Either way, `FEATHERLESS_API_KEY` is also accepted as an alias for
+   `FEATHERLESS_AI_API_KEY` — both names work.
 
 **Verify your keys actually work before running the eval:**
 ```
 D:\Python312\python.exe smoke_test.py
 ```
-One minimal call per provider (so confirming Gemini costs 1 of its 5
-requests/minute), plus a test of the failover router itself. Providers
-with no key set are reported as SKIPPED — never silently omitted.
+One minimal call per provider (so confirming Gemini costs 1 request out
+of its tight free-tier daily quota - 20/day observed for
+gemini-3.6-flash, see docs/ARCHITECTURE.md), plus a test of the failover
+router itself. Providers with no key set are reported as SKIPPED — never
+silently omitted.
 
    Note: if `python` isn't recognized on PATH (common when Python is
    installed somewhere like `D:\Python312`), use the full path to your
@@ -112,12 +138,25 @@ This writes `raw_outputs.json` (full detail) and `scorecard_blind.csv`
 looking at `blind_key.json` first, so you're not unconsciously grading
 generously in favor of the system you built).
 
-**After grading the scorecard:**
+**After grading the scorecard (blind, human):**
 ```bash
 python compute_metrics.py
 ```
 This prints recall, severity-weighted recall, and false-positive counts
-for both systems side by side.
+for both systems side by side. Cases where the pipeline and baseline
+ended up on different providers mid-run are excluded by default (pass
+`--include-mismatches` to score them anyway - not recommended for a
+final result).
+
+**Or, without a human grading session (automated proxy):**
+```bash
+python auto_score.py
+```
+Scores `raw_outputs.json` directly against `ground_truth` using
+keyword/phrase matching instead of a person's judgment. Faster to
+iterate with, but not a substitute for the blind human-graded numbers
+above in a final write-up - see "Evaluation methodology" in
+`docs/ARCHITECTURE.md` for why.
 
 ## Current status / what's left before submission
 
