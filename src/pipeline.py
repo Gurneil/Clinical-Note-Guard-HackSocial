@@ -91,6 +91,17 @@ independently-checkable factual claims. Each claim should be one discrete
 fact (one symptom, one medication + dose, one vital sign, one plan item,
 etc). Do not combine multiple facts into one claim.
 
+Do NOT include the clinician's overall diagnosis or assessment
+conclusion (e.g. an "Assessment:" line naming a condition) as a claim.
+A diagnosis is the clinician's synthesized clinical judgment, not
+something directly stated by the patient - it can be a reasonable
+conclusion from findings (like a positive test result) even when the
+diagnosis name itself is never spoken aloud in the transcript, so
+checking it against literal transcript wording produces false positives
+rather than catching real errors. Directly-reportable facts the
+diagnosis is BASED on (symptoms, exam findings, test results) should
+still be included as their own separate claims.
+
 NOTE:
 {note}
 
@@ -227,14 +238,26 @@ a doctor-patient transcript was included (even if paraphrased or
 summarized) in a clinical note written from that transcript. Check EVERY
 fact independently.
 
+A fact counts as "mentioned" if it is covered in ANY of these ways:
+- stated directly, in the same or different words
+- covered by a broader summarizing statement in the note (e.g. a note
+  saying "denies changes in weight, appetite, sleep, or energy" mentions
+  each of those four facts individually, even though none is its own
+  sentence)
+- referred to using a reasonable clinical synonym (e.g. "lipid panel"
+  and "cholesterol panel" refer to the same test; "sulfa allergy" and
+  "allergic to sulfa drugs" are the same fact)
+Only mark a fact "omitted" if the note truly gives no indication of it
+at all, directly or through a synonym or summary.
+
 NOTE:
 {note}
 
 FACTS TO CHECK ({len(facts)} total, check each independently):
 {numbered}
 
-For EACH fact, decide exactly ONE status: "mentioned" (it appears in the
-note in any form) or "omitted" (it does not appear in the note at all).
+For EACH fact, decide exactly ONE status: "mentioned" (covered by the
+note per the rules above) or "omitted" (no trace of it in the note).
 
 Return ONLY a JSON array with EXACTLY {len(facts)} objects, one per fact,
 in the SAME ORDER as listed above:
