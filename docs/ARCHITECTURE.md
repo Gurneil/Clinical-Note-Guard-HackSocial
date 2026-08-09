@@ -238,6 +238,30 @@ fails immediately and is never silently swallowed by a provider
 switch - a real bug should surface loudly, not get masked as "oh, it
 just failed over."
 
+## Reproducibility: pinning temperature after catching ourselves almost trusting a lucky run
+
+Running the full 18-case eval twice in a row, with no code changes in
+between, produced meaningfully different results: 100% pipeline recall
+on one run, 87% on the next. Neither run was wrong - both are real
+model outputs - but reporting whichever one happened to run last (or
+worse, running it repeatedly and keeping the best number) would have
+been exactly the kind of quiet result manipulation this project
+explicitly rules out. The cause: neither LLM client pinned a
+`temperature`, so every call sampled at the provider's default
+(non-zero) temperature. Every node in this pipeline - claim extraction,
+entailment checking, omission checking, classification - is a
+judgment/extraction task, not a creative one, so there is no reason to
+sample instead of taking the model's single best answer. Both clients
+now default to `temperature=0.0`. This doesn't guarantee byte-identical
+output on every provider (some providers still have minor residual
+nondeterminism even at temperature 0, particularly for quantized models
+served through aggregators like Featherless), but it removes the single
+largest source of run-to-run noise. Numbers reported anywhere in this
+project's `eval/` output or documentation were produced after this fix
+was in place, not before - and should still be read as one run of a
+noisy process, not a guaranteed-reproducible ground truth, especially
+on any category that only has 2-3 benchmark cases.
+
 ## Known limitations (documented honestly, not hidden)
 
 - The deterministic numeric check (Node 4) is a pattern-matcher for

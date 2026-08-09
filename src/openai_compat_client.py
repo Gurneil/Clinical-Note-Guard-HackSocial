@@ -99,7 +99,8 @@ def _status_code(exc) -> int | None:
 
 
 def call_model(prompt: str, model: str, base_url: str = None, api_key_env: str = None,
-                provider: str = None, max_retries: int = 2, max_tokens: int = 4096) -> str:
+                provider: str = None, max_retries: int = 2, max_tokens: int = 4096,
+                temperature: float = 0.0) -> str:
     """
     provider is the simple way to call this (looks up base_url/api_key_env
     from PROVIDER_SETTINGS); base_url/api_key_env let you override directly
@@ -116,6 +117,19 @@ def call_model(prompt: str, model: str, base_url: str = None, api_key_env: str =
     off at 4096, that's detected via finish_reason == "length" and gets
     one retry at double the token budget before giving up - a different,
     explicit failure mode from a quota/availability error.
+
+    temperature defaults to 0.0, also not left at the provider's default -
+    discovered mattering for real when back-to-back full eval runs (no
+    code changes in between) produced meaningfully different recall
+    numbers (100% then 87%) purely from LLM sampling variance at the
+    default (non-zero) temperature. Every node here is a
+    classification/extraction/entailment-judgment task, not a creative
+    one, so there's no reason to sample instead of taking the model's
+    single best answer - pinning temperature=0 doesn't guarantee
+    byte-identical output across runs, but removes the single largest
+    source of run-to-run noise, which matters for treating a
+    pipeline-vs-baseline comparison as a real measurement rather than a
+    coin flip.
     """
     if provider:
         client = _get_client(provider)
@@ -131,6 +145,7 @@ def call_model(prompt: str, model: str, base_url: str = None, api_key_env: str =
                 model=model,
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=tokens_for_attempt,
+                temperature=temperature,
             )
             choice = response.choices[0]
             if choice.finish_reason == "length" and attempt < max_retries - 1:
@@ -168,7 +183,7 @@ def _strip_markdown_fence(raw: str) -> str:
 
 def call_model_json(prompt: str, model: str, base_url: str = None, api_key_env: str = None,
                      provider: str = None, max_retries: int = 2, max_tokens: int = 4096,
-                     json_retries: int = 2):
+                     json_retries: int = 2, temperature: float = 0.0):
     """
     json_retries is a SEPARATE retry budget from max_retries (which
     handles 429/503/truncation inside call_model). This one exists
@@ -185,7 +200,8 @@ def call_model_json(prompt: str, model: str, base_url: str = None, api_key_env: 
     last_raw = None
     for attempt in range(json_retries):
         raw = call_model(prompt, model=model, base_url=base_url, api_key_env=api_key_env,
-                          provider=provider, max_retries=max_retries, max_tokens=max_tokens)
+                          provider=provider, max_retries=max_retries, max_tokens=max_tokens,
+                          temperature=temperature)
         last_raw = raw
         try:
             return json.loads(_strip_markdown_fence(raw))

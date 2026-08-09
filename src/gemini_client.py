@@ -45,7 +45,8 @@ def get_client():
     return _client
 
 
-def call_model(prompt: str, model: str, max_retries: int = 2, max_output_tokens: int = 4096) -> str:
+def call_model(prompt: str, model: str, max_retries: int = 2, max_output_tokens: int = 4096,
+                temperature: float = 0.0) -> str:
     """
     Call a Gemini model with a plain text prompt. Returns raw text.
 
@@ -56,6 +57,13 @@ def call_model(prompt: str, model: str, max_retries: int = 2, max_output_tokens:
     a confusing JSONDecodeError with no hint the real cause was a token
     cap). Set here too for consistency even though the failure was seen
     on Groq, not Gemini.
+
+    temperature defaults to 0.0 for the same reason as
+    openai_compat_client.py: two back-to-back full eval runs with no code
+    changes produced meaningfully different recall (100% then 87%) purely
+    from sampling variance. Every node here is classification/extraction/
+    entailment judgment, not creative generation, so there's no reason to
+    sample instead of the model's single best answer.
 
     Error handling is deliberately asymmetric:
       - 429 (quota exhausted): fails IMMEDIATELY, no retry. Retrying a
@@ -77,7 +85,10 @@ def call_model(prompt: str, model: str, max_retries: int = 2, max_output_tokens:
         try:
             response = client.models.generate_content(
                 model=model, contents=prompt,
-                config=types.GenerateContentConfig(max_output_tokens=tokens_for_attempt),
+                config=types.GenerateContentConfig(
+                    max_output_tokens=tokens_for_attempt,
+                    temperature=temperature,
+                ),
             )
             if response.candidates and response.candidates[0].finish_reason == "MAX_TOKENS" \
                     and attempt < max_retries - 1:
@@ -119,7 +130,7 @@ def _strip_markdown_fence(raw: str) -> str:
 
 
 def call_model_json(prompt: str, model: str, max_retries: int = 2, max_output_tokens: int = 4096,
-                     json_retries: int = 2):
+                     json_retries: int = 2, temperature: float = 0.0):
     """
     Call a Gemini model and parse the response as JSON.
 
@@ -131,7 +142,8 @@ def call_model_json(prompt: str, model: str, max_retries: int = 2, max_output_to
     last_err = None
     last_raw = None
     for attempt in range(json_retries):
-        raw = call_model(prompt, model=model, max_retries=max_retries, max_output_tokens=max_output_tokens)
+        raw = call_model(prompt, model=model, max_retries=max_retries, max_output_tokens=max_output_tokens,
+                          temperature=temperature)
         last_raw = raw
         try:
             return json.loads(_strip_markdown_fence(raw))
