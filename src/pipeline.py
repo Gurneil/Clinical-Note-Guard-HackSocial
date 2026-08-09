@@ -1,7 +1,7 @@
 """
 Clinical Note Hallucination Guard - main pipeline.
 
-Six nodes:
+Seven nodes:
   0. Input          - transcript + (in the live product) an AI-drafted note.
   1. draft_note              - transcript -> SOAP note draft (LLM, routed
                                 via DRAFT_CHAIN: Gemini, then Groq/Featherless)
@@ -10,16 +10,32 @@ Six nodes:
   3. entailment_check_batch  - ALL claims for one case, checked in a
                                 SINGLE request against the transcript
                                 (LLM, core-reasoning tier - fairness-linked
-                                with the baseline, see llm_router.py)
+                                with the baseline, see llm_router.py).
+                                Catches errors of COMMISSION: something in
+                                the note that shouldn't be there.
   4. deterministic_numeric_check - regex-based exact-match check for
                                 numbers/doses/vitals, NO LLM at all
                                 (UNCHANGED from the original design)
-  5. classify_errors_batch   - ALL flagged claims for one case, classified
-                                in a SINGLE request (LLM, mechanical tier)
-  6. human_review_checkpoint - required human-in-the-loop step before
+  5. omission_check_batch    - the mirror image of node 2+3: extracts
+                                atomic facts from the TRANSCRIPT, then
+                                checks whether each is mentioned in the
+                                note. Catches errors of OMISSION - a
+                                clinically relevant detail that never made
+                                it into the note at all. Mechanical tier,
+                                no fairness constraint (see config.py -
+                                taxonomy.json is explicit that omission is
+                                tracked separately, with "a different
+                                detection approach", from the
+                                commission-error categories above).
+  6. classify_errors_batch   - ALL flagged claims for one case, classified
+                                in a SINGLE request (LLM, mechanical tier).
+                                Only used for node 3's flags - node 5's
+                                flags are already known to be "omission",
+                                so they skip classification entirely.
+  7. human_review_checkpoint - required human-in-the-loop step before
                                 anything is finalized
 
-Nodes 2-5 form `run_guard()`, which is what the eval harness calls
+Nodes 2-6 form `run_guard()`, which is what the eval harness calls
 directly against (transcript, existing_note) pairs from the benchmark.
 `run_full_pipeline()` chains node 1 in front of that, for the live demo.
 
@@ -42,7 +58,7 @@ equivalent structural guarantee that it looked at every fact.
 import re
 
 import llm_router
-from config import EXTRACT_CHAIN, CLASSIFY_CHAIN, DRAFT_CHAIN, TAXONOMY
+from config import EXTRACT_CHAIN, CLASSIFY_CHAIN, DRAFT_CHAIN, OMISSION_CHAIN, TAXONOMY
 
 
 # ---------------------------------------------------------------------------
@@ -174,7 +190,69 @@ def deterministic_numeric_check(note: str, transcript: str) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
-# Node 5: Classify flagged claims, BATCHED - all flagged claims for one
+# Node 5a: Extract atomic facts from the TRANSCRIPT (mirror of node 2,
+# opposite direction - note -> transcript). Mechanical tier.
+# ---------------------------------------------------------------------------
+def extract_transcript_facts(transcript: str) -> list[str]:
+    prompt = f"""Break the following doctor-patient transcript into a list
+of atomic, clinically relevant facts that were stated (one symptom, one
+medication + dose, one exam finding, one denial, one plan item, etc). Do
+not include small talk or filler. Do not combine multiple facts into one.
+
+TRANSCRIPT:
+{transcript}
+
+Return ONLY a JSON array of strings, e.g. ["fact 1", "fact 2", ...].
+No markdown, no explanation, just the JSON array."""
+    result = llm_router.call_mechanical(EXTRACT_CHAIN, prompt, json_mode=True)
+    if not isinstance(result, list):
+        raise ValueError(f"Expected a JSON list of facts, got: {result}")
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Node 5b: Omission check, BATCHED - for every transcript fact, is it
+# mentioned (even paraphrased) anywhere in the note? Mechanical tier, no
+# fairness constraint - see config.py and the module docstring above for
+# why omission doesn't need to be linked to the baseline the way node 3 is.
+# Same forced-coverage guarantee as node 3: exactly one verdict per input
+# fact, in order, or it's treated as an error rather than silently accepted.
+# ---------------------------------------------------------------------------
+def omission_check_batch(facts: list[str], note: str):
+    if not facts:
+        return []
+    numbered = "\n".join(f"{i + 1}. {f}" for i, f in enumerate(facts))
+    prompt = f"""You are checking whether each of the following facts from
+a doctor-patient transcript was included (even if paraphrased or
+summarized) in a clinical note written from that transcript. Check EVERY
+fact independently.
+
+NOTE:
+{note}
+
+FACTS TO CHECK ({len(facts)} total, check each independently):
+{numbered}
+
+For EACH fact, decide exactly ONE status: "mentioned" (it appears in the
+note in any form) or "omitted" (it does not appear in the note at all).
+
+Return ONLY a JSON array with EXACTLY {len(facts)} objects, one per fact,
+in the SAME ORDER as listed above:
+[{{"fact_number": 1, "status": "mentioned" | "omitted"}}, ...]
+No markdown, just the JSON array. You MUST return exactly {len(facts)}
+objects - do not skip or merge any."""
+    result = llm_router.call_mechanical(OMISSION_CHAIN, prompt, json_mode=True)
+    if not isinstance(result, list) or len(result) != len(facts):
+        got = len(result) if isinstance(result, list) else type(result).__name__
+        raise ValueError(
+            f"Expected exactly {len(facts)} omission results, got {got}. "
+            "The model likely skipped or merged facts when batching."
+        )
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Node 6: Classify flagged claims, BATCHED - all flagged claims for one
 # case in a single request (mechanical tier).
 # ---------------------------------------------------------------------------
 def classify_errors_batch(flagged: list[dict]):
@@ -237,11 +315,29 @@ def run_guard(transcript: str, note: str, verbose: bool = False) -> dict:
 
     numeric_flags = deterministic_numeric_check(note, transcript)
 
+    transcript_facts = extract_transcript_facts(transcript)
+    if verbose:
+        print(f"  extracted {len(transcript_facts)} transcript facts (omission check)")
+    omission_results = omission_check_batch(transcript_facts, note)
+    omission_flags = [
+        {
+            "claim": fact_text,
+            "status": "omitted_from_note",
+            "category": "omission",
+            "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+            "source": "llm_pipeline_omission",
+        }
+        for fact_text, res in zip(transcript_facts, omission_results)
+        if res.get("status") == "omitted"
+    ]
+
     return {
         "claims_checked": claims,
+        "transcript_facts_checked": transcript_facts,
         "llm_flags": flagged,
         "deterministic_flags": numeric_flags,
-        "all_flags": flagged + numeric_flags,
+        "omission_flags": omission_flags,
+        "all_flags": flagged + numeric_flags + omission_flags,
         "core_reasoning_provider": core_provider,
         "core_reasoning_model": core_model,
     }

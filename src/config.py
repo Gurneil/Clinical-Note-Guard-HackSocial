@@ -58,6 +58,16 @@ CLASSIFY_CHAIN = [
     {"provider": "featherless", "model": "Qwen/Qwen2.5-7B-Instruct"},
 ]
 
+# Omission checking (transcript facts -> is each mentioned in the note?) is
+# the mirror image of extraction/entailment, but taxonomy.json is explicit
+# that it's "tracked as a secondary metric" with "a different detection
+# approach" - not the guard's primary job. No fairness constraint (the
+# baseline has no equivalent decomposition either way), so mechanical tier.
+OMISSION_CHAIN = [
+    {"provider": "groq", "model": "llama-3.1-8b-instant"},
+    {"provider": "featherless", "model": "Qwen/Qwen2.5-7B-Instruct"},
+]
+
 # Node 1 (drafting the note) only runs in the live demo, never in eval, and
 # has no fairness constraint - it is routed through DRAFT_CHAIN so the demo
 # survives a Gemini outage. MODEL_DRAFT is kept as the preferred draft model.
