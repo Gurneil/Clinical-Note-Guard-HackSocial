@@ -24,6 +24,7 @@ openai_compat_client.py and the GEMINI_API_KEY check in gemini_client.py.
 """
 import os
 
+import _env  # noqa: F401 - loads .env before anything reads os.environ
 import gemini_client
 import openai_compat_client
 from google.genai import errors as genai_errors

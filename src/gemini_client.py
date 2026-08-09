@@ -13,6 +13,7 @@ import json
 import os
 import time
 
+import _env  # noqa: F401 - loads .env before anything reads os.environ
 from google import genai
 from google.genai import types
 from google.genai import errors as genai_errors

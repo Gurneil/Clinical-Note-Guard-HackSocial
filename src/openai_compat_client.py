@@ -21,6 +21,7 @@ import json
 import os
 import time
 
+import _env  # noqa: F401 - loads .env before anything reads os.environ
 import openai
 from openai import OpenAI
 
