@@ -35,6 +35,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from pipeline import run_guard          # noqa: E402
 from baseline import single_prompt_check  # noqa: E402
+import llm_router  # noqa: E402
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "test_cases.json")
 RAW_OUT_PATH = os.path.join(os.path.dirname(__file__), "raw_outputs.json")
@@ -57,6 +58,15 @@ def summarize_baseline_flags(baseline_result: list) -> str:
 
 
 def main():
+    # Without this, a fresh `python run_eval.py` process still starts clean
+    # (the sticky tier index is a module-level variable, gone when the
+    # process exits) - this only matters if something else in the same
+    # process already called into llm_router before main() ran. Explicit
+    # here anyway so a full eval run always starts by trying Gemini first,
+    # rather than depending on that being true by accident of process
+    # lifetime.
+    llm_router.reset_core_tier()
+
     # encoding="utf-8" is not optional here: these files contain em dashes,
     # and Windows defaults to cp1252, which silently mojibakes them into the
     # prompts rather than failing.
@@ -79,11 +89,15 @@ def main():
 
         pipe_provider = pipeline_result["core_reasoning_provider"]
         pipe_model = pipeline_result["core_reasoning_model"]
-        if (pipe_provider, pipe_model) != (baseline_provider, baseline_model):
+        fairness_mismatch = (pipe_provider, pipe_model) != (baseline_provider, baseline_model)
+        if fairness_mismatch:
             # Should not happen given the sticky shared tier index in
             # llm_router.py, but checked explicitly rather than assumed -
             # if this ever fires, the comparison for this case is NOT
-            # fair and should be flagged, not silently scored.
+            # fair. Recorded on the case itself (not just printed) so
+            # compute_metrics.py can exclude it from scoring rather than
+            # silently folding an invalid comparison into the headline
+            # numbers.
             tier_mismatches.append(case_id)
             print(f"  !! WARNING: fairness mismatch on {case_id}: "
                   f"pipeline used {pipe_provider}/{pipe_model}, "
@@ -96,6 +110,9 @@ def main():
             "baseline_result": baseline_flags,
             "core_reasoning_provider": pipe_provider,
             "core_reasoning_model": pipe_model,
+            "baseline_provider": baseline_provider,
+            "baseline_model": baseline_model,
+            "fairness_mismatch": fairness_mismatch,
         })
 
         # Randomize A/B assignment per case so position isn't a tell

@@ -11,7 +11,8 @@ Setup:
     Groq:        free key (no card) at https://console.groq.com
                  export GROQ_API_KEY="your-key-here"
     Featherless: key from your account dashboard at https://featherless.ai
-                 export FEATHERLESS_API_KEY="your-key-here"
+                 export FEATHERLESS_AI_API_KEY="your-key-here"
+                 (FEATHERLESS_API_KEY is also accepted, as an alias)
 
 Neither key is ever read from anywhere but the environment - nothing to
 paste into code or chat.
@@ -20,6 +21,7 @@ import json
 import os
 import time
 
+import openai
 from openai import OpenAI
 
 PROVIDER_SETTINGS = {
@@ -76,15 +78,22 @@ def _get_client(provider: str) -> OpenAI:
 
 def _status_code(exc) -> int | None:
     """Best-effort extraction of an HTTP status code from whatever the
-    openai package raised, without depending on exact exception class
-    names (which have moved between SDK versions before)."""
-    code = getattr(exc, "status_code", None)
-    if code is not None:
-        return code
-    msg = str(exc)
-    for candidate in (429, 503, 500, 502, 504, 401, 404, 400):
-        if str(candidate) in msg:
-            return candidate
+    openai package raised.
+
+    openai.APIStatusError and every subclass (RateLimitError,
+    InternalServerError, NotFoundError, ...) carry a real `.status_code`
+    attribute - that covers every actual HTTP error response. There is
+    deliberately NO string-matching fallback: a substring scan over
+    str(exc) for "429", "404" etc. used to misfire on any error message
+    that happened to *contain* those digits for an unrelated reason (a
+    model name, a byte count, part of a request id) and silently
+    misclassify it as that HTTP status. APIConnectionError/APITimeoutError
+    (no HTTP response at all - the request never completed) correctly
+    return None here, and are treated as a real, immediate failure rather
+    than guessed at.
+    """
+    if isinstance(exc, openai.APIStatusError):
+        return exc.status_code
     return None
 
 

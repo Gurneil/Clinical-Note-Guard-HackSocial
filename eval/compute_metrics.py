@@ -11,12 +11,21 @@ against the ground truth in data/test_cases.json, and computes:
   - false positive rate: on the clean control case(s), did the system
     raise any flags at all?
 
+Cases where the pipeline and baseline ended up on different providers/
+models (a "fairness mismatch" - see run_eval.py and llm_router.py) are
+EXCLUDED from all of the above by default, because that comparison isn't
+apples-to-apples for that case. They're reported separately instead of
+being silently folded into the headline numbers. Pass --include-mismatches
+to score them anyway (not recommended - only for debugging).
+
 Usage:
     python compute_metrics.py
+    python compute_metrics.py --include-mismatches
 """
 import csv
 import json
 import os
+import sys
 
 SEVERITY_WEIGHT = {"critical": 3, "high": 2, "medium": 1, "low": 0.5}
 
@@ -25,9 +34,12 @@ DATA_PATH = os.path.join(BASE, "..", "data", "test_cases.json")
 TAXONOMY_PATH = os.path.join(BASE, "..", "taxonomy.json")
 SCORECARD_PATH = os.path.join(BASE, "scorecard_blind.csv")
 KEY_PATH = os.path.join(BASE, "blind_key.json")
+RAW_OUT_PATH = os.path.join(BASE, "raw_outputs.json")
 
 
 def main():
+    include_mismatches = "--include-mismatches" in sys.argv
+
     # encoding="utf-8" everywhere - see the note in run_eval.py.
     with open(DATA_PATH, encoding="utf-8") as f:
         cases = {c["id"]: c for c in json.load(f)["cases"]}
@@ -38,6 +50,17 @@ def main():
     with open(SCORECARD_PATH, encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
 
+    mismatched_cases = set()
+    if os.path.exists(RAW_OUT_PATH):
+        with open(RAW_OUT_PATH, encoding="utf-8") as f:
+            raw_outputs = json.load(f)
+        mismatched_cases = {
+            r["case_id"] for r in raw_outputs if r.get("fairness_mismatch")
+        }
+    else:
+        print(f"NOTE: {RAW_OUT_PATH} not found - can't check for fairness "
+              f"mismatches, scoring all rows as-is.\n")
+
     results = {"pipeline": {"hits": 0, "possible": 0, "weighted_hits": 0.0,
                              "weighted_possible": 0.0, "false_positives": 0,
                              "control_cases": 0},
@@ -46,9 +69,13 @@ def main():
                             "control_cases": 0}}
 
     missing_cells = []
+    excluded_cases = []
 
     for row in rows:
         case_id = row["case_id"]
+        if case_id in mismatched_cases and not include_mismatches:
+            excluded_cases.append(case_id)
+            continue
         gt = cases[case_id]["ground_truth"]
         key = blind_key[case_id]  # {"A": "pipeline"/"baseline", "B": ...}
 
@@ -82,8 +109,16 @@ def main():
             print(f"  {c}")
         print()
 
+    if excluded_cases:
+        print(f"EXCLUDED {len(excluded_cases)} case(s) from scoring - pipeline and "
+              f"baseline ran on different providers/models for these, so the "
+              f"comparison isn't fair: {sorted(excluded_cases)}")
+        print("(pass --include-mismatches to score them anyway)\n")
+
     print("=" * 60)
     print("RESULTS")
+    if excluded_cases:
+        print(f"({len(excluded_cases)} fairness-mismatched case(s) excluded - see above)")
     print("=" * 60)
     for system in ("pipeline", "baseline"):
         r = results[system]
