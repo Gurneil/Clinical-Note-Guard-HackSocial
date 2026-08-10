@@ -129,6 +129,22 @@ def entailment_check_batch(claims: list[str], transcript: str):
 a clinical note is supported by a source transcript. Check EVERY claim
 independently - your judgment on one claim must not influence any other.
 
+A claim is "supported" if the transcript conveys the same meaning, even
+in different words - do not require an exact wording match. In
+particular:
+- Clinical terminology in the note that restates a lay description in
+  the transcript counts as supported (e.g. transcript "red and swollen"
+  supports note "erythematous and enlarged"; transcript "white patches"
+  supports note "exudate").
+- A note statement that summarizes or combines multiple things the
+  transcript said is supported if everything in it was actually said
+  (e.g. transcript "use ibuprofen or acetaminophen for pain and fever
+  as needed" supports a note claim about either drug being used for
+  pain/fever as needed).
+Only mark "contradicted" if the note states something that conflicts
+with the transcript, and only mark "not_mentioned" if the transcript
+truly gives no indication of it at all, directly or through a synonym.
+
 TRANSCRIPT:
 {transcript}
 
