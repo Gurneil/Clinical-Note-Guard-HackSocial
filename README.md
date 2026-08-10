@@ -37,19 +37,28 @@ clinical-note-guard/
 │   ├── llm_router.py             # dispatch + automatic failover + fairness-linking
 │   ├── gemini_client.py          # Gemini API wrapper
 │   ├── openai_compat_client.py   # shared Groq + Featherless wrapper (both OpenAI-compatible)
-│   ├── pipeline.py               # the 7-node guard pipeline (commission + omission + human checkpoint)
+│   ├── pipeline.py               # the guard pipeline, nodes 0-7 (commission + omission + human checkpoint)
 │   └── baseline.py               # single-prompt comparison baseline
 ├── tests/                   # stdlib unittest, no real API calls, run before every change
 │   ├── test_deterministic_check.py
 │   ├── test_llm_router.py
 │   ├── test_omission_check.py
-│   └── test_openai_compat_client.py
+│   ├── test_openai_compat_client.py
+│   └── test_auto_score.py
 ├── eval/
 │   ├── run_eval.py         # runs both systems, writes a BLINDED scorecard
 │   ├── compute_metrics.py  # scores the filled-in blind scorecard by hand
-│   └── auto_score.py       # automated (non-blind) scoring proxy - see ARCHITECTURE.md
+│   ├── auto_score.py       # automated (non-blind) scoring proxy - see ARCHITECTURE.md
+│   ├── raw_outputs.json    # committed: full output from the actual eval run reported in the docs
+│   ├── scorecard_blind.csv # committed: blinded grading sheet from that same run
+│   ├── blind_key.json      # committed: A/B -> pipeline/baseline key for that run
+│   └── auto_scorecard.json # committed: per-case auto_score.py detail for that run
 └── docs/
-    └── ARCHITECTURE.md     # reasoning behind every node (submission doc)
+    ├── ARCHITECTURE.md            # reasoning behind every node + reported results (submission doc)
+    ├── SAMPLES.md                 # pipeline vs. baseline on real cases (submission doc)
+    ├── workflow_flowchart.png     # the required workflow diagram (submission asset)
+    ├── generate_flowchart.py      # regenerates workflow_flowchart.png (dev tool, needs matplotlib)
+    └── generate_samples_doc.py    # regenerates SAMPLES.md from eval/raw_outputs.json (dev tool)
 ```
 
 ## Setup
@@ -105,9 +114,17 @@ silently omitted.
    interpreter for every command below, e.g.
    `D:\Python312\python.exe -m pip install -r requirements.txt`.
 
-   Only Gemini is required to run anything at all. Groq/Featherless are
-   optional - if their keys aren't set, they're automatically skipped,
-   not an error (see src/llm_router.py).
+   Gemini alone is NOT enough to run the full pipeline: extraction,
+   classification, and the omission check (`EXTRACT_CHAIN`,
+   `CLASSIFY_CHAIN`, `OMISSION_CHAIN` in `src/config.py`) are Groq →
+   Featherless only, deliberately Gemini-free (see config.py's own
+   comments for why) - so you need at least one of Groq or Featherless
+   set as well, or those nodes have nothing to call. Gemini alone is
+   enough for `single_prompt_check()` (the baseline) and, on its own,
+   `entailment_check_batch()` - but not a full `run_guard()` call. Any
+   provider with no key set is automatically skipped with a loud warning,
+   not a silent error (see src/llm_router.py) - use `smoke_test.py` to
+   confirm what you actually have working before running the eval.
 
 ## Running things
 
@@ -161,10 +178,27 @@ above in a final write-up - see "Evaluation methodology" in
 ## Current status / what's left before submission
 
 - [x] Taxonomy defined (grounded in ambient-scribe literature)
-- [x] Pipeline built (5 automated nodes + human checkpoint)
-- [x] Starter benchmark: 6 cases (5 planted errors across 5 categories + 1 clean control)
-- [ ] Expand benchmark to ~15-20 cases (2-3 per category + several controls)
-- [ ] Run full eval, fill in blind scorecard, compute final metrics
-- [ ] Build the required workflow flowchart PNG
-- [ ] Write the required documentation (docs/ARCHITECTURE.md is the seed for this)
-- [ ] Record the samples/demo video comparing pipeline vs. baseline
+- [x] Pipeline built: 6 automated nodes (extraction, entailment, deterministic
+      numeric check, omission check, classification, plus draft for the live
+      demo) + a required human review checkpoint
+- [x] Benchmark: 18 cases - 3 numeric_medication_error, 3 fabrication, 3
+      negation_error, 2 distortion, 2 misattribution, 2 omission, 3 clean
+      controls
+- [x] Full eval run against all 18 cases, committed (`eval/raw_outputs.json`
+      and friends) - see `docs/ARCHITECTURE.md`, "Current auto-scored results"
+- [x] Required workflow flowchart (`docs/workflow_flowchart.png`)
+- [x] Required documentation (`docs/ARCHITECTURE.md`) - taxonomy, per-node
+      reasoning, failover engineering, reproducibility fixes, real results,
+      known limitations, all as they actually happened rather than planned
+- [x] Required samples document (`docs/SAMPLES.md`) - pipeline vs. baseline
+      on 4 real cases, generated directly from the committed eval output
+- [ ] **Blind human grading pass.** The numbers currently in `docs/` come
+      from `eval/auto_score.py`, an automated proxy explicitly labeled as
+      such everywhere it's cited - not the blind human-graded workflow
+      (`compute_metrics.py` + `scorecard_blind.csv`) that's this project's
+      own stated methodology. Filling in the blind scorecard by hand is the
+      one remaining step before treating any number here as a final,
+      citable result. Do this WITHOUT looking at `blind_key.json` first.
+- [ ] Samples/demo VIDEO, if the written `docs/SAMPLES.md` document isn't
+      sufficient for the submission (the track requirements say
+      video **or** document; a document is provided).
