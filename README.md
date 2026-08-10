@@ -60,6 +60,9 @@ clinical-note-guard/
 │   │                        # single case erroring out - see run_eval.py's own comments)
 │   ├── compute_metrics.py  # scores the filled-in blind scorecard by hand
 │   ├── auto_score.py       # automated (non-blind) scoring proxy - see ARCHITECTURE.md
+│   ├── ablation.py         # re-scores the committed run with each node withheld, to measure
+│   │                        # what each node actually contributed (zero API calls)
+│   ├── ablation_results.json # committed: the ablation table reported in ARCHITECTURE.md
 │   ├── measure_usage.py    # measures real token/latency cost per note, pipeline vs. baseline
 │   ├── raw_outputs.json    # committed: full output from the actual eval run reported in the docs
 │   ├── scorecard_blind.csv # committed: blinded grading sheet from that same run
@@ -68,9 +71,13 @@ clinical-note-guard/
 │   └── usage_summary.json  # committed: per-case cost/latency detail from measure_usage.py
 └── docs/
     ├── ARCHITECTURE.md            # reasoning behind every node + reported results (submission doc)
+    ├── PROMPTS.md                 # every prompt, what each constraint prevents, and the
+    │                              # iterations behind them (submission doc)
     ├── SAMPLES.md                 # pipeline vs. baseline on real cases (submission doc)
     ├── workflow_flowchart.png     # the required workflow diagram (submission asset)
     ├── generate_flowchart.py      # regenerates workflow_flowchart.png (dev tool, needs matplotlib)
+    │                              # (see also eval/ablation.py - measures each node's marginal
+    │                              #  contribution from the committed run, no API calls)
     └── generate_samples_doc.py    # regenerates SAMPLES.md from eval/raw_outputs.json (dev tool)
 ```
 

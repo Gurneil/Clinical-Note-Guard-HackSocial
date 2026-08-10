@@ -225,6 +225,82 @@ blind human grading pass described above, which is still the project's
 stated methodology and has not yet been run at the 60-case scale (see
 "Current status" in the README).
 
+## Does each node earn its place? (node ablation)
+
+Everything above argues that nodes 4 and 5 exist because node 3
+structurally cannot do their jobs. That is an argument. `eval/ablation.py`
+turns it into a measurement, and the measurement does not entirely agree
+with the argument.
+
+Every flag in `raw_outputs.json` records the node that produced it in its
+`source` field, so the same committed run can be re-scored with any node's
+flags withheld - no re-run, no additional API spend, and no run-to-run
+model variance between configurations, because every row below is scored
+against the identical outputs by the identical matcher.
+
+| Configuration | Recall | Severity-weighted | False positives | Recall delta |
+|---|---|---|---|---|
+| Full pipeline (nodes 3+4+5) | 45/51 (88.2%) | 92.1% | 15 | - |
+| Without node 3 (entailment) | 22/51 (43.1%) | 44.6% | 4 | **+45.1** |
+| Without node 4 (deterministic numeric) | 45/51 (88.2%) | 92.1% | 15 | **+0.0** |
+| Without node 5 (omission) | 43/51 (84.3%) | 90.1% | 11 | **+3.9** |
+
+**Node 3 is the engine.** 23 planted errors were caught by nothing else.
+It is also responsible for 11 of the 15 false positives - the same
+per-claim literalism that finds subtle errors is what misfires on
+borderline-fine claims.
+
+**Node 5 earns its place, narrowly.** Two errors were caught by nothing
+else, and one of them (`case_50_misattribution_medication_to_wrong_person`)
+isn't even an omission-category error - the omission check noticed the
+transcript fact that the note had displaced onto the wrong person. That
+cost 4 false positives, which is a defensible trade for 2 real catches
+only if a reviewer's time to dismiss a flag is cheap relative to a missed
+error reaching a chart. In this domain it is.
+
+**Node 4 contributed zero marginal recall, and this is worth stating
+plainly rather than burying.** Every numeric/medication error it caught,
+node 3 also caught independently. `docs/SAMPLES.md` presents `case_01` as
+a strength - "caught twice over, by the regex AND by entailment" - and the
+ablation confirms the redundancy is real while removing the comfortable
+assumption that the redundancy is what's doing the work. On this
+benchmark, against this core-reasoning model, node 4 is not adding
+coverage.
+
+Three honest reasons it stays in the pipeline anyway, none of which this
+benchmark confirms:
+
+1. It raised **zero** false positives across the control cases. It is the
+   only detector here with no precision cost at all, so its downside is
+   compute (which is negligible - it is a regex, not a model call).
+2. It is deterministic. Node 3's catches depend on a model that varies
+   between providers and versions; the eval in this repo landed on
+   `featherless/Qwen2.5-7B-Instruct` for most cases (see "Current
+   auto-scored results"). A regex that matches `20mg` against a transcript
+   containing only `10 milligrams` cannot have an off day.
+3. Numeric/medication is the highest-severity category in `taxonomy.json`.
+   Belt-and-braces on the category where an error is most likely to reach
+   a patient is a deliberate choice, not an accident.
+
+Whether reason 2 actually holds is directly testable and is not yet
+tested: run the ablation again against a run whose core reasoning was
+Gemini throughout, and see whether node 4's delta stays at zero. If it
+does across several models, the honest conclusion is that node 4 is
+redundant on this taxonomy and should be justified as defence-in-depth or
+dropped - not defended on coverage grounds it doesn't have.
+
+Reproduce with:
+
+```
+python eval/ablation.py
+```
+
+Same proxy caveat as everything else auto-scored here: the matcher is
+keyword/category overlap, not human judgment. The deltas are more
+trustworthy than the absolute numbers, because both sides of every delta
+run through the identical heuristic on the identical outputs, so a
+systematic bias in the matcher largely cancels.
+
 ## Example of iteration during development
 
 Before ever calling the API, the deterministic numeric checker (Node 4)

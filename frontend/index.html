@@ -61,8 +61,13 @@ button{font:inherit; color:inherit; background:none; border:none; cursor:pointer
 .nav-in{max-width:var(--maxw); margin:0 auto; padding:12px var(--pad); display:flex; align-items:center; gap:14px}
 .brand{display:flex; align-items:center; gap:11px; text-decoration:none; margin-right:auto}
 .brand-mark{width:30px; height:30px; flex:none}
-.brand-name{font-family:var(--f-display); font-size:23px; line-height:1; letter-spacing:.01em}
-.brand-sub{display:block; font-size:10px; letter-spacing:.16em; text-transform:uppercase; opacity:.55; font-weight:500; margin-top:3px}
+/* the display serif is built for 60px+; at wordmark size its hairlines go
+   spindly, so the mark uses the UI face tightened up instead */
+/* line-height 1 crops the leading and makes the mark sit high against the
+   icon; a little leading drops it onto the optical centre */
+.brand-name{font-family:var(--f-body); font-size:19px; font-weight:600; line-height:1.2; letter-spacing:-.028em}
+.brand-name em{font-style:normal; font-weight:400; opacity:.72}
+.brand-sub{display:block; font-size:9.5px; letter-spacing:.15em; text-transform:uppercase; opacity:.5; font-weight:500; margin-top:2px}
 .nav-links{display:flex; align-items:center; gap:4px}
 .navbtn{padding:9px 13px; border-radius:999px; font-size:14.5px; font-weight:500; display:inline-flex; align-items:center; gap:6px; text-decoration:none; white-space:nowrap}
 .navbtn:hover{background:rgba(128,128,128,.14)}
@@ -300,6 +305,24 @@ mark.ev.hot{background:rgba(176,64,45,.24); box-shadow:0 0 0 1px rgba(176,64,45,
 .cost span{font-size:13.6px; color:var(--slate)}
 @media(max-width:760px){.costgrid{grid-template-columns:1fr} .barrow{grid-template-columns:88px 1fr 62px; font-size:13.5px}}
 
+.ablation{margin-top:56px; border-top:1px solid var(--hair); padding-top:38px}
+.ablation h3{font-family:var(--f-display); font-size:clamp(26px,3.6vw,36px); line-height:1.1}
+.ablation-lead{font-size:15.5px; color:var(--slate); margin-top:12px; max-width:620px}
+.abl-rows{margin-top:28px; display:grid; gap:2px}
+.abl-row{display:grid; grid-template-columns:170px 120px 78px 1fr; gap:18px; align-items:start; padding:16px 0; border-top:1px solid var(--hair)}
+.abl-node{font-family:var(--f-mono); font-size:12px; color:var(--ink); padding-top:2px}
+.abl-bar{display:block; height:8px; border-radius:99px; background:var(--vanilla-deep); overflow:hidden; margin-top:5px}
+.abl-bar i{display:block; height:100%; background:var(--clinic); border-radius:99px}
+.abl-delta{font-family:var(--f-mono); font-size:13.5px; font-weight:600; color:var(--clinic-2)}
+.abl-note{font-size:14px; color:var(--slate); max-width:60ch}
+.abl-row[data-zero="true"] .abl-delta{color:var(--vermilion)}
+.abl-row[data-zero="true"] .abl-bar{background:rgba(176,64,45,.14)}
+@media(max-width:820px){
+  .abl-row{grid-template-columns:1fr auto; gap:8px 14px}
+  .abl-bar{grid-column:1; margin-top:2px}
+  .abl-note{grid-column:1 / -1}
+}
+
 /* ─────────────────────────────────────────────
    Taxonomy
    ───────────────────────────────────────────── */
@@ -360,7 +383,7 @@ mark.ev.hot{background:rgba(176,64,45,.24); box-shadow:0 0 0 1px rgba(176,64,45,
         <path d="M9 16.4l4.4 4.3L23 11.2" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <span>
-        <span class="brand-name">Note&thinsp;Guard</span>
+        <span class="brand-name"><em>Note</em>&thinsp;Guard</span>
         <span class="brand-sub">Clinical documentation QA</span>
       </span>
     </a>
@@ -408,6 +431,10 @@ mark.ev.hot{background:rgba(176,64,45,.24); box-shadow:0 0 0 1px rgba(176,64,45,
           <a class="drop-item" href="../docs/ARCHITECTURE.md">
             <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 2.5h7L16 7v10.5H4.5z"/><path d="M11 2.5V7h5M7 11h6M7 14h4"/></svg>
             <span><b>ARCHITECTURE.md</b><small>Every design decision, with reasons</small></span>
+          </a>
+          <a class="drop-item" href="../docs/PROMPTS.md">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5h13M3.5 10h9M3.5 14.5h11"/><path d="M15.5 12.6l2.2 2.2-3 .8z"/></svg>
+            <span><b>PROMPTS.md</b><small>Every prompt, and what each rule prevents</small></span>
           </a>
           <a class="drop-item" href="../docs/SAMPLES.md">
             <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="15" height="11" rx="2"/><path d="M2.5 9h15M8 9v6.5"/></svg>
@@ -684,6 +711,35 @@ mark.ev.hot{background:rgba(176,64,45,.24); box-shadow:0 0 0 1px rgba(176,64,45,
         <div class="cost"><b>1.7&times;</b><span>the baseline's latency (~12.8s vs ~7.5s per note). Whether that trade is worth it depends on your note volume — this project doesn't answer that for you.</span></div>
       </div>
     </div>
+
+    <div class="ablation">
+      <h3>Does each node earn its place?</h3>
+      <p class="ablation-lead">
+        Every flag records which node raised it, so the same run can be re-scored with any node
+        withheld — no re-run, no extra API spend. This is the pipeline marking its own homework
+        in public.
+      </p>
+      <div class="abl-rows">
+        <div class="abl-row">
+          <span class="abl-node">Node 3 · entailment</span>
+          <span class="abl-bar"><i style="width:100%"></i></span>
+          <span class="abl-delta">+45.1 pts</span>
+          <span class="abl-note">23 errors nothing else caught. Also 11 of the 15 false positives — the literalism cuts both ways.</span>
+        </div>
+        <div class="abl-row">
+          <span class="abl-node">Node 5 · omission</span>
+          <span class="abl-bar"><i style="width:8.6%"></i></span>
+          <span class="abl-delta">+3.9 pts</span>
+          <span class="abl-note">2 errors nothing else caught, for 4 false positives. One of them wasn't even an omission — it was a medication attributed to the wrong person.</span>
+        </div>
+        <div class="abl-row" data-zero="true">
+          <span class="abl-node">Node 4 · numeric regex</span>
+          <span class="abl-bar"><i style="width:0"></i></span>
+          <span class="abl-delta">+0.0 pts</span>
+          <span class="abl-note">Caught nothing the entailment node hadn't already caught. It stays because it costs no model call and raised zero false positives — but on this benchmark it is not adding coverage, and saying otherwise would be a nicer story than the data supports.</span>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ══════════ TAXONOMY ══════════ -->
@@ -761,7 +817,7 @@ mark.ev.hot{background:rgba(176,64,45,.24); box-shadow:0 0 0 1px rgba(176,64,45,
   <footer class="foot wrap">
     <div class="foot-in">
       <div>
-        <span class="brand-name" style="font-size:30px">Note&thinsp;Guard</span>
+        <span class="brand-name" style="font-size:27px"><em>Note</em>&thinsp;Guard</span>
         <div class="foot-links">
           <a href="#demo" data-run-demo>Run a check</a>
           <a href="#pipeline">The pipeline</a>

@@ -1,0 +1,77 @@
+{
+  "threshold": 0.2,
+  "cases_scored": 57,
+  "full_pipeline": {
+    "recall_hits": 45,
+    "recall_possible": 51,
+    "recall_pct": 88.2,
+    "weighted_pct": 92.1,
+    "false_positives": 15,
+    "control_cases": 6
+  },
+  "ablations": {
+    "without_node_3": {
+      "recall_hits": 22,
+      "recall_possible": 51,
+      "recall_pct": 43.1,
+      "weighted_pct": 44.6,
+      "false_positives": 4,
+      "control_cases": 6,
+      "label": "entailment check",
+      "recall_delta": 45.1,
+      "errors_only_this_node_caught": [
+        "case_04_distortion",
+        "case_09_fabrication_allergy_visit",
+        "case_10_fabrication_knee_exam",
+        "case_11_negation_error_shortness_of_breath",
+        "case_13_distortion_fever_duration",
+        "case_14_misattribution_smoking_history",
+        "case_20_numeric_medication_error_insulin_units",
+        "case_23_numeric_medication_error_pediatric_weight_dose",
+        "case_24_numeric_medication_error_drug_name",
+        "case_25_numeric_medication_error_lab_value",
+        "case_26_fabrication_chest_pain_radiation",
+        "case_28_fabrication_physical_exam_finding",
+        "case_29_fabrication_medication_added",
+        "case_30_fabrication_symptom_never_discussed",
+        "case_32_fabrication_imaging_result",
+        "case_33_negation_error_penicillin_allergy",
+        "case_34_negation_error_suicidal_ideation",
+        "case_35_negation_error_loss_of_consciousness",
+        "case_36_negation_error_smoking_status",
+        "case_40_distortion_pain_severity",
+        "case_41_distortion_symptom_duration",
+        "case_43_distortion_functional_status",
+        "case_47_misattribution_wrong_side"
+      ],
+      "false_positives_removed": 11
+    },
+    "without_node_4": {
+      "recall_hits": 45,
+      "recall_possible": 51,
+      "recall_pct": 88.2,
+      "weighted_pct": 92.1,
+      "false_positives": 15,
+      "control_cases": 6,
+      "label": "deterministic numeric check",
+      "recall_delta": 0.0,
+      "errors_only_this_node_caught": [],
+      "false_positives_removed": 0
+    },
+    "without_node_5": {
+      "recall_hits": 43,
+      "recall_possible": 51,
+      "recall_pct": 84.3,
+      "weighted_pct": 90.1,
+      "false_positives": 11,
+      "control_cases": 6,
+      "label": "omission check",
+      "recall_delta": 3.9,
+      "errors_only_this_node_caught": [
+        "case_50_misattribution_medication_to_wrong_person",
+        "case_52_omission_abnormal_vital_sign"
+      ],
+      "false_positives_removed": 4
+    }
+  }
+}
