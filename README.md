@@ -128,6 +128,16 @@ silently omitted.
 
 ## Running things
 
+**Live demo** (draft a note from a transcript, then guard-check it, with
+an interactive human review at the end):
+```
+python demo.py                # pick a benchmark transcript from a menu
+python demo.py 3               # run case #3 directly, skip the menu
+python demo.py 3 --no-review   # skip the interactive y/n review prompts
+```
+This is `pipeline.run_full_pipeline()` end to end - the only way to run
+it from the command line rather than a hand-typed `python -c "..."`.
+
 **Sanity-check your Gemini key works:**
 ```bash
 cd src
