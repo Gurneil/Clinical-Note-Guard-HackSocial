@@ -1,0 +1,70 @@
+{
+  "provider": "groq",
+  "model": "whisper-large-v3",
+  "confidence_floor": 0.55,
+  "levels": [
+    {
+      "level": "clean",
+      "gain": 1.0,
+      "noise_amplitude": 0,
+      "confidence_min": 0.8347,
+      "confidence_max": 0.9011,
+      "segments": 11,
+      "doses_recovered": [
+        "10"
+      ],
+      "blood_pressures_recovered": [
+        "128/82"
+      ],
+      "transcript_chars": 600,
+      "transcript_excerpt": "Hi Mr. Alvarez, good to see you. How have you been feeling since we adjusted your blood pressure medication? Pretty good, actually. No headaches or dizziness li",
+      "below_floor": false
+    },
+    {
+      "level": "mild",
+      "gain": 0.6,
+      "noise_amplitude": 1500,
+      "confidence_min": 0.8012,
+      "confidence_max": 0.8688,
+      "segments": 10,
+      "doses_recovered": [
+        "10"
+      ],
+      "blood_pressures_recovered": [
+        "128/82"
+      ],
+      "transcript_chars": 605,
+      "transcript_excerpt": "Hi Mr. Alvarez, good to see you. How have you been feeling since we adjusted your blood pressure medication? Pretty good, actually. No headaches or dizziness li",
+      "below_floor": false
+    },
+    {
+      "level": "heavy",
+      "gain": 0.25,
+      "noise_amplitude": 7000,
+      "confidence_min": 0.3617,
+      "confidence_max": 0.3694,
+      "segments": 14,
+      "doses_recovered": [],
+      "blood_pressures_recovered": [],
+      "transcript_chars": 469,
+      "transcript_excerpt": "I miss your operation. Please proceed. I'll let you continue with the procedure. Yes, that's the next stage. This is the next stage. I know you have a particula",
+      "below_floor": true
+    },
+    {
+      "level": "severe",
+      "gain": 0.12,
+      "noise_amplitude": 14000,
+      "confidence_min": 0.3134,
+      "confidence_max": 0.6714,
+      "segments": 2,
+      "doses_recovered": [],
+      "blood_pressures_recovered": [],
+      "transcript_chars": 40,
+      "transcript_excerpt": "R\u00f8de R\u00f8de Undertexter av Nicolai Winther",
+      "below_floor": true
+    }
+  ],
+  "worst_confidence_with_facts_intact": 0.8012,
+  "best_confidence_with_facts_lost": 0.3617,
+  "separated": true
+}

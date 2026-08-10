@@ -225,6 +225,113 @@ blind human grading pass described above, which is still the project's
 stated methodology and has not yet been run at the 60-case scale (see
 "Current status" in the README).
 
+## The transcript is a model output too (node 3b)
+
+Every node above measures the note against the transcript, and treats
+whatever the transcript says as settled. That is defensible while the
+transcript is a hand-written string in `data/test_cases.json`. It stops
+being defensible the moment the transcript comes from a real encounter,
+because then the transcript is itself a model's output - a speech
+recogniser's - and this project's whole premise is that an unverified model
+output should not be trusted.
+
+That was an inconsistency at the foundation of the design: a system built
+on "verify against the source" was treating an unverified derivative *as*
+the source. `--audio` mode closes it.
+
+**The failure modes overlap exactly.** `taxonomy.json` ranks
+numeric/medication and negation errors as the highest-severity categories.
+Those are precisely what speech recognition damages most - "fifteen" and
+"fifty" differ by one phoneme, and a dropped "no" inverts a denial. A wrong
+dose is a wrong dose whether a scribe invented it or a recogniser misheard
+it; from the patient's side of the chart the two are indistinguishable. ASR
+error and this project's error taxonomy are not adjacent problems, they are
+the same problem one layer down.
+
+### The rule
+
+Whisper returns per-window confidence alongside the text. Node 3b joins
+each of node 3's verdicts to the audio that verdict rested on, and
+downgrades the ones resting on audio the recogniser was guessing at:
+
+| Node 3 verdict | Audio | Result |
+|---|---|---|
+| supported | confident | supported |
+| supported | **unreliable** | **unverifiable** |
+| contradicted | confident | contradicted |
+| contradicted | **unreliable** | **unverifiable** |
+| not_mentioned | either | unchanged - rests on absence of evidence, not on a segment |
+
+**"Supported" is the dangerous one.** A contradicted claim already goes to a
+human by definition - it is a flag, someone reads it. A *supported* claim
+is the one that passes silently into a signed note. If it was validated
+against a mis-heard dose, the system has done worse than nothing: it has
+laundered a recognition error into a confirmed fact and put a tick next to
+it. Downgrading confident-looking passes is the point of the node, not a
+side effect.
+
+Node 3b never guesses what the audio really said, never corrects the
+transcript, and never decides whether the note is right - nothing in the
+text can resolve that. It emits a flag with a timestamp, and the human at
+node 7 is told which seconds to re-listen to.
+
+### Calibrating the threshold, rather than guessing it
+
+The whole node reduces to one number: the confidence below which a segment
+is untrustworthy. Too low and it never fires; too high and everything
+becomes unverifiable. Picked by intuition, it would be decorative.
+
+`eval/asr_confidence_check.py` measures it. One synthetic encounter is
+degraded in controlled steps, and at each step it records both the
+recogniser's confidence and whether the clinically load-bearing facts
+survived:
+
+| Audio | Confidence | Dose | Blood pressure | What Whisper returned |
+|---|---|---|---|---|
+| clean | 0.835 - 0.901 | 10mg ✓ | 128/82 ✓ | correct |
+| mild | 0.801 - 0.869 | 10mg ✓ | 128/82 ✓ | correct |
+| heavy | 0.362 - 0.369 | **lost** | **lost** | *"I miss your operation. Please proceed."* |
+| severe | 0.313 - 0.671 | **lost** | **lost** | *"Undertexter av Nicolai Winther"* |
+
+The `heavy` row is the one that justifies the whole node. Whisper did not
+fail loudly there - it returned calm, grammatical English with nothing to
+do with the audio. That is an ASR hallucination wearing the same clothes as
+a real transcript, and it is exactly what a note-checker would otherwise
+validate against without noticing. Confidence caught it: 0.36 against 0.85
+for real speech.
+
+Every run that preserved the facts scored at least **0.801**; every run that
+destroyed them scored at most **0.369**. The default floor of **0.55** sits
+in the empty band between, with margin on both sides. Reproduce with:
+
+```
+python eval/asr_confidence_check.py data/audio/case_01_synthetic.wav
+```
+
+### What this does not solve
+
+- **Granularity is coarse.** Groq's API returns `avg_logprob` per ~30-second
+  window, not per segment: an 11-segment, 50-second recording came back with
+  two distinct confidence values. So node 3b can say *which part of the
+  encounter* is unreliable, not which word. A local Whisper with true
+  per-segment logprobs, or word-level confidence, would sharpen this;
+  `TRANSCRIBE_CHAIN` already has a local tier for exactly that reason.
+- **Confidence is not accuracy.** `exp(avg_logprob)` is the model's
+  geometric-mean token probability, not a probability that the text is
+  correct. A recogniser can be confidently wrong. What the experiment above
+  shows is only that it *usually isn't* on this material - not that it
+  can't be.
+- **One recording, one recogniser, one degradation model.** Uniform hiss on
+  synthetic speech is not a crowded clinic, an accent the model handles
+  poorly, or a patient who mumbles. The threshold is defensible on the
+  evidence collected; it is not a general-purpose constant, which is why
+  the script that measures it ships alongside the number it produced.
+- **Audio quality is not the only way a transcript lies.** Diarisation
+  errors - the right words attributed to the wrong speaker - can occur at
+  full confidence, and would defeat this entirely. That is the same
+  category as `misattribution` in the taxonomy, now one level lower, and
+  nothing here addresses it.
+
 ## Does each node earn its place? (node ablation)
 
 Everything above argues that nodes 4 and 5 exist because node 3
@@ -510,6 +617,21 @@ token counts above by their own negotiated or published provider rate.
   7-10 cases each, too few for tight per-category confidence; a
   production benchmark would want dozens of cases per category, not
   under 10.
+- **Without `--audio`, the transcript is assumed to be faithful, and
+  nothing here checks that.** The 60 benchmark cases are hand-written
+  text, so every number reported in this document measures
+  note-against-transcript, never note-against-reality. If a transcript is
+  itself wrong, the pipeline will confidently validate a note that
+  matches it. Node 3b (see "The transcript is a model output too") exists
+  to narrow that gap when audio is available, but it is not part of any
+  result reported above, and it cannot help a deployment whose transcripts
+  arrive as text from somewhere else.
+- Node 3b's confidence signal is coarse and partly unvalidated: the
+  hosted API reports confidence per ~30-second window rather than per
+  utterance, `exp(avg_logprob)` is the recogniser's own token probability
+  rather than a probability of being correct, and the threshold was
+  calibrated on one recording with one degradation model. Diarisation
+  errors - right words, wrong speaker - would pass it at full confidence.
 - The deterministic numeric checker (Node 4) only recognizes mg/mcg
   doses and blood-pressure readings written as "x/y" or "x over y" - a
   weight in kilograms, a bare lab value with no unit, an insulin dose in

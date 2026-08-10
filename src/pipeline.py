@@ -326,7 +326,16 @@ No markdown, just the JSON array."""
 # ---------------------------------------------------------------------------
 # Nodes 2-5 chained: the guard itself, run against any (transcript, note) pair
 # ---------------------------------------------------------------------------
-def run_guard(transcript: str, note: str, verbose: bool = False) -> dict:
+def run_guard(transcript: str, note: str, verbose: bool = False,
+              audio_segments: list = None) -> dict:
+    """audio_segments is optional and changes nothing when omitted.
+
+    When the transcript came from src/transcribe.py rather than from a
+    hand-written benchmark case, pass its `segments` here and node 3b
+    (transcript_confidence) will downgrade any verdict that rested on audio
+    the recogniser was unsure of. Omitted -> the transcript is treated as
+    ground truth, exactly as before, and every existing result stands.
+    """
     claims = extract_claims(note)
     if verbose:
         print(f"  extracted {len(claims)} claims")
@@ -372,16 +381,33 @@ def run_guard(transcript: str, note: str, verbose: bool = False) -> dict:
         if res.get("status") == "omitted"
     ]
 
-    return {
+    # Node 3b: only runs when the transcript came from audio. Every verdict
+    # above assumed the transcript was ground truth; this is where that
+    # assumption gets checked against what the recogniser actually heard.
+    uncertainty_flags = []
+    if audio_segments:
+        import transcript_confidence
+        uncertainty_flags = transcript_confidence.unverifiable_flags(
+            claims, entailment_results, audio_segments)
+        if verbose and uncertainty_flags:
+            print(f"  {len(uncertainty_flags)} claim(s) rest on unreliable audio")
+
+    result = {
         "claims_checked": claims,
         "transcript_facts_checked": transcript_facts,
         "llm_flags": flagged,
         "deterministic_flags": numeric_flags,
         "omission_flags": omission_flags,
-        "all_flags": flagged + numeric_flags + omission_flags,
+        "all_flags": flagged + numeric_flags + omission_flags + uncertainty_flags,
         "core_reasoning_provider": core_provider,
         "core_reasoning_model": core_model,
     }
+    if audio_segments:
+        import transcript_confidence
+        result["uncertainty_flags"] = uncertainty_flags
+        result["transcript_reliability"] = transcript_confidence.transcript_reliability_summary(
+            audio_segments)
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -413,9 +439,11 @@ def human_review_checkpoint(guard_result: dict, interactive: bool = True) -> dic
 # ---------------------------------------------------------------------------
 # Full pipeline: draft -> guard -> human checkpoint (used for the live demo)
 # ---------------------------------------------------------------------------
-def run_full_pipeline(transcript: str, interactive: bool = True) -> dict:
+def run_full_pipeline(transcript: str, interactive: bool = True,
+                      audio_segments: list = None) -> dict:
     note = draft_note(transcript)
-    guard_result = run_guard(transcript, note, verbose=True)
+    guard_result = run_guard(transcript, note, verbose=True,
+                             audio_segments=audio_segments)
     review = human_review_checkpoint(guard_result, interactive=interactive)
     return {
         "draft_note": note,

@@ -65,9 +65,23 @@ ABLATION_PATH = os.path.join(BASE, "ablation_results.json")
 # node id -> (flag source value, human label)
 NODES = {
     3: ("llm_pipeline", "entailment check"),
+    3.5: ("asr_confidence", "transcript confidence"),
     4: ("deterministic_check", "deterministic numeric check"),
     5: ("llm_pipeline_omission", "omission check"),
 }
+
+# Node 3b only produces flags on runs whose transcript came from audio. The
+# committed benchmark is hand-written text, so it contributes nothing there,
+# and a row of zeros for a node that could not have fired would be
+# misleading rather than informative - so it is skipped unless present.
+def _sources_present(raw_outputs) -> set:
+    present = set()
+    for row in raw_outputs:
+        if "error" in row:
+            continue
+        for flag in row["pipeline_result"]["all_flags"]:
+            present.add(flag.get("source"))
+    return present
 
 
 def _score(raw_outputs, taxonomy, keep_sources, threshold, include_mismatches):
@@ -160,7 +174,10 @@ def main():
 
     rows = [("full pipeline (nodes 3+4+5)", full, None)]
 
+    present = _sources_present(raw_outputs)
     for node_id, (source, label) in sorted(NODES.items()):
+        if source not in present:
+            continue
         ablated = _score(raw_outputs, taxonomy, all_sources - {source},
                          args.threshold, args.include_mismatches)
         lost = sorted(full["_caught_ids"] - ablated["_caught_ids"])
@@ -188,6 +205,8 @@ def main():
 
     print("\nMarginal contribution per node:")
     for node_id, (source, label) in sorted(NODES.items()):
+        if f"without_node_{node_id}" not in report["ablations"]:
+            continue
         entry = report["ablations"][f"without_node_{node_id}"]
         lost = entry["errors_only_this_node_caught"]
         if lost:

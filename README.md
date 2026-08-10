@@ -38,6 +38,11 @@ clinical-note-guard/
 │       └── pipeline-flow.mp4  # 6s pipeline film shown in the site's pipeline section
 │                              # (generated with Higgsfield / MiniMax 2.3)
 ├── data/
+│   ├── audio/
+│   │   └── case_01_synthetic.wav  # case_01 spoken by two Windows TTS voices, so
+│   │                        # `--audio` is runnable without recording anything.
+│   │                        # Synthetic speech of a synthetic transcript: still
+│   │                        # no real patient, and no real clinician, anywhere.
 │   └── test_cases.json    # synthetic benchmark: transcripts + notes +
 │                           # ground truth for planted errors (60 cases)
 ├── src/
@@ -47,6 +52,11 @@ clinical-note-guard/
 │   ├── gemini_client.py          # Gemini API wrapper
 │   ├── openai_compat_client.py   # shared Groq + Featherless wrapper (both OpenAI-compatible)
 │   ├── usage.py                  # per-call token/latency recorder - real cost data, not estimated
+│   ├── transcribe.py             # node 0 for real audio: Whisper via Groq (or a local
+│   │                              # faster-whisper failover), with per-segment confidence
+│   ├── transcript_confidence.py  # node 3b: a verdict is only as good as the audio it was
+│   │                              # checked against - downgrades claims resting on
+│   │                              # unreliable audio to "unverifiable"
 │   ├── pipeline.py               # the guard pipeline, nodes 0-7 (commission + omission + human checkpoint)
 │   └── baseline.py               # single-prompt comparison baseline (now omission-aware, see ARCHITECTURE.md)
 ├── tests/                   # stdlib unittest, no real API calls, run before every change
@@ -64,6 +74,9 @@ clinical-note-guard/
 │   │                        # what each node actually contributed (zero API calls)
 │   ├── ablation_results.json # committed: the ablation table reported in ARCHITECTURE.md
 │   ├── measure_usage.py    # measures real token/latency cost per note, pipeline vs. baseline
+│   ├── asr_confidence_check.py    # calibrates node 3b's threshold: degrades audio in steps and
+│   │                        # measures confidence against whether the clinical facts survived
+│   ├── asr_confidence_results.json # committed: the calibration run reported in ARCHITECTURE.md
 │   ├── raw_outputs.json    # committed: full output from the actual eval run reported in the docs
 │   ├── scorecard_blind.csv # committed: blinded grading sheet from that same run
 │   ├── blind_key.json      # committed: A/B -> pipeline/baseline key for that run
