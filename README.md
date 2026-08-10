@@ -259,6 +259,17 @@ table for the pipeline vs. the baseline - see `docs/ARCHITECTURE.md`,
       known limitations, all as they actually happened rather than planned
 - [x] Required samples document (`docs/SAMPLES.md`) - pipeline vs. baseline
       on 4 real cases, generated directly from the committed eval output
+- [x] Prompt-engineering record (`docs/PROMPTS.md`) - every prompt verbatim,
+      what each constraint prevents, and the iterations behind them
+- [x] Node ablation (`eval/ablation.py`) - each node's marginal contribution
+      measured from the committed run, no API calls. Reports node 4 as
+      contributing zero additional recall, which is not the flattering
+      result but is the measured one
+- [x] Audio mode + node 3b (`src/transcribe.py`, `src/transcript_confidence.py`)
+      - the transcript treated as a model output rather than as ground
+      truth, with the confidence threshold calibrated by experiment
+      (`eval/asr_confidence_check.py`) and a worked example in
+      `docs/SAMPLES_AUDIO.md`
 - [x] LICENSE (MIT)
 - [x] Project site (`frontend/index.html`) - static, no build step. Not a
       track requirement for ML Prompt Engineering; included because it

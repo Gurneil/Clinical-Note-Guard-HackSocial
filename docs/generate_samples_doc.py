@@ -103,6 +103,15 @@ def main():
         "what actually happened, including the one case picked specifically "
         "because the pipeline over-flags relative to the baseline there.\n"
     )
+    out.append(
+        "Every case here is a text transcript, treated as ground truth. For "
+        "what happens when the transcript itself is wrong - a live `--audio` "
+        "run where the recogniser hallucinated an entire encounter and node "
+        "3b was the only thing that caught it - see "
+        "[SAMPLES_AUDIO.md](SAMPLES_AUDIO.md). That run is not generated "
+        "from `raw_outputs.json`, so it is kept in its own file rather than "
+        "being overwritten every time this script runs.\n"
+    )
     out.append("---\n")
 
     for case_id, rationale in SELECTED.items():
