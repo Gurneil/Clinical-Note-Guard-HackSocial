@@ -1,3 +1,7 @@
 google-genai>=0.3.0
 openai>=1.0.0
 python-dotenv>=1.0.0
+
+# Dev-only: not needed to run the pipeline itself, only to regenerate
+# docs/workflow_flowchart.png via docs/generate_flowchart.py.
+matplotlib>=3.8.0
