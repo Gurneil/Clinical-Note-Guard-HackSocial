@@ -14,6 +14,7 @@ import os
 import time
 
 import _env  # noqa: F401 - loads .env before anything reads os.environ
+import usage
 from google import genai
 from google.genai import types
 from google.genai import errors as genai_errors
@@ -82,14 +83,22 @@ def call_model(prompt: str, model: str, max_retries: int = 2, max_output_tokens:
     last_err = None
     tokens_for_attempt = max_output_tokens
     for attempt in range(max_retries):
+        # Timer outside the try - see the equivalent note in
+        # openai_compat_client.py (a failed call's latency is a real cost).
+        timer = usage.timed()
         try:
-            response = client.models.generate_content(
-                model=model, contents=prompt,
-                config=types.GenerateContentConfig(
-                    max_output_tokens=tokens_for_attempt,
-                    temperature=temperature,
-                ),
-            )
+            with timer:
+                response = client.models.generate_content(
+                    model=model, contents=prompt,
+                    config=types.GenerateContentConfig(
+                        max_output_tokens=tokens_for_attempt,
+                        temperature=temperature,
+                    ),
+                )
+            meta = getattr(response, "usage_metadata", None)
+            usage.record("gemini", model, timer.elapsed,
+                         prompt_tokens=getattr(meta, "prompt_token_count", None),
+                         completion_tokens=getattr(meta, "candidates_token_count", None))
             if response.candidates and response.candidates[0].finish_reason == "MAX_TOKENS" \
                     and attempt < max_retries - 1:
                 tokens_for_attempt *= 2
@@ -98,6 +107,7 @@ def call_model(prompt: str, model: str, max_retries: int = 2, max_output_tokens:
                 continue
             return response.text
         except genai_errors.APIError as e:
+            usage.record("gemini", model, timer.elapsed, ok=False)
             last_err = e
             if e.code == 429:
                 print(f"    [gemini_client] 429 quota exhausted on {model} - failing fast, not retrying")
@@ -111,6 +121,7 @@ def call_model(prompt: str, model: str, max_retries: int = 2, max_output_tokens:
                 raise
         except Exception as e:
             # Non-APIError (e.g. a real connection issue) - one short retry
+            usage.record("gemini", model, timer.elapsed, ok=False)
             last_err = e
             wait = 2 ** attempt
             print(f"    [gemini_client] call failed (attempt {attempt + 1}/{max_retries}): {e}, retrying in {wait}s...")

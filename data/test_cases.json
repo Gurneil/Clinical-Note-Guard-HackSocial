@@ -1,5 +1,5 @@
 {
-  "_comment": "Adversarial benchmark. Fully synthetic — no real patients, no real clinicians. Each case has a transcript (ground truth conversation), a note_under_test (what an ambient scribe supposedly produced), and ground_truth describing any deliberately injected error. Expanded from a 6-case starter set to 18: 3 numeric_medication_error, 3 fabrication, 3 negation_error, 2 distortion, 2 misattribution, 2 omission, 3 clean controls (no planted error, used to measure false-positive rate). The omission category was added once the pipeline actually gained a way to detect it (see src/pipeline.py's omission_check_batch) — before that, planting omission cases would have scored 0% against a detector that didn't exist.",
+  "_comment": "Adversarial benchmark. Fully synthetic — no real patients, no real clinicians. Each case has a transcript (ground truth conversation), a note_under_test (what an ambient scribe supposedly produced), and ground_truth describing any deliberately injected error. Expanded from a 6-case starter set to 18, and from 18 to the current 60: 10 numeric_medication_error, 10 fabrication, 10 negation_error, 8 distortion, 7 misattribution, 7 omission, 8 clean controls (no planted error, used to measure false-positive rate). Note that the results reported in docs/ARCHITECTURE.md cover 57 of these 60 - three cases errored out mid-run and are excluded there rather than counted as misses; see that file's 'Current auto-scored results' section. The omission category was added once the pipeline actually gained a way to detect it (see src/pipeline.py's omission_check_batch) — before that, planting omission cases would have scored 0% against a detector that didn't exist.",
   "cases": [
     {
       "id": "case_01_numeric_medication_error",
@@ -281,6 +281,685 @@
       "specialty": "Primary care - annual physical, no complaints",
       "transcript": "Doctor: How have you been feeling overall this year?\nPatient: Really good, no complaints. No chest pain, no shortness of breath, sleeping well, eating well.\nDoctor: Any changes in weight, appetite, or energy levels?\nPatient: No, everything's been pretty stable.\nDoctor: Great. Let's do a quick exam... heart and lungs sound normal, abdomen is soft and non-tender, everything looks good.\nPatient: Glad to hear it.\nDoctor: I'll order your routine annual labs - cholesterol panel and basic metabolic panel. Keep up with the exercise and diet, and I'll see you again next year unless something comes up sooner.\nPatient: Will do, thank you.",
       "note_under_test": "Subjective: Patient reports feeling well overall, no complaints. Denies chest pain, shortness of breath, or changes in weight, appetite, sleep, or energy.\nObjective: Heart and lungs normal on auscultation. Abdomen soft, non-tender.\nAssessment: Routine annual physical, no acute concerns.\nPlan: Routine annual labs ordered (lipid panel, basic metabolic panel). Continue current diet and exercise. Follow up in 1 year or sooner if needed.",
+      "ground_truth": {
+        "has_error": false,
+        "injected_errors": []
+      }
+    },
+    {
+      "id": "case_19_numeric_medication_error_warfarin_inr",
+      "specialty": "Hematology - anticoagulation clinic",
+      "transcript": "Doctor: Good morning, Mrs. Okafor. We're checking your INR today.\nPatient: Yes, I've been taking the warfarin every evening like you said.\nDoctor: What dose are you on right now?\nPatient: Five milligrams, every day at dinner time.\nDoctor: Any bleeding, bruising, blood in the urine or stool?\nPatient: No, nothing like that. Maybe one small bruise on my arm from bumping a door.\nDoctor: That's fine. Your INR today came back at 2.4, which is right in the target range for you.\nPatient: That's good news.\nDoctor: Keep the dose exactly where it is. No changes. Come back in four weeks for another INR.\nPatient: Will do. Should I still avoid the leafy greens?\nDoctor: Not avoid, just stay consistent - same amount week to week.",
+      "note_under_test": "Subjective: Patient on warfarin 10mg daily each evening for anticoagulation. Denies bleeding, hematuria, or melena. Reports one minor bruise on the arm from mechanical trauma.\nObjective: INR 2.4, within therapeutic range.\nAssessment: Anticoagulation therapeutic and stable.\nPlan: Continue current warfarin dose without change. Repeat INR in 4 weeks. Counseled on maintaining consistent dietary vitamin K intake.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "numeric_medication_error",
+            "claim_text": "warfarin 10mg daily each evening",
+            "correct_value": "warfarin 5mg daily each evening",
+            "transcript_evidence": "Patient stated 'Five milligrams, every day at dinner time'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_20_numeric_medication_error_insulin_units",
+      "specialty": "Endocrinology - type 1 diabetes follow-up",
+      "transcript": "Doctor: How have the sugars been running since we adjusted the basal insulin?\nPatient: Better. Mornings are mostly between 110 and 130 now.\nDoctor: And you're on how many units of glargine at bedtime?\nPatient: Twenty-two units, at about 10 pm.\nDoctor: Any lows? Shakiness, sweating, waking up at night?\nPatient: One low last week, around 65, in the afternoon after I skipped lunch.\nDoctor: Your A1c came back at 7.1, down from 7.8.\nPatient: That's the best it's been.\nDoctor: It is. Let's keep the glargine where it is and keep the same mealtime ratios.\nPatient: Sounds good.",
+      "note_under_test": "Subjective: Patient with type 1 diabetes reports improved glycemic control since basal adjustment. Fasting glucose 110-130. Currently on insulin glargine 12 units nightly at 10pm. One hypoglycemic episode last week (65 mg/dL) in the setting of a missed meal. No nocturnal hypoglycemia.\nObjective: A1c 7.1%, improved from 7.8%.\nAssessment: Type 1 diabetes mellitus, improved control.\nPlan: Continue current basal insulin dose and mealtime ratios.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "numeric_medication_error",
+            "claim_text": "insulin glargine 12 units nightly",
+            "correct_value": "insulin glargine 22 units nightly",
+            "transcript_evidence": "Patient stated 'Twenty-two units, at about 10 pm'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_21_numeric_medication_error_bp_reading",
+      "specialty": "Nephrology - chronic kidney disease follow-up",
+      "transcript": "Doctor: Let's review where things stand with your kidney function.\nPatient: Okay.\nDoctor: Your creatinine is 1.8, and your eGFR is 42, both about the same as three months ago.\nPatient: So it's holding steady?\nDoctor: Holding steady, which is what we want. Blood pressure today is 146 over 90, which is higher than I'd like.\nPatient: I've been under a lot of stress at work.\nDoctor: Understood. Are you taking the amlodipine 5 milligrams daily?\nPatient: Every morning, yes.\nDoctor: Let's add losartan 25 milligrams daily on top of it and recheck in six weeks.\nPatient: Alright.",
+      "note_under_test": "Subjective: Patient with CKD reports work-related stress. Adherent to amlodipine 5mg daily.\nObjective: Creatinine 1.8, eGFR 42, both stable from 3 months prior. Blood pressure 164/90.\nAssessment: Chronic kidney disease, stable renal function. Hypertension, above goal.\nPlan: Add losartan 25mg daily. Recheck blood pressure and renal function in 6 weeks.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "numeric_medication_error",
+            "claim_text": "Blood pressure 164/90",
+            "correct_value": "Blood pressure 146/90",
+            "transcript_evidence": "Doctor stated 'Blood pressure today is 146 over 90'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_22_numeric_medication_error_frequency",
+      "specialty": "Psychiatry - depression medication management",
+      "transcript": "Doctor: How has the mood been over the last month?\nPatient: Noticeably better. I'm getting out of the house again.\nDoctor: Good. You're on sertraline - remind me of the dose.\nPatient: Fifty milligrams, once a day in the morning.\nDoctor: Any side effects? Nausea, sleep changes, anything sexual?\nPatient: A bit of nausea the first week, but that's gone now.\nDoctor: Any thoughts of harming yourself?\nPatient: No. Not at all.\nDoctor: I'd like to keep you at the same dose for another three months and then we'll reassess.\nPatient: That works for me.",
+      "note_under_test": "Subjective: Patient reports significant improvement in mood over the past month with increased activity and social engagement. Taking sertraline 50mg twice daily. Initial nausea in week one, now resolved. Denies suicidal ideation.\nObjective: Alert, cooperative, euthymic affect.\nAssessment: Major depressive disorder, responding well to current therapy.\nPlan: Continue current sertraline regimen. Reassess in 3 months.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "numeric_medication_error",
+            "claim_text": "sertraline 50mg twice daily",
+            "correct_value": "sertraline 50mg once daily in the morning",
+            "transcript_evidence": "Patient stated 'Fifty milligrams, once a day in the morning'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_23_numeric_medication_error_pediatric_weight_dose",
+      "specialty": "Pediatrics - asthma follow-up",
+      "transcript": "Doctor: How has Maya's breathing been since the last visit?\nParent: Much better. She's only used the rescue inhaler twice in the last month.\nDoctor: That's a real improvement. Let's get her weight - okay, 24 kilograms.\nParent: She's grown a bit.\nDoctor: She has. She's on the low-dose inhaled steroid, two puffs twice a day, correct?\nParent: Yes, morning and night.\nDoctor: Any nighttime coughing or waking up short of breath?\nParent: Not since we started it.\nDoctor: Let's keep everything the same and see her again in three months. Keep the albuterol for rescue only.\nParent: Understood.",
+      "note_under_test": "Subjective: Mother reports marked improvement in asthma control. Rescue inhaler used twice in the past month. No nocturnal cough or dyspnea. On low-dose inhaled corticosteroid, 2 puffs twice daily.\nObjective: Weight 42 kg. Lungs clear to auscultation bilaterally.\nAssessment: Persistent asthma, well controlled on current regimen.\nPlan: Continue inhaled corticosteroid at current dose. Albuterol as rescue only. Follow up in 3 months.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "numeric_medication_error",
+            "claim_text": "Weight 42 kg",
+            "correct_value": "Weight 24 kg",
+            "transcript_evidence": "Doctor stated 'let's get her weight - okay, 24 kilograms'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_24_numeric_medication_error_drug_name",
+      "specialty": "Primary care - thyroid follow-up",
+      "transcript": "Doctor: Your thyroid labs came back today.\nPatient: What do they show?\nDoctor: TSH is 3.2, which is normal. The levothyroxine dose is doing its job.\nPatient: Good.\nDoctor: You're on 75 micrograms every morning, on an empty stomach?\nPatient: Yes, half an hour before breakfast, like you told me.\nDoctor: Perfect. Any palpitations, heat intolerance, weight changes?\nPatient: No, I feel pretty normal these days.\nDoctor: Then we'll keep it exactly as is and recheck in six months.\nPatient: Thank you.",
+      "note_under_test": "Subjective: Patient on liothyronine 75 mcg daily, taken on an empty stomach 30 minutes before breakfast. Denies palpitations, heat intolerance, or weight change.\nObjective: TSH 3.2 (within normal limits).\nAssessment: Hypothyroidism, biochemically euthyroid on current replacement.\nPlan: Continue current dose. Repeat thyroid function testing in 6 months.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "numeric_medication_error",
+            "claim_text": "liothyronine 75 mcg daily",
+            "correct_value": "levothyroxine 75 mcg daily",
+            "transcript_evidence": "Doctor stated 'The levothyroxine dose is doing its job' and 'You're on 75 micrograms every morning'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_25_numeric_medication_error_lab_value",
+      "specialty": "Primary care - lipid management",
+      "transcript": "Doctor: Let's go over your cholesterol panel.\nPatient: Is it any better?\nDoctor: It is. Your LDL came down to 96, from 142 six months ago.\nPatient: The statin's working then.\nDoctor: It is. You're on atorvastatin 20 milligrams at bedtime, right?\nPatient: Right, every night.\nDoctor: Any muscle aches?\nPatient: None at all.\nDoctor: Total cholesterol is 178, triglycerides 140, HDL 54. All reasonable.\nPatient: So no changes?\nDoctor: No changes. Recheck in one year.",
+      "note_under_test": "Subjective: Patient tolerating atorvastatin 20mg nightly without myalgias.\nObjective: Lipid panel: LDL 69 (down from 142), total cholesterol 178, triglycerides 140, HDL 54.\nAssessment: Hyperlipidemia, improved and at goal on current therapy.\nPlan: Continue atorvastatin 20mg nightly. Repeat lipid panel in 1 year.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "numeric_medication_error",
+            "claim_text": "LDL 69",
+            "correct_value": "LDL 96",
+            "transcript_evidence": "Doctor stated 'Your LDL came down to 96, from 142 six months ago'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_26_fabrication_chest_pain_radiation",
+      "specialty": "Emergency medicine - chest discomfort evaluation",
+      "transcript": "Doctor: Tell me about the chest discomfort.\nPatient: It started about an hour ago. Feels like pressure right in the middle of my chest.\nDoctor: Does it go anywhere - your arm, your jaw, your back?\nPatient: No, it just stays in the middle.\nDoctor: Short of breath? Sweaty? Nauseated?\nPatient: A little short of breath. Not sweaty, not nauseated.\nDoctor: Has this happened before?\nPatient: Once, maybe two months ago, but it went away on its own.\nDoctor: Your EKG shows no acute changes and your first troponin is negative. We'll repeat it in three hours.\nPatient: Okay.",
+      "note_under_test": "Subjective: Patient reports one hour of central chest pressure with radiation to the left arm and jaw. Associated mild dyspnea. Denies diaphoresis or nausea. Similar episode approximately two months ago, self-resolved.\nObjective: EKG without acute ischemic changes. Initial troponin negative.\nAssessment: Chest pain, undifferentiated. Awaiting serial troponin.\nPlan: Repeat troponin in 3 hours. Continuous cardiac monitoring.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "fabrication",
+            "claim_text": "radiation to the left arm and jaw",
+            "correct_value": "no radiation - pain stayed central",
+            "transcript_evidence": "Patient stated 'No, it just stays in the middle' when asked about radiation"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_27_fabrication_travel_history",
+      "specialty": "Infectious disease - fever workup",
+      "transcript": "Doctor: How long have you had the fever?\nPatient: Four days now. Up to about 102.\nDoctor: Any cough, sore throat, diarrhea?\nPatient: Some diarrhea, started two days ago.\nDoctor: Any sick contacts at home or work?\nPatient: My coworker was out with something last week.\nDoctor: Have you traveled anywhere recently?\nPatient: No, I haven't been anywhere. I haven't left the state in about two years.\nDoctor: Any animal exposures, tick bites?\nPatient: No.\nDoctor: We'll send blood cultures and a stool study and start there.\nPatient: Alright.",
+      "note_under_test": "Subjective: Patient with 4 days of fever up to 102F and 2 days of diarrhea. Sick contact at work. Reports recent travel to Central America three weeks ago. Denies animal exposures or tick bites.\nObjective: Febrile on presentation.\nAssessment: Fever of unclear source with GI involvement.\nPlan: Blood cultures, stool studies.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "fabrication",
+            "claim_text": "Reports recent travel to Central America three weeks ago",
+            "correct_value": "no recent travel at all",
+            "transcript_evidence": "Patient stated 'No, I haven't been anywhere. I haven't left the state in about two years'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_28_fabrication_physical_exam_finding",
+      "specialty": "Neurology - headache evaluation",
+      "transcript": "Doctor: Describe the headaches for me.\nPatient: They're on the right side, throbbing, maybe twice a week now.\nDoctor: Any nausea or sensitivity to light?\nPatient: Both, especially the light.\nDoctor: Any vision changes, weakness, numbness?\nPatient: No, nothing like that.\nDoctor: Let me examine you. Pupils are equal and reactive, eye movements are full, strength is 5 out of 5 everywhere, and your reflexes are symmetric.\nPatient: Is that all normal?\nDoctor: That's all normal. Your neurologic exam is completely unremarkable.\nPatient: That's a relief.\nDoctor: Let's start you on a preventive medication and keep a headache diary.",
+      "note_under_test": "Subjective: Patient reports right-sided throbbing headaches twice weekly with associated nausea and photophobia. Denies vision changes, weakness, or numbness.\nObjective: Pupils equal and reactive, extraocular movements intact, strength 5/5 throughout, reflexes symmetric. Mild papilledema noted on fundoscopic exam.\nAssessment: Migraine without aura.\nPlan: Initiate preventive therapy. Headache diary.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "fabrication",
+            "claim_text": "Mild papilledema noted on fundoscopic exam",
+            "correct_value": "no fundoscopic finding was described; exam was stated to be completely normal",
+            "transcript_evidence": "Doctor stated 'That's all normal. Your neurologic exam is completely unremarkable'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_29_fabrication_medication_added",
+      "specialty": "Rheumatology - rheumatoid arthritis follow-up",
+      "transcript": "Doctor: How are the joints doing on the methotrexate?\nPatient: Better. The morning stiffness is down to about twenty minutes.\nDoctor: That's a big improvement from an hour. Any mouth sores, nausea?\nPatient: No mouth sores. A little nausea the day after I take it.\nDoctor: We can try taking it at night instead. Are you taking the folic acid?\nPatient: Every day except the methotrexate day.\nDoctor: Perfect. Let's keep methotrexate at the current dose and recheck your labs in eight weeks.\nPatient: No changes to anything else?\nDoctor: No changes.",
+      "note_under_test": "Subjective: Patient reports improvement in rheumatoid arthritis symptoms on methotrexate, with morning stiffness reduced from one hour to 20 minutes. Mild nausea the day after dosing. No oral ulcers. Taking folic acid daily except on methotrexate day.\nObjective: Joints without active synovitis on exam.\nAssessment: Rheumatoid arthritis, improving on current DMARD therapy.\nPlan: Continue methotrexate at current dose. Add prednisone 5mg daily for bridging. Shift methotrexate dosing to evening to reduce nausea. Repeat labs in 8 weeks.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "fabrication",
+            "claim_text": "Add prednisone 5mg daily for bridging",
+            "correct_value": "no new medication was added; the doctor explicitly said no changes",
+            "transcript_evidence": "Doctor stated 'Let's keep methotrexate at the current dose' and 'No changes'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_30_fabrication_symptom_never_discussed",
+      "specialty": "Urology - urinary frequency",
+      "transcript": "Doctor: What's been going on?\nPatient: I'm up three or four times a night to urinate. It's been a couple of months.\nDoctor: Any burning when you urinate?\nPatient: No burning.\nDoctor: Trouble starting the stream, or a weak stream?\nPatient: The stream is weaker than it used to be, yes.\nDoctor: Any blood in the urine?\nPatient: No.\nDoctor: Your urinalysis is clean and your PSA is 1.8, which is normal for your age.\nPatient: So what is it?\nDoctor: Most likely benign prostatic enlargement. Let's try tamsulosin 0.4 milligrams at bedtime.",
+      "note_under_test": "Subjective: Patient reports nocturia 3-4 times nightly for two months and decreased urinary stream. Denies dysuria or hematuria. Also endorses lower back pain and unintentional weight loss.\nObjective: Urinalysis unremarkable. PSA 1.8.\nAssessment: Lower urinary tract symptoms, likely benign prostatic hyperplasia.\nPlan: Start tamsulosin 0.4mg at bedtime.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "fabrication",
+            "claim_text": "Also endorses lower back pain and unintentional weight loss",
+            "correct_value": "neither back pain nor weight loss was mentioned anywhere in the encounter",
+            "transcript_evidence": "No mention of back pain or weight loss appears in the transcript at all"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_31_fabrication_counseling_not_given",
+      "specialty": "Obstetrics - routine prenatal visit",
+      "transcript": "Doctor: You're at 28 weeks now. How have you been feeling?\nPatient: Tired, but okay. The baby's moving a lot.\nDoctor: Good fetal movement is exactly what we want. Any bleeding, leaking fluid, contractions?\nPatient: None of those.\nDoctor: Blood pressure is 118 over 72, and your fundal height measures 28 centimeters, right on track.\nPatient: Great.\nDoctor: Your glucose tolerance test came back normal.\nPatient: That's a relief.\nDoctor: We'll see you again in two weeks. Call if anything changes.\nPatient: Thank you.",
+      "note_under_test": "Subjective: G2P1 at 28 weeks gestation reports fatigue and good fetal movement. Denies bleeding, leakage of fluid, or contractions.\nObjective: Blood pressure 118/72. Fundal height 28 cm, appropriate for gestational age. One-hour glucose tolerance test normal.\nAssessment: Intrauterine pregnancy at 28 weeks, progressing normally.\nPlan: Return in 2 weeks. Patient counseled at length on signs of preeclampsia including headache, visual changes, and right upper quadrant pain. Tdap vaccine administered today.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "fabrication",
+            "claim_text": "Patient counseled at length on signs of preeclampsia... Tdap vaccine administered today",
+            "correct_value": "no preeclampsia counseling and no vaccine administration occurred in this encounter",
+            "transcript_evidence": "The doctor said only 'We'll see you again in two weeks. Call if anything changes'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_32_fabrication_imaging_result",
+      "specialty": "Orthopedics - shoulder pain",
+      "transcript": "Doctor: How did the shoulder pain start?\nPatient: I was reaching for something on a high shelf about three weeks ago and felt a pull.\nDoctor: Can you lift your arm above your head?\nPatient: I can, but it hurts at the top.\nDoctor: Any numbness or tingling down the arm?\nPatient: No.\nDoctor: On exam you've got a painful arc and a positive impingement sign, but your strength is intact.\nPatient: Do I need a scan?\nDoctor: Not yet. Let's start physical therapy and anti-inflammatories, and if you're not better in six weeks we'll get an MRI then.\nPatient: Okay, that makes sense.",
+      "note_under_test": "Subjective: Patient reports three weeks of right shoulder pain after reaching overhead. Pain at end-range abduction. Denies numbness or paresthesias.\nObjective: Painful arc present, positive impingement sign, strength intact. MRI demonstrates a partial-thickness supraspinatus tear.\nAssessment: Rotator cuff tendinopathy with impingement.\nPlan: Physical therapy and NSAIDs. Reassess in 6 weeks.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "fabrication",
+            "claim_text": "MRI demonstrates a partial-thickness supraspinatus tear",
+            "correct_value": "no MRI was performed; it was explicitly deferred for six weeks",
+            "transcript_evidence": "Doctor stated 'Not yet... if you're not better in six weeks we'll get an MRI then'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_33_negation_error_penicillin_allergy",
+      "specialty": "Primary care - cellulitis",
+      "transcript": "Doctor: That looks like cellulitis on your lower leg.\nPatient: It's been getting redder since yesterday.\nDoctor: Any fever or chills?\nPatient: No fever.\nDoctor: Before I prescribe anything - are you allergic to any medications?\nPatient: Yes, penicillin. I got a bad rash from it as a kid.\nDoctor: Good to know. I'll avoid that whole class then. Let's use doxycycline instead.\nPatient: Okay.\nDoctor: 100 milligrams twice a day for seven days. Come back sooner if the redness spreads past the marks I'm drawing.\nPatient: Understood.",
+      "note_under_test": "Subjective: Patient presents with spreading erythema of the lower leg since yesterday. Denies fever or chills. No known drug allergies.\nObjective: Erythematous, warm, well-demarcated area on the left lower extremity, borders marked.\nAssessment: Cellulitis of the lower extremity.\nPlan: Doxycycline 100mg twice daily for 7 days. Return precautions given for spread beyond marked borders.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "negation_error",
+            "claim_text": "No known drug allergies",
+            "correct_value": "documented penicillin allergy with rash",
+            "transcript_evidence": "Patient stated 'Yes, penicillin. I got a bad rash from it as a kid'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_34_negation_error_suicidal_ideation",
+      "specialty": "Psychiatry - acute mental health assessment",
+      "transcript": "Doctor: You mentioned things have been very heavy lately.\nPatient: They have. I've been having a hard time seeing a way forward.\nDoctor: I want to ask directly - have you had thoughts of ending your life?\nPatient: Yes. Not a plan, but the thought has been there this past week.\nDoctor: Thank you for telling me. Do you have access to firearms or anything you'd use?\nPatient: No, nothing like that.\nDoctor: Is there someone at home with you?\nPatient: My sister lives with me.\nDoctor: I'd like to arrange close follow-up and set up a safety plan with you today.\nPatient: I'd be okay with that.",
+      "note_under_test": "Subjective: Patient reports persistent low mood and hopelessness. Denies suicidal ideation. No access to firearms or other means. Lives with sister, who is a support.\nObjective: Alert, cooperative, tearful at times.\nAssessment: Major depressive episode.\nPlan: Safety plan established. Close outpatient follow-up arranged.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "negation_error",
+            "claim_text": "Denies suicidal ideation",
+            "correct_value": "endorses passive suicidal ideation this past week, without a plan",
+            "transcript_evidence": "Patient stated 'Yes. Not a plan, but the thought has been there this past week'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_35_negation_error_loss_of_consciousness",
+      "specialty": "Emergency medicine - head injury",
+      "transcript": "Doctor: Tell me what happened.\nPatient: I slipped on the stairs and hit the back of my head.\nDoctor: Did you black out at all?\nPatient: Yes, my wife says I was out for maybe ten or fifteen seconds.\nDoctor: Any vomiting since?\nPatient: No vomiting.\nDoctor: Any blood thinners?\nPatient: No, none.\nDoctor: Headache now?\nPatient: A dull one at the back.\nDoctor: Given the loss of consciousness, I'd like to get a CT of your head to be safe.\nPatient: Whatever you think is best.",
+      "note_under_test": "Subjective: Patient sustained a fall down stairs with occipital impact. Denies loss of consciousness. No vomiting. Not on anticoagulation. Reports dull occipital headache.\nObjective: Alert and oriented. Occipital tenderness without laceration.\nAssessment: Head injury following mechanical fall.\nPlan: Non-contrast head CT.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "negation_error",
+            "claim_text": "Denies loss of consciousness",
+            "correct_value": "witnessed loss of consciousness for 10-15 seconds",
+            "transcript_evidence": "Patient stated 'Yes, my wife says I was out for maybe ten or fifteen seconds'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_36_negation_error_smoking_status",
+      "specialty": "Pulmonology - COPD follow-up",
+      "transcript": "Doctor: How's the breathing been?\nPatient: About the same. I get winded going up the one flight of stairs.\nDoctor: Are you still smoking?\nPatient: I am, yeah. I'm down to about half a pack, but I haven't quit.\nDoctor: Half a pack from a full pack is real progress. I'd like to keep working on it with you.\nPatient: I want to quit, it's just hard.\nDoctor: Would you be open to nicotine replacement?\nPatient: I'd try the patch, sure.\nDoctor: Let's do that. And keep using the inhalers exactly as prescribed.\nPatient: Okay.",
+      "note_under_test": "Subjective: Patient with COPD reports stable exertional dyspnea, winded after one flight of stairs. Patient is a former smoker and has successfully quit. Open to nicotine replacement therapy.\nObjective: Decreased breath sounds bilaterally, no wheezing.\nAssessment: COPD, stable.\nPlan: Continue current inhaler regimen. Initiate nicotine patch.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "negation_error",
+            "claim_text": "Patient is a former smoker and has successfully quit",
+            "correct_value": "patient is a current smoker, approximately half a pack per day",
+            "transcript_evidence": "Patient stated 'I am, yeah. I'm down to about half a pack, but I haven't quit'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_37_negation_error_chest_pain_denial",
+      "specialty": "Cardiology - heart failure follow-up",
+      "transcript": "Doctor: How's the swelling in your legs?\nPatient: Better since you increased the water pill.\nDoctor: Good. Are you having any chest pain?\nPatient: No, no chest pain at all.\nDoctor: Shortness of breath lying flat?\nPatient: I still need two pillows, same as before.\nDoctor: Any palpitations?\nPatient: Sometimes, a fluttering, maybe once a week.\nDoctor: Your weight is down four pounds from last visit, which is what we wanted.\nPatient: I've been watching the salt.\nDoctor: Keep doing exactly that. Same medications, see me in a month.",
+      "note_under_test": "Subjective: Patient with heart failure reports improved lower extremity edema following diuretic titration. Reports intermittent chest pain. Two-pillow orthopnea, unchanged. Occasional palpitations approximately weekly. Adherent to sodium restriction.\nObjective: Weight down 4 lbs from prior visit. Trace pedal edema.\nAssessment: Chronic heart failure, improved volume status.\nPlan: Continue current medications. Follow up in 1 month.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "negation_error",
+            "claim_text": "Reports intermittent chest pain",
+            "correct_value": "explicitly denies chest pain",
+            "transcript_evidence": "Patient stated 'No, no chest pain at all'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_38_negation_error_pregnancy_status",
+      "specialty": "Gynecology - contraception counseling",
+      "transcript": "Doctor: What brings you in today?\nPatient: I want to talk about switching birth control.\nDoctor: Sure. Is there any chance you could be pregnant right now?\nPatient: No, definitely not. I took a test last week and it was negative.\nDoctor: Good. Any history of blood clots, migraines with aura, or high blood pressure?\nPatient: None of those.\nDoctor: Do you smoke?\nPatient: No.\nDoctor: Then a combined oral contraceptive is a reasonable option for you. Let's start with a low-dose one.\nPatient: That sounds fine.",
+      "note_under_test": "Subjective: Patient presents to discuss contraception change. Possible early pregnancy cannot be excluded. Denies history of thromboembolism, migraine with aura, or hypertension. Non-smoker.\nObjective: Vital signs within normal limits.\nAssessment: Contraception counseling.\nPlan: Initiate low-dose combined oral contraceptive.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "negation_error",
+            "claim_text": "Possible early pregnancy cannot be excluded",
+            "correct_value": "pregnancy explicitly excluded - negative home test last week",
+            "transcript_evidence": "Patient stated 'No, definitely not. I took a test last week and it was negative'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_39_negation_error_falls_history",
+      "specialty": "Geriatrics - annual wellness visit",
+      "transcript": "Doctor: Have you had any falls in the past year?\nPatient: Two. One in the bathroom in the spring, and one in the garden a couple months ago.\nDoctor: Were you hurt either time?\nPatient: Bruised my hip the second time, nothing broken.\nDoctor: Do you use a cane or walker?\nPatient: No, I manage on my own.\nDoctor: Any dizziness when you stand up?\nPatient: Sometimes, just for a second.\nDoctor: I'd like to refer you to physical therapy for balance work and review your medications for anything that could contribute.\nPatient: That's fine with me.",
+      "note_under_test": "Subjective: Patient denies falls in the past year. Does not use an assistive device. Reports brief lightheadedness on standing.\nObjective: Steady gait observed in the exam room.\nAssessment: Annual wellness visit. Orthostatic symptoms.\nPlan: Physical therapy referral for balance training. Medication review for contributors to orthostasis.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "negation_error",
+            "claim_text": "Patient denies falls in the past year",
+            "correct_value": "two falls in the past year, one with hip bruising",
+            "transcript_evidence": "Patient stated 'Two. One in the bathroom in the spring, and one in the garden a couple months ago'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_40_distortion_pain_severity",
+      "specialty": "Primary care - abdominal pain",
+      "transcript": "Doctor: How bad is the stomach pain, on a scale of one to ten?\nPatient: Right now it's about a three. It was maybe a five yesterday.\nDoctor: Where exactly?\nPatient: Down here on the lower right side.\nDoctor: Does eating make it better or worse?\nPatient: A little worse after eating.\nDoctor: Any fever, vomiting?\nPatient: No fever, no vomiting.\nDoctor: Your abdomen is soft, mildly tender there, but no rebound or guarding.\nPatient: Is that concerning?\nDoctor: Not immediately. Let's get some labs and reassess.",
+      "note_under_test": "Subjective: Patient reports severe right lower quadrant abdominal pain, 9/10 at present, worse after eating. Denies fever or vomiting.\nObjective: Abdomen soft, mild right lower quadrant tenderness, no rebound or guarding.\nAssessment: Right lower quadrant abdominal pain, undifferentiated.\nPlan: Laboratory workup and reassessment.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "distortion",
+            "claim_text": "severe right lower quadrant abdominal pain, 9/10 at present",
+            "correct_value": "3/10 at present, 5/10 yesterday",
+            "transcript_evidence": "Patient stated 'Right now it's about a three. It was maybe a five yesterday'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_41_distortion_symptom_duration",
+      "specialty": "Dermatology - rash evaluation",
+      "transcript": "Doctor: How long have you had this rash?\nPatient: About five days now.\nDoctor: Is it itchy?\nPatient: Very itchy, especially at night.\nDoctor: Did you change soaps, detergents, start any new medications?\nPatient: I started a new laundry detergent right before it showed up.\nDoctor: That's a strong clue. Anyone else at home with a rash?\nPatient: No, just me.\nDoctor: This looks like a contact dermatitis. Stop the new detergent, rewash everything, and use this steroid cream twice a day.\nPatient: For how long?\nDoctor: Two weeks, then let me know.",
+      "note_under_test": "Subjective: Patient reports a pruritic rash present for approximately five weeks, worse at night. Onset coincided with a new laundry detergent. No other affected household members.\nObjective: Erythematous papular eruption on the trunk and arms.\nAssessment: Allergic contact dermatitis, likely detergent-related.\nPlan: Discontinue new detergent, rewash linens and clothing. Topical corticosteroid twice daily for 2 weeks.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "distortion",
+            "claim_text": "rash present for approximately five weeks",
+            "correct_value": "five days",
+            "transcript_evidence": "Patient stated 'About five days now'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_42_distortion_frequency_of_symptom",
+      "specialty": "Neurology - seizure follow-up",
+      "transcript": "Doctor: How many seizures have you had since we last met?\nPatient: Just one, about six weeks ago.\nDoctor: What did it look like?\nPatient: My wife said I stared off for maybe thirty seconds and didn't respond.\nDoctor: Any convulsions, tongue biting, incontinence?\nPatient: No, none of that.\nDoctor: Are you taking the levetiracetam consistently?\nPatient: Every day, morning and night.\nDoctor: Any mood changes or irritability on it?\nPatient: Not that I've noticed.\nDoctor: One breakthrough in three months is manageable. Let's keep the dose and recheck a level.",
+      "note_under_test": "Subjective: Patient reports multiple breakthrough seizures weekly since last visit, described by his wife as 30-second staring episodes with unresponsiveness. Denies convulsive activity, tongue biting, or incontinence. Adherent to levetiracetam twice daily without mood side effects.\nObjective: Neurologic exam non-focal.\nAssessment: Focal seizures with impaired awareness.\nPlan: Continue current levetiracetam dose. Check drug level.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "distortion",
+            "claim_text": "multiple breakthrough seizures weekly since last visit",
+            "correct_value": "one seizure, approximately six weeks ago",
+            "transcript_evidence": "Patient stated 'Just one, about six weeks ago'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_43_distortion_functional_status",
+      "specialty": "Physical medicine - post-stroke rehabilitation",
+      "transcript": "Doctor: How's the walking coming along?\nPatient: I can get around the house with the cane now.\nDoctor: And outside?\nPatient: Outside I still need my daughter's arm. The uneven ground is hard.\nDoctor: That's normal progress at this stage. How's the right hand?\nPatient: I can hold a cup, but buttons are still impossible.\nDoctor: We'll keep working on fine motor in occupational therapy.\nPatient: How long until it's back to normal?\nDoctor: Hard to say exactly, but you're moving in the right direction.\nPatient: I'll take that.",
+      "note_under_test": "Subjective: Patient reports independent ambulation indoors and outdoors without assistance. Able to grasp a cup with the right hand; fine motor tasks such as buttoning remain difficult.\nObjective: Right-sided weakness, improved from prior assessment.\nAssessment: Post-stroke hemiparesis, improving.\nPlan: Continue occupational therapy with focus on fine motor tasks.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "distortion",
+            "claim_text": "independent ambulation indoors and outdoors without assistance",
+            "correct_value": "independent indoors with a cane, but requires physical assistance outdoors",
+            "transcript_evidence": "Patient stated 'Outside I still need my daughter's arm. The uneven ground is hard'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_44_distortion_adherence",
+      "specialty": "Primary care - hypertension, adherence discussion",
+      "transcript": "Doctor: Your pressure is running higher today - 152 over 94.\nPatient: I figured it might be.\nDoctor: Have you been taking the medication daily?\nPatient: Honestly, I miss it probably two or three days a week. I forget in the mornings.\nDoctor: That's really useful to know, and it's common. Would a pill organizer or a phone alarm help?\nPatient: An alarm might, actually.\nDoctor: Let's try that before we change the dose, and see where you are in a month.\nPatient: That's fair.",
+      "note_under_test": "Subjective: Patient reports full adherence to antihypertensive therapy, taking it daily as prescribed. Open to reminder strategies.\nObjective: Blood pressure 152/94.\nAssessment: Hypertension, above goal.\nPlan: Trial of phone alarm reminders. Recheck blood pressure in 1 month before adjusting dose.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "distortion",
+            "claim_text": "Patient reports full adherence to antihypertensive therapy, taking it daily as prescribed",
+            "correct_value": "misses doses 2-3 days per week",
+            "transcript_evidence": "Patient stated 'Honestly, I miss it probably two or three days a week. I forget in the mornings'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_45_distortion_onset_timing",
+      "specialty": "Emergency medicine - stroke evaluation",
+      "transcript": "Doctor: When did the weakness start?\nFamily member: We noticed it when he woke up at 7 this morning. He was completely fine when he went to bed at 10 last night.\nDoctor: So the last time he was known to be normal was 10 pm?\nFamily member: That's right, 10 pm.\nDoctor: That matters a lot for treatment decisions. What did you notice first?\nFamily member: His right arm was limp and his speech was slurred.\nDoctor: Any headache, vomiting?\nFamily member: He hasn't complained of a headache.\nDoctor: We're taking him straight to CT.",
+      "note_under_test": "Subjective: Family reports acute onset of right arm weakness and dysarthria witnessed at 7:00 am this morning, with symptom onset clearly established at 7:00 am. No headache or vomiting reported.\nObjective: Right upper extremity weakness, dysarthria.\nAssessment: Acute stroke syndrome.\nPlan: Emergent non-contrast head CT.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "distortion",
+            "claim_text": "symptom onset clearly established at 7:00 am",
+            "correct_value": "last known well was 10 pm the prior night; 7 am was discovery, not onset",
+            "transcript_evidence": "Family stated 'He was completely fine when he went to bed at 10 last night' and confirmed last known normal was 10 pm"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_46_misattribution_family_cancer_history",
+      "specialty": "Primary care - cancer screening discussion",
+      "transcript": "Doctor: Let's talk about screening. Any cancer in the family?\nPatient: My mother had breast cancer at 52.\nDoctor: Anyone else?\nPatient: My uncle had colon cancer, but he was in his seventies.\nDoctor: And you've never had any cancer yourself?\nPatient: No, never.\nDoctor: Any breast lumps, nipple changes, skin changes?\nPatient: No.\nDoctor: Given your mother's history, I'd like to start your mammograms now rather than waiting.\nPatient: That makes sense to me.",
+      "note_under_test": "Subjective: Patient reports a personal history of breast cancer diagnosed at age 52. Uncle with colon cancer in his seventies. Denies breast lumps, nipple changes, or skin changes.\nObjective: Breast exam without palpable mass.\nAssessment: Elevated breast cancer risk.\nPlan: Initiate screening mammography now rather than at standard age threshold.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "misattribution",
+            "claim_text": "Patient reports a personal history of breast cancer diagnosed at age 52",
+            "correct_value": "the patient's MOTHER had breast cancer at 52; the patient has never had cancer",
+            "transcript_evidence": "Patient stated 'My mother had breast cancer at 52' and later 'No, never' when asked about personal cancer history"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_47_misattribution_wrong_side",
+      "specialty": "Ophthalmology - vision change",
+      "transcript": "Doctor: Which eye is the problem?\nPatient: The left one. Everything's blurry in the left eye.\nDoctor: When did it start?\nPatient: Three days ago, and it hasn't improved.\nDoctor: Any pain with eye movement?\nPatient: A little ache when I look to the side.\nDoctor: Any flashes or floaters?\nPatient: No.\nDoctor: Visual acuity is 20/60 on the left, 20/20 on the right. There's a relative afferent pupillary defect on the left.\nPatient: What does that mean?\nDoctor: It points to the optic nerve on that side. I want an MRI.",
+      "note_under_test": "Subjective: Patient reports three days of blurred vision in the right eye with mild pain on extraocular movement. Denies flashes or floaters.\nObjective: Visual acuity 20/60 OS, 20/20 OD. Relative afferent pupillary defect present on the left.\nAssessment: Suspected optic neuritis.\nPlan: MRI of the orbits and brain.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "misattribution",
+            "claim_text": "blurred vision in the right eye",
+            "correct_value": "the LEFT eye is affected",
+            "transcript_evidence": "Patient stated 'The left one. Everything's blurry in the left eye'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_48_misattribution_partner_symptom",
+      "specialty": "Primary care - sleep complaint",
+      "transcript": "Doctor: How's your sleep been?\nPatient: I sleep through the night fine, but my wife says I snore terribly.\nDoctor: Does she notice you stopping breathing?\nPatient: She says I gasp sometimes, yes.\nDoctor: Are you tired during the day?\nPatient: Not especially. My wife is exhausted, though - she's the one waking up.\nDoctor: Any morning headaches?\nPatient: No.\nDoctor: Given the snoring and the witnessed gasping, I'd like to get you a sleep study.\nPatient: Alright.",
+      "note_under_test": "Subjective: Patient reports significant daytime fatigue and exhaustion. Loud snoring with witnessed gasping episodes reported by spouse. Denies morning headaches.\nObjective: BMI 31. Mallampati class III.\nAssessment: Suspected obstructive sleep apnea.\nPlan: Refer for polysomnography.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "misattribution",
+            "claim_text": "Patient reports significant daytime fatigue and exhaustion",
+            "correct_value": "the patient denies daytime tiredness; it is his WIFE who is exhausted from being woken",
+            "transcript_evidence": "Patient stated 'Not especially. My wife is exhausted, though - she's the one waking up'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_49_misattribution_symptom_to_wrong_system",
+      "specialty": "Gastroenterology - reflux follow-up",
+      "transcript": "Doctor: How's the heartburn?\nPatient: The burning after meals is much better on the omeprazole.\nDoctor: Any trouble swallowing?\nPatient: No trouble swallowing.\nDoctor: You mentioned a cough last time - is that still there?\nPatient: The cough is still there, mostly at night.\nDoctor: That can be reflux-related. Any wheezing?\nPatient: No wheezing.\nDoctor: Let's keep the omeprazole, raise the head of your bed, and no eating three hours before sleep.\nPatient: I can do that.",
+      "note_under_test": "Subjective: Patient reports improved post-prandial burning on omeprazole. Reports difficulty swallowing, mostly at night. Denies wheezing.\nObjective: Abdomen soft, non-tender.\nAssessment: Gastroesophageal reflux disease, improved.\nPlan: Continue omeprazole. Elevate head of bed. Avoid oral intake within 3 hours of bedtime.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "misattribution",
+            "claim_text": "Reports difficulty swallowing, mostly at night",
+            "correct_value": "the nocturnal symptom is a COUGH; the patient explicitly denied difficulty swallowing",
+            "transcript_evidence": "Patient stated 'No trouble swallowing' and separately 'The cough is still there, mostly at night'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_50_misattribution_medication_to_wrong_person",
+      "specialty": "Pediatrics - medication reconciliation",
+      "transcript": "Doctor: Let's go over what Ethan takes at home.\nParent: He takes the albuterol inhaler when he needs it, and a chewable vitamin.\nDoctor: That's it for him?\nParent: That's it. His older sister takes the ADHD medication, not him.\nDoctor: Good, I want to make sure I have that right - the methylphenidate is his sister's.\nParent: Correct, not Ethan's.\nDoctor: Any allergies for Ethan?\nParent: None that we know of.\nDoctor: Great. Everything looks good today.",
+      "note_under_test": "Subjective: Medication reconciliation completed. Patient takes albuterol inhaler as needed, a chewable multivitamin, and methylphenidate daily. No known allergies.\nObjective: Well-appearing child, growth parameters appropriate.\nAssessment: Well child visit.\nPlan: Continue current medications. Routine follow-up.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "misattribution",
+            "claim_text": "and methylphenidate daily",
+            "correct_value": "methylphenidate belongs to the patient's SISTER, not the patient",
+            "transcript_evidence": "Parent stated 'His older sister takes the ADHD medication, not him' and confirmed 'Correct, not Ethan's'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_51_omission_anticoagulant_medication",
+      "specialty": "Pre-operative assessment - elective hernia repair",
+      "transcript": "Doctor: We're getting you ready for the hernia repair. Let's go through your medications.\nPatient: I take metformin twice a day, lisinopril in the morning, and apixaban twice a day.\nDoctor: Apixaban - that's a blood thinner. That's very important for surgery planning.\nPatient: I've been on it since my clot two years ago.\nDoctor: We'll need to coordinate holding that before the operation.\nPatient: Okay.\nDoctor: Any problems with anesthesia in the past?\nPatient: No, I've had two surgeries with no trouble.\nDoctor: Good. I'll send a note to the surgical team.",
+      "note_under_test": "Subjective: Patient presents for pre-operative assessment prior to elective hernia repair. Home medications include metformin twice daily and lisinopril each morning. No prior anesthetic complications; two previous surgeries without issue.\nObjective: Vital signs stable.\nAssessment: Pre-operative evaluation, elective hernia repair.\nPlan: Clear for surgery pending routine labs. Note sent to surgical team.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "omission",
+            "claim_text": "apixaban twice daily is entirely absent from the medication list and from the plan",
+            "correct_value": "patient takes apixaban twice daily and it needs to be held pre-operatively",
+            "transcript_evidence": "Patient stated 'and apixaban twice a day'; doctor stated 'We'll need to coordinate holding that before the operation'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_52_omission_abnormal_vital_sign",
+      "specialty": "Primary care - acute visit for cough",
+      "transcript": "Doctor: How long has the cough been going on?\nPatient: About a week. It's mostly dry.\nDoctor: Any fever?\nPatient: I felt warm a couple of nights ago.\nDoctor: Let's check you over. Your temperature is normal, but your oxygen saturation is 91 percent on room air, which is lower than I'd expect.\nPatient: Is that bad?\nDoctor: It's low enough that I want a chest X-ray today rather than waiting.\nPatient: Alright.\nDoctor: Your lungs have some crackles at the right base.\nPatient: I did feel a bit winded on the stairs.",
+      "note_under_test": "Subjective: Patient reports one week of a mostly dry cough with subjective warmth two nights ago. Mild exertional dyspnea on stairs.\nObjective: Temperature normal. Crackles at the right lung base.\nAssessment: Cough with focal exam findings, pneumonia suspected.\nPlan: Chest X-ray today.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "omission",
+            "claim_text": "oxygen saturation of 91% on room air is entirely absent from the note",
+            "correct_value": "SpO2 91% on room air, explicitly called out by the clinician as abnormal and as the reason for same-day imaging",
+            "transcript_evidence": "Doctor stated 'your oxygen saturation is 91 percent on room air, which is lower than I'd expect'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_53_omission_return_precautions",
+      "specialty": "Emergency medicine - discharge after abdominal pain",
+      "transcript": "Doctor: Your labs and CT are reassuring. I don't see anything that needs surgery tonight.\nPatient: That's good to hear.\nDoctor: But I want to be very clear about when to come back. If the pain moves to the lower right, if you develop a fever, or if you start vomiting and can't keep fluids down, come straight back to the emergency department.\nPatient: Pain to the lower right, fever, or vomiting. Got it.\nDoctor: Exactly. Otherwise follow up with your regular doctor in two days.\nPatient: I'll call them tomorrow.\nDoctor: Perfect.",
+      "note_under_test": "Subjective: Patient evaluated for abdominal pain. Reassured by workup.\nObjective: Laboratory studies and CT abdomen/pelvis without acute findings.\nAssessment: Non-specific abdominal pain, no surgical pathology identified.\nPlan: Discharge home. Follow up with primary care in 2 days.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "omission",
+            "claim_text": "the specific return precautions given verbally are entirely absent from the note",
+            "correct_value": "explicit return precautions: pain migrating to right lower quadrant, fever, or intractable vomiting",
+            "transcript_evidence": "Doctor stated 'If the pain moves to the lower right, if you develop a fever, or if you start vomiting and can't keep fluids down, come straight back'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_54_omission_new_symptom_raised_late",
+      "specialty": "Primary care - diabetes follow-up",
+      "transcript": "Doctor: Sugars look good, A1c is 6.8. Keep doing what you're doing.\nPatient: Will do.\nDoctor: Anything else before we finish?\nPatient: Actually, yes - I've been having numbness and tingling in both feet for the last month or so.\nDoctor: That's important. Constant or comes and goes?\nPatient: Mostly at night, both feet.\nDoctor: I'm going to examine your feet today and check your monofilament sensation. We should take that seriously.\nPatient: I almost didn't mention it.\nDoctor: I'm glad you did.",
+      "note_under_test": "Subjective: Patient with type 2 diabetes reports good adherence and no new complaints.\nObjective: A1c 6.8%.\nAssessment: Type 2 diabetes mellitus, well controlled.\nPlan: Continue current regimen. Routine follow-up in 3 months.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "omission",
+            "claim_text": "one month of bilateral foot numbness and tingling is entirely absent from the note",
+            "correct_value": "new bilateral peripheral neuropathy symptoms for one month, worse at night, plus the planned foot/monofilament exam",
+            "transcript_evidence": "Patient stated 'I've been having numbness and tingling in both feet for the last month or so'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_55_omission_social_determinant",
+      "specialty": "Primary care - medication cost barrier",
+      "transcript": "Doctor: Are you getting the inhaler filled every month?\nPatient: Not every month, no. It's eighty dollars and some months I can't cover it.\nDoctor: That's a real barrier and I'm glad you told me. There's a generic alternative that's much cheaper.\nPatient: That would help a lot.\nDoctor: Let me switch you to that today.\nPatient: Thank you.\nDoctor: How's the breathing otherwise?\nPatient: Okay when I have the inhaler.\nDoctor: Understood. The cost issue is likely the main thing driving your flare-ups.",
+      "note_under_test": "Subjective: Patient reports adequate symptom control when using the inhaler.\nObjective: Lungs with scattered expiratory wheezes.\nAssessment: Asthma with intermittent exacerbations.\nPlan: Switch to alternative inhaler formulation. Follow up in 6 weeks.",
+      "ground_truth": {
+        "has_error": true,
+        "injected_errors": [
+          {
+            "category": "omission",
+            "claim_text": "the cost barrier causing missed refills is entirely absent from the note",
+            "correct_value": "patient cannot afford the $80 inhaler some months and skips refills; the clinician identified this as the main driver of exacerbations and the reason for the switch",
+            "transcript_evidence": "Patient stated 'It's eighty dollars and some months I can't cover it'; doctor stated 'The cost issue is likely the main thing driving your flare-ups'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "case_56_clean_control_migraine",
+      "specialty": "Neurology - migraine follow-up",
+      "transcript": "Doctor: How many headache days did you have last month?\nPatient: Four, down from about ten.\nDoctor: That's a big improvement. Is the sumatriptan working when you take it?\nPatient: Usually within an hour, yes.\nDoctor: Any side effects from the propranolol?\nPatient: I feel a little tired, but I can live with it.\nDoctor: Any new symptoms - vision changes, weakness, numbness?\nPatient: None.\nDoctor: Let's keep both medications exactly as they are and see you in three months.\nPatient: Sounds good.",
+      "note_under_test": "Subjective: Patient reports 4 headache days last month, reduced from approximately 10. Sumatriptan provides relief within one hour when taken. Mild fatigue attributed to propranolol, tolerable to the patient. Denies vision changes, weakness, or numbness.\nObjective: Neurologic exam non-focal.\nAssessment: Migraine, improved on current preventive therapy.\nPlan: Continue propranolol and sumatriptan at current doses. Follow up in 3 months.",
+      "ground_truth": {
+        "has_error": false,
+        "injected_errors": []
+      }
+    },
+    {
+      "id": "case_57_clean_control_uti",
+      "specialty": "Primary care - urinary tract infection",
+      "transcript": "Doctor: What's been bothering you?\nPatient: Burning when I urinate, and I'm going constantly. Started two days ago.\nDoctor: Any fever, back pain, nausea?\nPatient: No fever, no back pain.\nDoctor: Any blood in the urine?\nPatient: Maybe a little pink yesterday.\nDoctor: Your urinalysis shows white cells and nitrites, consistent with a urinary tract infection.\nPatient: What do I take?\nDoctor: Nitrofurantoin, 100 milligrams twice a day for five days.\nPatient: Any allergies to worry about? I don't have any.\nDoctor: Good. Drink plenty of fluids and call if you develop fever or back pain.",
+      "note_under_test": "Subjective: Patient reports two days of dysuria and urinary frequency, with possible mild hematuria yesterday. Denies fever, back pain, or nausea. No known drug allergies.\nObjective: Urinalysis positive for leukocytes and nitrites.\nAssessment: Uncomplicated urinary tract infection.\nPlan: Nitrofurantoin 100mg twice daily for 5 days. Increase fluid intake. Return precautions given for fever or back pain.",
+      "ground_truth": {
+        "has_error": false,
+        "injected_errors": []
+      }
+    },
+    {
+      "id": "case_58_clean_control_ankle_sprain",
+      "specialty": "Sports medicine - ankle injury",
+      "transcript": "Doctor: How did you hurt the ankle?\nPatient: I rolled it playing basketball yesterday. It went inward.\nDoctor: Can you put weight on it?\nPatient: I can limp on it, but it hurts.\nDoctor: Any numbness in the foot?\nPatient: No.\nDoctor: There's swelling and tenderness over the outside of the ankle, but the bones along the back edge feel fine and you can bear weight, so an X-ray isn't required.\nPatient: That's good.\nDoctor: Ice, compression, elevation, and ibuprofen as needed. Start gentle range of motion in a few days.\nPatient: When can I play again?\nDoctor: Give it two to three weeks, and only when it's pain-free.",
+      "note_under_test": "Subjective: Patient reports an inversion ankle injury sustained during basketball yesterday. Able to bear weight with a limp. Denies numbness in the foot.\nObjective: Swelling and tenderness over the lateral malleolus. No posterior malleolar bony tenderness. Able to bear weight; Ottawa ankle rules not met, imaging not indicated.\nAssessment: Lateral ankle sprain.\nPlan: Ice, compression, elevation, ibuprofen as needed. Begin gentle range of motion in several days. Return to sport in 2-3 weeks once pain-free.",
+      "ground_truth": {
+        "has_error": false,
+        "injected_errors": []
+      }
+    },
+    {
+      "id": "case_59_clean_control_med_refill",
+      "specialty": "Primary care - stable medication refill visit",
+      "transcript": "Doctor: You're here for refills today?\nPatient: Yes, the blood pressure medication and the cholesterol one.\nDoctor: Any problems with either?\nPatient: None at all.\nDoctor: Blood pressure today is 124 over 78. That's right where we want it.\nPatient: Good.\nDoctor: Any chest pain, shortness of breath, swelling?\nPatient: No, nothing.\nDoctor: I'll send both refills to your pharmacy for another six months.\nPatient: Thank you.\nDoctor: Come see me in six months, or sooner if anything changes.",
+      "note_under_test": "Subjective: Patient presents for medication refills. Reports no problems with either antihypertensive or lipid-lowering therapy. Denies chest pain, dyspnea, or edema.\nObjective: Blood pressure 124/78.\nAssessment: Hypertension and hyperlipidemia, both stable on current therapy.\nPlan: Refill both medications for 6 months. Follow up in 6 months or sooner if symptoms develop.",
+      "ground_truth": {
+        "has_error": false,
+        "injected_errors": []
+      }
+    },
+    {
+      "id": "case_60_clean_control_conjunctivitis",
+      "specialty": "Primary care - red eye",
+      "transcript": "Doctor: Tell me about the eye.\nPatient: The right eye's been red and watery for two days. There's some crusting in the morning.\nDoctor: Any pain, or change in your vision?\nPatient: No pain, and I can see fine.\nDoctor: Do you wear contact lenses?\nPatient: No, just glasses.\nDoctor: Anyone at home or work with the same thing?\nPatient: My son had a red eye last week.\nDoctor: This looks like a viral conjunctivitis. It should clear on its own in a week or so.\nPatient: Do I need drops?\nDoctor: No antibiotics needed. Cool compresses, wash your hands often, and don't share towels. Come back if you get pain or your vision changes.",
+      "note_under_test": "Subjective: Patient reports two days of right eye redness and tearing with morning crusting. Denies eye pain or visual change. Does not wear contact lenses. Sick contact: son with red eye last week.\nObjective: Right conjunctival injection without corneal involvement. Vision grossly intact.\nAssessment: Viral conjunctivitis.\nPlan: Supportive care with cool compresses. Hand hygiene, avoid sharing towels. No antibiotics indicated. Return precautions for eye pain or vision change.",
       "ground_truth": {
         "has_error": false,
         "injected_errors": []

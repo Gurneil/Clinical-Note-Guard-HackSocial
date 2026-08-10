@@ -5,3 +5,6 @@ venv/
 .venv/
 .*venv/
 .scratch/
+
+# Skill copies pulled in by tooling - not project code
+.claude/skills/

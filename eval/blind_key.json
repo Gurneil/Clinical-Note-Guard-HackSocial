@@ -1,11 +1,11 @@
 {
   "case_01_numeric_medication_error": {
-    "A": "pipeline",
-    "B": "baseline"
-  },
-  "case_02_fabrication": {
     "A": "baseline",
     "B": "pipeline"
+  },
+  "case_02_fabrication": {
+    "A": "pipeline",
+    "B": "baseline"
   },
   "case_03_negation_error": {
     "A": "pipeline",
@@ -15,25 +15,21 @@
     "A": "baseline",
     "B": "pipeline"
   },
-  "case_05_misattribution": {
+  "case_06_clean_control": {
     "A": "baseline",
     "B": "pipeline"
-  },
-  "case_06_clean_control": {
-    "A": "pipeline",
-    "B": "baseline"
   },
   "case_07_numeric_medication_error_pediatric_dose": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_08_numeric_medication_error_beta_blocker": {
     "A": "baseline",
     "B": "pipeline"
   },
-  "case_08_numeric_medication_error_beta_blocker": {
-    "A": "pipeline",
-    "B": "baseline"
-  },
   "case_09_fabrication_allergy_visit": {
-    "A": "pipeline",
-    "B": "baseline"
+    "A": "baseline",
+    "B": "pipeline"
   },
   "case_10_fabrication_knee_exam": {
     "A": "baseline",
@@ -48,27 +44,191 @@
     "B": "baseline"
   },
   "case_13_distortion_fever_duration": {
-    "A": "baseline",
-    "B": "pipeline"
+    "A": "pipeline",
+    "B": "baseline"
   },
   "case_14_misattribution_smoking_history": {
-    "A": "baseline",
-    "B": "pipeline"
+    "A": "pipeline",
+    "B": "baseline"
   },
   "case_15_omission_otc_medication": {
     "A": "baseline",
     "B": "pipeline"
   },
   "case_16_omission_drug_allergy": {
-    "A": "baseline",
-    "B": "pipeline"
+    "A": "pipeline",
+    "B": "baseline"
   },
   "case_17_clean_control_dermatology": {
     "A": "pipeline",
     "B": "baseline"
   },
   "case_18_clean_control_annual_physical": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_19_numeric_medication_error_warfarin_inr": {
     "A": "baseline",
     "B": "pipeline"
+  },
+  "case_20_numeric_medication_error_insulin_units": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_21_numeric_medication_error_bp_reading": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_22_numeric_medication_error_frequency": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_23_numeric_medication_error_pediatric_weight_dose": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_24_numeric_medication_error_drug_name": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_25_numeric_medication_error_lab_value": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_26_fabrication_chest_pain_radiation": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_27_fabrication_travel_history": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_28_fabrication_physical_exam_finding": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_29_fabrication_medication_added": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_30_fabrication_symptom_never_discussed": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_31_fabrication_counseling_not_given": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_32_fabrication_imaging_result": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_33_negation_error_penicillin_allergy": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_34_negation_error_suicidal_ideation": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_35_negation_error_loss_of_consciousness": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_36_negation_error_smoking_status": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_37_negation_error_chest_pain_denial": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_38_negation_error_pregnancy_status": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_39_negation_error_falls_history": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_40_distortion_pain_severity": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_41_distortion_symptom_duration": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_42_distortion_frequency_of_symptom": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_43_distortion_functional_status": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_44_distortion_adherence": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_45_distortion_onset_timing": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_46_misattribution_family_cancer_history": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_47_misattribution_wrong_side": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_48_misattribution_partner_symptom": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_49_misattribution_symptom_to_wrong_system": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_50_misattribution_medication_to_wrong_person": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_51_omission_anticoagulant_medication": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_52_omission_abnormal_vital_sign": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_53_omission_return_precautions": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_54_omission_new_symptom_raised_late": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_55_omission_social_determinant": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_56_clean_control_migraine": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_57_clean_control_uti": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_58_clean_control_ankle_sprain": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_59_clean_control_med_refill": {
+    "A": "pipeline",
+    "B": "baseline"
   }
 }

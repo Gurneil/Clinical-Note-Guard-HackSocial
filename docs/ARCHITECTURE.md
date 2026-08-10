@@ -106,10 +106,32 @@ Both the pipeline and the single-prompt baseline are run against the
 identical benchmark, using the identical underlying model where
 comparable (Gemini Flash for both the baseline and the pipeline's
 strongest node) — so that any measured difference reflects the workflow
-design, not a difference in raw model capability. The benchmark itself
-is 18 cases: 3 numeric_medication_error, 3 fabrication, 3
-negation_error, 2 distortion, 2 misattribution, 2 omission, and 3 clean
-controls (see `data/test_cases.json`).
+design, not a difference in raw model capability. The benchmark is 60
+cases: 10 numeric_medication_error, 10 fabrication, 10 negation_error, 8
+distortion, 7 misattribution, 7 omission, and 8 clean controls (see
+`data/test_cases.json`). Expanded from an original 18-case starter set
+specifically because 18 cases meant a 2-case swing in either system's
+catch count read as an 8-13 percentage-point swing in the headline
+number - not enough cases to say the workflow comparison, rather than
+noise, was driving the result. 60 cases doesn't make every
+per-category number tight (7-10 cases per category is still small), but
+it moves the *overall* recall comparison onto much sturdier ground.
+
+**A second, independent fairness gap was found and fixed alongside the
+benchmark expansion**: the single-prompt baseline's prompt
+(`src/baseline.py`) originally asked only for "inaccuracies,
+fabrications, or discrepancies" - errors of commission - while the
+pipeline runs a dedicated omission-detection node (Node 5) and the
+benchmark scores both systems on omission cases. That meant part of the
+pipeline's measured recall advantage was the baseline never having been
+told to look for the failure mode it was being graded on, not the
+workflow doing anything smarter. The baseline prompt now explicitly asks
+for both directions (see the prompt's own docstring for the full
+reasoning); what still differs between the two systems - and is the
+actual thing this evaluation is testing - is workflow structure: atomic
+claim decomposition, forced one-verdict-per-claim coverage, the
+deterministic numeric tier, and the fixed taxonomy, none of which the
+baseline gets.
 
 Grading is done **blind**: the human grader sees each case's two outputs
 labeled "System A" / "System B", randomized per case, without knowing
@@ -141,42 +163,67 @@ used depending on whether a human grading session is available.
 
 ### Current auto-scored results (proxy, not blind-graded - see above)
 
-From the eval run committed in `eval/raw_outputs.json` (all 18 cases, at
-`temperature=0.0`): the core-reasoning tier downgraded all the way to
-`featherless/Qwen2.5-7B-Instruct` for every case - Gemini's daily quota
-was already exhausted before this run started, and Groq's per-minute
-token limit was hit almost immediately too (see the sticky-downgrade
-log output), so the comparison below reflects Featherless's model
-quality specifically, not Gemini's or Groq's. No fairness mismatches -
-both systems landed on the same tier for every case, confirmed by
-checking `raw_outputs.json` directly rather than assumed from the
-"no fairness mismatches" summary line alone.
+From the eval run committed in `eval/raw_outputs.json` (60 cases, at
+`temperature=0.0`, run against the omission-aware baseline prompt
+described above). Provider mix for this run, taken directly from
+`raw_outputs.json` rather than assumed: `gemini-3.6-flash` for the
+first 3 cases before the daily quota (20 requests/day - see the
+failover section below) was exhausted, `groq/llama-3.3-70b-versatile`
+for 2 more cases, and `featherless/Qwen2.5-7B-Instruct` for the
+remaining 53 - so, as with the original 18-case run, this reflects
+mostly Featherless/Qwen's judgment quality, not Gemini's, simply because
+one 60-case run burns through the free tier's daily cap almost
+immediately. This is a real, disclosed constraint of running on free
+tiers, not something the numbers below pretend isn't true.
 
-| | Recall | Severity-weighted recall | False positives (3 controls) |
+Of the 60 cases, 2 failed outright (Groq's `llama-3.1-8b-instant`
+returned malformed JSON on both retry attempts for the omission-check
+batch on `case_05_misattribution` and `case_60_clean_control_conjunctivitis`
+- recorded with their raw error in `raw_outputs.json` rather than
+silently dropped or counted as "no error found") and 1 more
+(`case_06_clean_control`) was excluded for a genuine fairness mismatch.
+The numbers below are over the remaining 57 cases (51 with a planted
+error, 6 clean controls) - see `eval/auto_scorecard.json` for the
+per-case detail.
+
+| | Recall | Severity-weighted recall | False positives (6 controls) |
 |---|---|---|---|
-| Pipeline | 14/15 (93%) | 93% | up to ~8, noisy across runs |
-| Baseline | 12/15 (80%) | 83% | ~3, more stable across runs |
+| Pipeline | 45/51 (88%) | 92% | 15 |
+| Baseline | 39/51 (76%) | 83% | 11 |
 
-Read honestly, not just as "pipeline wins": across several repeated
-runs (see the temperature-pinning section above), pipeline recall was
-stable at 93% and consistently beat the baseline's 80-87%, which is the
-core claim this project is testing - decomposition-then-verify catches
-more planted errors than one open-ended prompt. But the pipeline's
-false-positive count on clean notes was both higher than the baseline's
-and noisier run-to-run, for a specific, understood reason: decomposing
-a note into many atomic claims/facts creates many independent
-opportunities for an over-literal per-item judgment to misfire (see the
-residual paraphrase-recognition gap above), where the baseline's single
-holistic read tends to be more conservative and simply misses subtler
-errors instead of flagging borderline-fine things. That's a genuine
-precision/recall trade-off, not a bug to hide - a system that never
-raises a false alarm but misses one in five real errors is not
-obviously better than one that catches more real errors at the cost of
-occasionally over-flagging a clean note for human review to dismiss.
-Which trade-off is preferable depends on deployment context (a human is
+Read honestly, not just as "pipeline wins": at 57 scored cases (roughly
+3x the original 18-case run), a 6-case recall gap is a materially more
+trustworthy signal than the earlier run's 2-case gap was, and it
+persists even after closing the baseline-prompt fairness gap described
+above - so this reads as real evidence for the core claim this project
+is testing, decomposition-then-verify catches more planted errors than
+one open-ended prompt, not just an artifact of a small sample or an
+unfair baseline. But the pipeline's false-positive count on clean notes
+(15 across 6 controls, roughly 2.5/note) is still meaningfully higher
+than the baseline's (11, roughly 1.8/note), for the same understood
+reason as before: decomposing a note into many atomic claims/facts
+creates many independent opportunities for an over-literal per-item
+judgment to misfire (see the residual paraphrase-recognition gap
+above), where the baseline's single holistic read tends to be more
+conservative and simply misses subtler errors instead of flagging
+borderline-fine things. That's a genuine precision/recall trade-off,
+not a bug to hide - a system that misses roughly one in four real
+errors is not obviously better than one that catches more real errors
+at the cost of more false alarms for human review to dismiss. Which
+trade-off is preferable depends on deployment context (a human is
 reviewing every flag either way - see Node 7), and is exactly the kind
 of judgment call worth surfacing to a grader rather than burying behind
 a single "our system wins" headline number.
+
+Two things worth doing before treating either number as final: (1) rerun
+on a day with a full, unused Gemini quota (or spread the run across
+multiple days) so the fairness-critical comparison is actually measuring
+Gemini-vs-Gemini rather than Featherless-vs-Featherless most of the
+time - the workflow-design claim should hold on a stronger model too,
+but that's not yet directly confirmed at 60-case scale; and (2) the
+blind human grading pass described above, which is still the project's
+stated methodology and has not yet been run at the 60-case scale (see
+"Current status" in the README).
 
 ## Example of iteration during development
 
@@ -301,6 +348,48 @@ was in place, not before - and should still be read as one run of a
 noisy process, not a guaranteed-reproducible ground truth, especially
 on any category that only has 2-3 benchmark cases.
 
+## Cost and latency (measured, not estimated)
+
+Sustainability/scalability claims are only worth something if backed by a
+real number, not "should be efficient." `src/usage.py` records every LLM
+call's provider, model, token counts (from the provider's own response
+metadata, never estimated locally), and wall-clock latency - failed calls
+included, since a failover that burns a 20-second timeout before falling
+back to the next provider is a real cost of the multi-provider design, not
+a free retry. `eval/measure_usage.py` runs both systems on a fixed,
+diverse 7-case sample (one of each error category plus a clean control)
+and reports the aggregate - a small sample rather than all 60 cases,
+because per-call cost doesn't depend on which case is being checked or
+whether the answer was right, so this is real measured data at a fraction
+of the API budget a full second eval run would cost (see the free-tier
+constraints discussed above).
+
+Measured on this repo's providers (mixed Gemini/Groq/Featherless per the
+sticky failover tier - see `eval/usage_summary.json` for the full
+per-case breakdown):
+
+| | Pipeline | Baseline |
+|---|---|---|
+| LLM calls per note | 5.3 | 1.0 |
+| Tokens per note | ~3,280 | ~600 |
+| Wall-clock latency per note | ~12.8s | ~7.5s |
+
+Read honestly: the pipeline costs roughly **5.5x the tokens and ~1.7x the
+latency** of the baseline per note checked. That is a real, direct cost of
+decomposition (multiple calls: extraction, entailment, omission-fact
+extraction, omission-check, classification, vs. the baseline's single
+call) and it is the number that should sit next to the recall table above
+when judging whether the accuracy gain is "worth it" for a given
+deployment - not a question this project answers on the team's behalf,
+since the right trade-off depends on note volume and review-staff cost at
+the deploying organization. All measurements here are on free-tier
+API pricing (actual spend: $0); this project does not publish a
+per-request dollar estimate because per-token prices vary by provider,
+change over time, and this project has not verified current pricing
+against any provider's own page - reporting an unverified number would be
+worse than reporting none. Anyone wanting a dollar figure can multiply the
+token counts above by their own negotiated or published provider rate.
+
 ## Known limitations (documented honestly, not hidden)
 
 - The deterministic numeric check (Node 4) is a pattern-matcher for
@@ -329,17 +418,33 @@ on any category that only has 2-3 benchmark cases.
   harder inference than a direct synonym match. Deliberately NOT chased
   further with more prompt patches: each fix so far targeted a clear,
   generalizable gap: past that, additional narrow patches risk
-  overfitting the prompts to this specific 18-case benchmark rather than
+  overfitting the prompts to this specific benchmark rather than
   producing genuinely more robust reasoning. This is the honest edge of
   what zero-shot prompting gets you here - the residual false-positive
   rate below is reported with this still present, not after
   hand-tuning it away.
-- The benchmark is 18 cases (3 numeric_medication_error, 3 fabrication,
-  3 negation_error, 2 distortion, 2 misattribution, 2 omission, 3 clean
-  controls) - large enough to speak to precision/recall trends per
-  category but too small for tight statistical confidence on any single
-  category; a production benchmark would want dozens of cases per
-  category, not 2-3.
+- The benchmark is 60 cases (10 numeric_medication_error, 10
+  fabrication, 10 negation_error, 8 distortion, 7 misattribution, 7
+  omission, 8 clean controls) - up from an original 18-case starter set
+  specifically because 18 cases meant the headline recall comparison
+  could swing 8-13 points from a 2-case difference, which wasn't a
+  believable margin. 60 cases is large enough that the overall
+  pipeline-vs-baseline comparison holds up to a 6-case gap being a real
+  signal rather than noise, but individual categories still only have
+  7-10 cases each, too few for tight per-category confidence; a
+  production benchmark would want dozens of cases per category, not
+  under 10.
+- The deterministic numeric checker (Node 4) only recognizes mg/mcg
+  doses and blood-pressure readings written as "x/y" or "x over y" - a
+  weight in kilograms, a bare lab value with no unit, an insulin dose in
+  units, or a medication-name substitution with no numeric change at all
+  are real numeric_medication_error cases it will not catch (see
+  `tests/test_deterministic_check.py`,
+  `test_numeric_cases_outside_the_regex_format_are_not_caught_deterministically`,
+  which exists specifically to keep this limitation from silently
+  regressing into a false claim of coverage). Node 3's LLM entailment
+  check is the second line of defense for exactly these cases, not a
+  redundant check.
 - Blind human grading (the default methodology - see "Evaluation
   methodology" above) requires an actual human grading session, which
   wasn't run for the numbers in this repo's `eval/` output; those were

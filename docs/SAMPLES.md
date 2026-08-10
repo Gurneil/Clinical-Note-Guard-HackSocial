@@ -1,6 +1,6 @@
 # Samples: Pipeline vs. Single-Prompt Baseline
 
-Real output from `eval/raw_outputs.json` - the actual committed eval run (see `docs/ARCHITECTURE.md`, "Current auto-scored results", for the full 18-case numbers this document is drawn from; provider/model used for each case is recorded per-case below). Nothing here is paraphrased or hand-typed from a screenshot; this document is generated directly from that JSON by `docs/generate_samples_doc.py`, so re-running the eval and regenerating this file keeps it accurate.
+Real output from `eval/raw_outputs.json` - the actual committed eval run (see `docs/ARCHITECTURE.md`, "Current auto-scored results", for the full 60-case numbers this document is drawn from; provider/model used for each case is recorded per-case below). Nothing here is paraphrased or hand-typed from a screenshot; this document is generated directly from that JSON by `docs/generate_samples_doc.py`, so re-running the eval and regenerating this file keeps it accurate.
 
 **Case selection is deliberately not all wins for the pipeline** - see the rationale under each case heading. The goal is to show what actually happened, including the one case picked specifically because the pipeline over-flags relative to the baseline there.
 
@@ -46,12 +46,13 @@ Plan: Continue lisinopril at current dose. Return to clinic in 3 months for rech
 - Correct value: "lisinopril 10mg once daily"
 - Transcript evidence: "Patient confirmed 'lisinopril 10 milligrams once a day'"
 
-**Provider/model this case actually ran on** (both systems, fairness-linked - see `llm_router.py`): `featherless/Qwen/Qwen2.5-7B-Instruct`
+**Provider/model this case actually ran on** (both systems, fairness-linked - see `llm_router.py`): `gemini/gemini-3.6-flash`
 
 ### Pipeline output
 
 - **[numeric_medication_error]** Lisinopril dose is 20mg
-  - explanation: The note states a specific dose of Lisinopril that is not mentioned in the transcript.
+  - explanation: The note states a Lisinopril dose of 20mg, but the transcript indicates a dose of 10mg.
+  - evidence: "lisinopril 10 milligrams once a day"
   - source node: `llm_pipeline`
 - **[numeric_medication_error]** 20mg
   - evidence: "This number/dose appears in the note but was not found anywhere in the transcript."
@@ -62,10 +63,8 @@ Plan: Continue lisinopril at current dose. Return to clinic in 3 months for rech
 
 ### Baseline output (single prompt, same transcript + note)
 
-- Denies headaches, dizziness, or leg swelling.
-  - The patient mentioned he had no headaches or dizziness but did not specifically deny leg swelling.
-- Taking lisinopril 20mg once daily each morning with breakfast.
-  - The patient is actually taking lisinopril 10mg once daily, not 20mg.
+- lisinopril 20mg once daily
+  - The note states the dosage of lisinopril is 20mg, but the transcript states it is 10 milligrams.
 
 ---
 
@@ -109,15 +108,17 @@ Plan: Supportive care - fluids, rest, OTC cough drops as needed. Return if sympt
 - Correct value: "not mentioned; patient explicitly denied fever and denied nausea/vomiting"
 - Transcript evidence: "Patient said 'No fever that I've noticed' and, on nausea/vomiting, 'No, none of that.'"
 
-**Provider/model this case actually ran on** (both systems, fairness-linked - see `llm_router.py`): `featherless/Qwen/Qwen2.5-7B-Instruct`
+**Provider/model this case actually ran on** (both systems, fairness-linked - see `llm_router.py`): `gemini/gemini-3.6-flash`
 
 ### Pipeline output
 
-- **[omission]** Patient reports fever
-  - explanation: The claim is not mentioned in the transcript, indicating a missing detail.
+- **[negation_error]** Patient reports fever
+  - explanation: A denial is flipped into an affirmation, or vice versa.
+  - evidence: "No fever that I've noticed."
   - source node: `llm_pipeline`
-- **[omission]** Patient reports mild nausea
-  - explanation: The claim is not mentioned in the transcript, indicating a missing detail.
+- **[distortion]** Patient reports mild nausea
+  - explanation: A detail that IS present in the transcript but has been altered in the note — e.g. the right symptom with the wrong severity, duration, or qualifier.
+  - evidence: "No, none of that."
   - source node: `llm_pipeline`
 - **[omission]** No fever
   - explanation: This fact was stated in the transcript but does not appear anywhere in the note.
@@ -134,10 +135,8 @@ Plan: Supportive care - fluids, rest, OTC cough drops as needed. Return if sympt
 
 ### Baseline output (single prompt, same transcript + note)
 
-- Patient reports a dry cough for 5 days, accompanied by fever and mild nausea.
-  - The patient did not mention having a fever or nausea in the transcript.
-- Denies chest pain or shortness of breath.
-  - The patient mentioned having a little bit of a sore throat but denied chest pain or shortness of breath in the transcript.
+- accompanied by fever and mild nausea
+  - The patient explicitly denied having a fever ("No fever that I've noticed") and denied nausea ("No, none of that").
 
 ---
 
@@ -184,16 +183,16 @@ Plan: Baseline labs ordered.
 
 ### Pipeline output
 
+- **[omission]** Exam findings are pending
+  - explanation: The claim states that exam findings are pending, but there is no mention of this in the transcript.
+  - source node: `llm_pipeline`
 - **[negation_error]** No acute concerns are present
-  - explanation: The claim is a denial that is flipped into an affirmation.
+  - explanation: The claim states that no acute concerns are present, but this is the opposite of what is stated in the transcript (i.e., acute concerns are present).
   - source node: `llm_pipeline`
 - **[omission]** Patient is allergic to sulfa drugs
   - explanation: This fact was stated in the transcript but does not appear anywhere in the note.
   - source node: `llm_pipeline_omission`
 - **[omission]** Patient broke out in hives after taking sulfa drugs
-  - explanation: This fact was stated in the transcript but does not appear anywhere in the note.
-  - source node: `llm_pipeline_omission`
-- **[omission]** Patient has no other allergies
   - explanation: This fact was stated in the transcript but does not appear anywhere in the note.
   - source node: `llm_pipeline_omission`
 - **[omission]** A quick exam will be performed
@@ -268,14 +267,19 @@ Plan: Routine annual labs ordered (lipid panel, basic metabolic panel). Continue
 
 ### Baseline output (single prompt, same transcript + note)
 
-_(no issues found)_
+- Patient reports feeling well overall, no complaints. Denies chest pain, shortness of breath, or changes in weight, appetite, sleep, or energy.
+  - The transcript mentions that the patient has been sleeping well and eating well, which are not included in the note.
+- Plan: Routine annual labs ordered (lipid panel, basic metabolic panel).
+  - The transcript mentions ordering a 'cholesterol panel' and 'basic metabolic panel', but the note only lists 'lipid panel'.
 
 ---
 
 ## Observations (read against the actual output above, not asserted separately)
 
-- **`case_02`: a real categorization slip, not a detection miss.** The two fabricated-symptom claims (fever, nausea) were correctly flagged by node 3 (entailment) - but `classify_errors_batch` (node 6) labeled them `omission` instead of `fabrication`. The error was still caught and would still reach a human reviewer; the taxonomy label attached to it was wrong. Worth fixing before treating per-category precision as reliable, and left visible here rather than cleaned up for the writeup.
+- **`case_01`: the deterministic and LLM checks catch the same error two different ways, plus the omission node adds a third, independent signal.** Node 4's regex flags the bare `20mg` token with zero ambiguity; node 3's entailment flags the same dose in context ("Lisinopril dose is 20mg"); node 5's omission check separately notices the transcript's correct `10 milligrams` never made it into the note at all. Three nodes converging on one real error is what "decompose then verify from multiple angles" is supposed to produce - the baseline gets the same catch with its one call, but with no structural reason it had to.
 
-- **`case_16`: the clearest pipeline-vs-baseline gap in this sample set.** The baseline's single holistic read produced zero issues on a note that is missing a documented, safety-critical drug allergy entirely. It is not that the baseline model "disagreed" - a whole-note free-form review, with no structural requirement to check every transcript fact against the note, simply has no mechanism that would surface an omission like this. That structural gap is exactly what node 5 exists to close.
+- **`case_02`: the pipeline decomposes what the baseline reports as one issue into several separately-judged claims.** The baseline's single call correctly flags the fabricated fever and nausea together, in one sentence. The pipeline's node 3 catches the same two fabrications as `negation_error`/`distortion` flags, and node 5 separately (and somewhat redundantly) flags the transcript's four individual denials ("No fever", "No nausea", "No vomiting", "No stomach issues") as omissions from the note - even though the note's fabricated line covers that same ground in spirit, just incorrectly. This is a real instance of the documented precision cost of decomposition (see `docs/ARCHITECTURE.md`, "Known limitations"): the same real error surfaces as multiple flags instead of one.
 
-- **`case_18`: the honest cost of that same decomposition.** Breaking a note into many atomic claims/facts (7 checkable items here) creates 7 independent chances for a false positive instead of 1. The baseline's conservative, non-decomposed read caught nothing wrong here (correctly - it's a clean note) partly because it never atomizes "denies changes in weight, appetite, sleep, or energy" into four separately-judged claims the way the pipeline does. See `docs/ARCHITECTURE.md`, "Known limitations", for the full discussion.
+- **`case_16`: the clearest pipeline-vs-baseline gap in this sample set.** The baseline's single holistic read produced zero issues on a note that is missing a documented, safety-critical drug allergy (sulfa, with a prior hives reaction) entirely. It is not that the baseline model "disagreed" - a whole-note free-form review, with no structural requirement to check every transcript fact against the note, simply has no mechanism that would surface an omission like this. That structural gap is exactly what node 5 exists to close.
+
+- **`case_18`: the honest cost of that same decomposition, on a genuinely clean note.** Breaking a note into many atomic claims/facts (7 checkable items here) creates 7 independent chances for a false positive instead of 1. Here the pipeline raises 7 flags - 4 of them ("denies changes in weight, appetite, sleep, or energy" atomized into four separate negation claims) arguably shouldn't be flags at all, since the note's single summarizing sentence does cover all four. The baseline's single-pass read raises 2 flags instead of 0 on this same clean note - fewer false alarms than the pipeline, but not zero either. Neither system is precision-perfect on this note; the pipeline is further from it. See `docs/ARCHITECTURE.md`, "Known limitations", for the full discussion.

@@ -23,6 +23,7 @@ import time
 
 import _env  # noqa: F401 - loads .env before anything reads os.environ
 import openai
+import usage
 from openai import OpenAI
 
 PROVIDER_SETTINGS = {
@@ -140,13 +141,22 @@ def call_model(prompt: str, model: str, base_url: str = None, api_key_env: str =
     last_err = None
     tokens_for_attempt = max_tokens
     for attempt in range(max_retries):
+        # Timer created outside the try so the except path can still report
+        # how long a failed call burned before it failed - a 20s timeout
+        # that then fails over is a real cost of the multi-provider design.
+        timer = usage.timed()
         try:
-            response = client.chat.completions.create(
-                model=model,
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=tokens_for_attempt,
-                temperature=temperature,
-            )
+            with timer:
+                response = client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=tokens_for_attempt,
+                    temperature=temperature,
+                )
+            u = getattr(response, "usage", None)
+            usage.record(provider or "openai_compat", model, timer.elapsed,
+                         prompt_tokens=getattr(u, "prompt_tokens", None),
+                         completion_tokens=getattr(u, "completion_tokens", None))
             choice = response.choices[0]
             if choice.finish_reason == "length" and attempt < max_retries - 1:
                 tokens_for_attempt *= 2
@@ -155,6 +165,7 @@ def call_model(prompt: str, model: str, base_url: str = None, api_key_env: str =
                 continue
             return choice.message.content
         except Exception as e:
+            usage.record(provider or "openai_compat", model, timer.elapsed, ok=False)
             last_err = e
             code = _status_code(e)
             if code == 429:

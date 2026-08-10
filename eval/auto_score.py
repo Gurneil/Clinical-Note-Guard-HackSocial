@@ -131,8 +131,15 @@ def main():
     excluded_cases = []
     per_case_detail = []
 
+    failed_cases = []
     for row in raw_outputs:
         case_id = row["case_id"]
+        if "error" in row:
+            # run_eval.py records a case here if it errored out entirely
+            # (e.g. a model exhausted its JSON-retry budget) - nothing to
+            # score, not the same thing as a fairness mismatch.
+            failed_cases.append(case_id)
+            continue
         if row.get("fairness_mismatch") and not args.include_mismatches:
             excluded_cases.append(case_id)
             continue
@@ -174,6 +181,10 @@ def main():
     with open(AUTO_SCORECARD_PATH, "w", encoding="utf-8") as f:
         json.dump({"threshold": args.threshold, "cases": per_case_detail}, f, indent=2)
     print(f"Wrote per-case detail -> {AUTO_SCORECARD_PATH}\n")
+
+    if failed_cases:
+        print(f"EXCLUDED {len(failed_cases)} case(s) that errored out during run_eval.py: {sorted(failed_cases)}")
+        print("(see each case's \"error\" field in raw_outputs.json)\n")
 
     if excluded_cases:
         print(f"EXCLUDED {len(excluded_cases)} fairness-mismatched case(s): {sorted(excluded_cases)}")

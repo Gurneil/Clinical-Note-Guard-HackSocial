@@ -77,81 +77,117 @@ def main():
     blind_rows = []
     blind_key = {}
     tier_mismatches = []
+    failed_cases = []
 
-    for case in dataset:
-        case_id = case["id"]
-        transcript = case["transcript"]
-        note = case["note_under_test"]
-        print(f"Running case: {case_id} ...")
+    # The whole loop body is wrapped so that ANY exception (a case that
+    # exhausts its JSON retry budget, a keyboard interrupt, whatever) still
+    # results in every case processed BEFORE the failure being written to
+    # disk, rather than losing an entire run's worth of API calls. This was
+    # a real bug, not a hypothetical: a full 60-case run crashed on case 54
+    # of 60 (a small model returning malformed JSON twice in a row) with no
+    # top-level handling, silently discarding 53 already-completed cases'
+    # worth of paid API calls because raw_outputs was only ever written
+    # after the loop finished normally.
+    try:
+        for case in dataset:
+            case_id = case["id"]
+            transcript = case["transcript"]
+            note = case["note_under_test"]
+            print(f"Running case: {case_id} ...")
 
-        pipeline_result = run_guard(transcript, note, verbose=True)
-        baseline_flags, baseline_provider, baseline_model = single_prompt_check(transcript, note)
+            try:
+                pipeline_result = run_guard(transcript, note, verbose=True)
+                baseline_flags, baseline_provider, baseline_model = single_prompt_check(transcript, note)
+            except Exception as e:
+                # A single case failing (e.g. a mechanical-tier model
+                # returning malformed JSON on every retry) is a real,
+                # expected possibility at this scale - not a reason to
+                # discard every other case's results. Recorded explicitly
+                # as failed (not silently skipped) so it's visible in
+                # raw_outputs.json and excluded from scoring rather than
+                # miscounted as "no flags raised".
+                print(f"  !! ERROR on {case_id}, skipping this case: {e}")
+                failed_cases.append(case_id)
+                raw_outputs.append({
+                    "case_id": case_id,
+                    "ground_truth": case["ground_truth"],
+                    "error": str(e),
+                })
+                continue
 
-        pipe_provider = pipeline_result["core_reasoning_provider"]
-        pipe_model = pipeline_result["core_reasoning_model"]
-        fairness_mismatch = (pipe_provider, pipe_model) != (baseline_provider, baseline_model)
-        if fairness_mismatch:
-            # Should not happen given the sticky shared tier index in
-            # llm_router.py, but checked explicitly rather than assumed -
-            # if this ever fires, the comparison for this case is NOT
-            # fair. Recorded on the case itself (not just printed) so
-            # compute_metrics.py can exclude it from scoring rather than
-            # silently folding an invalid comparison into the headline
-            # numbers.
-            tier_mismatches.append(case_id)
-            print(f"  !! WARNING: fairness mismatch on {case_id}: "
-                  f"pipeline used {pipe_provider}/{pipe_model}, "
-                  f"baseline used {baseline_provider}/{baseline_model}")
+            pipe_provider = pipeline_result["core_reasoning_provider"]
+            pipe_model = pipeline_result["core_reasoning_model"]
+            fairness_mismatch = (pipe_provider, pipe_model) != (baseline_provider, baseline_model)
+            if fairness_mismatch:
+                # Should not happen given the sticky shared tier index in
+                # llm_router.py, but checked explicitly rather than assumed -
+                # if this ever fires, the comparison for this case is NOT
+                # fair. Recorded on the case itself (not just printed) so
+                # compute_metrics.py can exclude it from scoring rather than
+                # silently folding an invalid comparison into the headline
+                # numbers.
+                tier_mismatches.append(case_id)
+                print(f"  !! WARNING: fairness mismatch on {case_id}: "
+                      f"pipeline used {pipe_provider}/{pipe_model}, "
+                      f"baseline used {baseline_provider}/{baseline_model}")
 
-        raw_outputs.append({
-            "case_id": case_id,
-            "ground_truth": case["ground_truth"],
-            "pipeline_result": pipeline_result,
-            "baseline_result": baseline_flags,
-            "core_reasoning_provider": pipe_provider,
-            "core_reasoning_model": pipe_model,
-            "baseline_provider": baseline_provider,
-            "baseline_model": baseline_model,
-            "fairness_mismatch": fairness_mismatch,
-        })
+            raw_outputs.append({
+                "case_id": case_id,
+                "ground_truth": case["ground_truth"],
+                "pipeline_result": pipeline_result,
+                "baseline_result": baseline_flags,
+                "core_reasoning_provider": pipe_provider,
+                "core_reasoning_model": pipe_model,
+                "baseline_provider": baseline_provider,
+                "baseline_model": baseline_model,
+                "fairness_mismatch": fairness_mismatch,
+            })
 
-        # Randomize A/B assignment per case so position isn't a tell
-        systems = ["pipeline", "baseline"]
-        random.shuffle(systems)
-        label_map = {systems[0]: "A", systems[1]: "B"}
-        blind_key[case_id] = {v: k for k, v in label_map.items()}
+            # Randomize A/B assignment per case so position isn't a tell
+            systems = ["pipeline", "baseline"]
+            random.shuffle(systems)
+            label_map = {systems[0]: "A", systems[1]: "B"}
+            blind_key[case_id] = {v: k for k, v in label_map.items()}
 
-        summaries = {
-            "pipeline": summarize_pipeline_flags(pipeline_result),
-            "baseline": summarize_baseline_flags(baseline_flags),
-        }
+            summaries = {
+                "pipeline": summarize_pipeline_flags(pipeline_result),
+                "baseline": summarize_baseline_flags(baseline_flags),
+            }
 
-        blind_rows.append({
-            "case_id": case_id,
-            "system_A_output": summaries["pipeline"] if label_map["pipeline"] == "A" else summaries["baseline"],
-            "system_B_output": summaries["pipeline"] if label_map["pipeline"] == "B" else summaries["baseline"],
-            "A_caught_target_error(1/0)": "",
-            "B_caught_target_error(1/0)": "",
-            "A_false_positive_count": "",
-            "B_false_positive_count": "",
-            "core_reasoning_provider_model": f"{pipe_provider}/{pipe_model}",
-            "notes": "",
-        })
+            blind_rows.append({
+                "case_id": case_id,
+                "system_A_output": summaries["pipeline"] if label_map["pipeline"] == "A" else summaries["baseline"],
+                "system_B_output": summaries["pipeline"] if label_map["pipeline"] == "B" else summaries["baseline"],
+                "A_caught_target_error(1/0)": "",
+                "B_caught_target_error(1/0)": "",
+                "A_false_positive_count": "",
+                "B_false_positive_count": "",
+                "core_reasoning_provider_model": f"{pipe_provider}/{pipe_model}",
+                "notes": "",
+            })
+    finally:
+        # Runs even on a mid-loop crash or Ctrl-C - whatever was completed
+        # is never silently lost.
+        with open(RAW_OUT_PATH, "w", encoding="utf-8") as f:
+            json.dump(raw_outputs, f, indent=2)
+        print(f"\nWrote raw outputs -> {RAW_OUT_PATH}")
 
-    with open(RAW_OUT_PATH, "w", encoding="utf-8") as f:
-        json.dump(raw_outputs, f, indent=2)
-    print(f"\nWrote raw outputs -> {RAW_OUT_PATH}")
+        if blind_rows:
+            with open(SCORECARD_PATH, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=list(blind_rows[0].keys()))
+                writer.writeheader()
+                writer.writerows(blind_rows)
+            print(f"Wrote blind scorecard -> {SCORECARD_PATH}")
+            print("  -> Fill in the 4 blank columns by hand, WITHOUT looking at blind_key.json first.")
 
-    with open(SCORECARD_PATH, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=list(blind_rows[0].keys()))
-        writer.writeheader()
-        writer.writerows(blind_rows)
-    print(f"Wrote blind scorecard -> {SCORECARD_PATH}")
-    print("  -> Fill in the 4 blank columns by hand, WITHOUT looking at blind_key.json first.")
+            with open(KEY_PATH, "w", encoding="utf-8") as f:
+                json.dump(blind_key, f, indent=2)
+            print(f"Wrote blind key -> {KEY_PATH}  (don't peek until scorecard is filled in!)")
 
-    with open(KEY_PATH, "w", encoding="utf-8") as f:
-        json.dump(blind_key, f, indent=2)
-    print(f"Wrote blind key -> {KEY_PATH}  (don't peek until scorecard is filled in!)")
+    if failed_cases:
+        print(f"\n!! {len(failed_cases)} case(s) failed and were excluded entirely: {failed_cases}")
+        print("   See each case's \"error\" field in raw_outputs.json. Consider re-running just")
+        print("   those cases (transient model-formatting failures are usually not reproducible).")
 
     if tier_mismatches:
         print(f"\n!! {len(tier_mismatches)} case(s) had a fairness mismatch: {tier_mismatches}")

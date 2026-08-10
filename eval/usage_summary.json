@@ -1,0 +1,344 @@
+{
+  "sample_ids": [
+    "case_01_numeric_medication_error",
+    "case_02_fabrication",
+    "case_03_negation_error",
+    "case_04_distortion",
+    "case_05_misattribution",
+    "case_15_omission_otc_medication",
+    "case_06_clean_control"
+  ],
+  "pipeline": {
+    "sample_size": 7,
+    "total_calls": 37,
+    "avg_calls_per_note": 5.29,
+    "total_tokens": 22959,
+    "avg_tokens_per_note": 3279.9,
+    "total_latency_s": 89.84,
+    "avg_latency_s_per_note": 12.83
+  },
+  "baseline": {
+    "sample_size": 7,
+    "total_calls": 7,
+    "avg_calls_per_note": 1.0,
+    "total_tokens": 4181,
+    "avg_tokens_per_note": 597.3,
+    "total_latency_s": 52.57,
+    "avg_latency_s_per_note": 7.51
+  },
+  "per_case": [
+    {
+      "case_id": "case_01_numeric_medication_error",
+      "pipeline": {
+        "calls": 5,
+        "failed_calls": 0,
+        "prompt_tokens": 2379,
+        "completion_tokens": 994,
+        "total_tokens": 3373,
+        "latency_s": 13.281,
+        "calls_missing_usage_data": 0,
+        "by_model": {
+          "groq/llama-3.1-8b-instant": {
+            "calls": 4,
+            "prompt_tokens": 1672,
+            "completion_tokens": 430,
+            "latency_s": 2.633
+          },
+          "gemini/gemini-3.6-flash": {
+            "calls": 1,
+            "prompt_tokens": 707,
+            "completion_tokens": 564,
+            "latency_s": 10.648
+          }
+        }
+      },
+      "baseline": {
+        "calls": 1,
+        "failed_calls": 0,
+        "prompt_tokens": 470,
+        "completion_tokens": 55,
+        "total_tokens": 525,
+        "latency_s": 4.179,
+        "calls_missing_usage_data": 0,
+        "by_model": {
+          "gemini/gemini-3.6-flash": {
+            "calls": 1,
+            "prompt_tokens": 470,
+            "completion_tokens": 55,
+            "latency_s": 4.179
+          }
+        }
+      }
+    },
+    {
+      "case_id": "case_02_fabrication",
+      "pipeline": {
+        "calls": 5,
+        "failed_calls": 0,
+        "prompt_tokens": 2460,
+        "completion_tokens": 1210,
+        "total_tokens": 3670,
+        "latency_s": 13.42,
+        "calls_missing_usage_data": 0,
+        "by_model": {
+          "groq/llama-3.1-8b-instant": {
+            "calls": 4,
+            "prompt_tokens": 1745,
+            "completion_tokens": 625,
+            "latency_s": 1.558
+          },
+          "gemini/gemini-3.6-flash": {
+            "calls": 1,
+            "prompt_tokens": 715,
+            "completion_tokens": 585,
+            "latency_s": 11.862
+          }
+        }
+      },
+      "baseline": {
+        "calls": 1,
+        "failed_calls": 0,
+        "prompt_tokens": 478,
+        "completion_tokens": 101,
+        "total_tokens": 579,
+        "latency_s": 4.838,
+        "calls_missing_usage_data": 0,
+        "by_model": {
+          "gemini/gemini-3.6-flash": {
+            "calls": 1,
+            "prompt_tokens": 478,
+            "completion_tokens": 101,
+            "latency_s": 4.838
+          }
+        }
+      }
+    },
+    {
+      "case_id": "case_03_negation_error",
+      "pipeline": {
+        "calls": 7,
+        "failed_calls": 2,
+        "prompt_tokens": 2570,
+        "completion_tokens": 1088,
+        "total_tokens": 3658,
+        "latency_s": 10.986,
+        "calls_missing_usage_data": 2,
+        "by_model": {
+          "groq/llama-3.1-8b-instant": {
+            "calls": 4,
+            "prompt_tokens": 1792,
+            "completion_tokens": 590,
+            "latency_s": 2.19
+          },
+          "gemini/gemini-3.6-flash": {
+            "calls": 2,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "latency_s": 7.717
+          },
+          "groq/llama-3.3-70b-versatile": {
+            "calls": 1,
+            "prompt_tokens": 778,
+            "completion_tokens": 498,
+            "latency_s": 1.079
+          }
+        }
+      },
+      "baseline": {
+        "calls": 1,
+        "failed_calls": 0,
+        "prompt_tokens": 529,
+        "completion_tokens": 46,
+        "total_tokens": 575,
+        "latency_s": 0.519,
+        "calls_missing_usage_data": 0,
+        "by_model": {
+          "groq/llama-3.3-70b-versatile": {
+            "calls": 1,
+            "prompt_tokens": 529,
+            "completion_tokens": 46,
+            "latency_s": 0.519
+          }
+        }
+      }
+    },
+    {
+      "case_id": "case_04_distortion",
+      "pipeline": {
+        "calls": 6,
+        "failed_calls": 1,
+        "prompt_tokens": 2434,
+        "completion_tokens": 760,
+        "total_tokens": 3194,
+        "latency_s": 13.28,
+        "calls_missing_usage_data": 1,
+        "by_model": {
+          "groq/llama-3.1-8b-instant": {
+            "calls": 4,
+            "prompt_tokens": 1704,
+            "completion_tokens": 436,
+            "latency_s": 2.341
+          },
+          "groq/llama-3.3-70b-versatile": {
+            "calls": 1,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "latency_s": 0.031
+          },
+          "featherless/Qwen/Qwen2.5-7B-Instruct": {
+            "calls": 1,
+            "prompt_tokens": 730,
+            "completion_tokens": 324,
+            "latency_s": 10.908
+          }
+        }
+      },
+      "baseline": {
+        "calls": 1,
+        "failed_calls": 0,
+        "prompt_tokens": 492,
+        "completion_tokens": 144,
+        "total_tokens": 636,
+        "latency_s": 5.25,
+        "calls_missing_usage_data": 0,
+        "by_model": {
+          "featherless/Qwen/Qwen2.5-7B-Instruct": {
+            "calls": 1,
+            "prompt_tokens": 492,
+            "completion_tokens": 144,
+            "latency_s": 5.25
+          }
+        }
+      }
+    },
+    {
+      "case_id": "case_05_misattribution",
+      "pipeline": {
+        "calls": 5,
+        "failed_calls": 0,
+        "prompt_tokens": 2273,
+        "completion_tokens": 647,
+        "total_tokens": 2920,
+        "latency_s": 11.047,
+        "calls_missing_usage_data": 0,
+        "by_model": {
+          "groq/llama-3.1-8b-instant": {
+            "calls": 4,
+            "prompt_tokens": 1625,
+            "completion_tokens": 353,
+            "latency_s": 1.416
+          },
+          "featherless/Qwen/Qwen2.5-7B-Instruct": {
+            "calls": 1,
+            "prompt_tokens": 648,
+            "completion_tokens": 294,
+            "latency_s": 9.631
+          }
+        }
+      },
+      "baseline": {
+        "calls": 1,
+        "failed_calls": 0,
+        "prompt_tokens": 448,
+        "completion_tokens": 167,
+        "total_tokens": 615,
+        "latency_s": 29.061,
+        "calls_missing_usage_data": 0,
+        "by_model": {
+          "featherless/Qwen/Qwen2.5-7B-Instruct": {
+            "calls": 1,
+            "prompt_tokens": 448,
+            "completion_tokens": 167,
+            "latency_s": 29.061
+          }
+        }
+      }
+    },
+    {
+      "case_id": "case_15_omission_otc_medication",
+      "pipeline": {
+        "calls": 5,
+        "failed_calls": 0,
+        "prompt_tokens": 2296,
+        "completion_tokens": 554,
+        "total_tokens": 2850,
+        "latency_s": 7.645,
+        "calls_missing_usage_data": 0,
+        "by_model": {
+          "groq/llama-3.1-8b-instant": {
+            "calls": 4,
+            "prompt_tokens": 1638,
+            "completion_tokens": 400,
+            "latency_s": 1.583
+          },
+          "featherless/Qwen/Qwen2.5-7B-Instruct": {
+            "calls": 1,
+            "prompt_tokens": 658,
+            "completion_tokens": 154,
+            "latency_s": 6.062
+          }
+        }
+      },
+      "baseline": {
+        "calls": 1,
+        "failed_calls": 0,
+        "prompt_tokens": 453,
+        "completion_tokens": 114,
+        "total_tokens": 567,
+        "latency_s": 4.358,
+        "calls_missing_usage_data": 0,
+        "by_model": {
+          "featherless/Qwen/Qwen2.5-7B-Instruct": {
+            "calls": 1,
+            "prompt_tokens": 453,
+            "completion_tokens": 114,
+            "latency_s": 4.358
+          }
+        }
+      }
+    },
+    {
+      "case_id": "case_06_clean_control",
+      "pipeline": {
+        "calls": 4,
+        "failed_calls": 0,
+        "prompt_tokens": 2228,
+        "completion_tokens": 1066,
+        "total_tokens": 3294,
+        "latency_s": 20.182,
+        "calls_missing_usage_data": 0,
+        "by_model": {
+          "groq/llama-3.1-8b-instant": {
+            "calls": 3,
+            "prompt_tokens": 1388,
+            "completion_tokens": 539,
+            "latency_s": 1.643
+          },
+          "featherless/Qwen/Qwen2.5-7B-Instruct": {
+            "calls": 1,
+            "prompt_tokens": 840,
+            "completion_tokens": 527,
+            "latency_s": 18.539
+          }
+        }
+      },
+      "baseline": {
+        "calls": 1,
+        "failed_calls": 0,
+        "prompt_tokens": 560,
+        "completion_tokens": 124,
+        "total_tokens": 684,
+        "latency_s": 4.362,
+        "calls_missing_usage_data": 0,
+        "by_model": {
+          "featherless/Qwen/Qwen2.5-7B-Instruct": {
+            "calls": 1,
+            "prompt_tokens": 560,
+            "completion_tokens": 124,
+            "latency_s": 4.362
+          }
+        }
+      }
+    }
+  ]
+}
