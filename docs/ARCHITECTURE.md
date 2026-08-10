@@ -141,10 +141,16 @@ used depending on whether a human grading session is available.
 
 ### Current auto-scored results (proxy, not blind-graded - see above)
 
-From the most recent `run_eval.py` + `auto_score.py` run against all 18
-cases, at `temperature=0.0`, entailment/baseline running on
-`groq/llama-3.3-70b-versatile` after Gemini's daily quota was exhausted
-(no fairness mismatches - both systems on the same tier for every case):
+From the eval run committed in `eval/raw_outputs.json` (all 18 cases, at
+`temperature=0.0`): the core-reasoning tier downgraded all the way to
+`featherless/Qwen2.5-7B-Instruct` for every case - Gemini's daily quota
+was already exhausted before this run started, and Groq's per-minute
+token limit was hit almost immediately too (see the sticky-downgrade
+log output), so the comparison below reflects Featherless's model
+quality specifically, not Gemini's or Groq's. No fairness mismatches -
+both systems landed on the same tier for every case, confirmed by
+checking `raw_outputs.json` directly rather than assumed from the
+"no fairness mismatches" summary line alone.
 
 | | Recall | Severity-weighted recall | False positives (3 controls) |
 |---|---|---|---|

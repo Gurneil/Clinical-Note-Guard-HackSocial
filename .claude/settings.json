@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git -c user.name=* -c user.email=* commit *)",
+      "PowerShell(& D:\\Python312\\python.exe *)",
+      "PowerShell(D:\\Python312\\python.exe *)"
+    ]
+  }
+}
