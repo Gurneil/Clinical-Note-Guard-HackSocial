@@ -1,0 +1,110 @@
+{
+  "threshold": 0.2,
+  "cases": [
+    {
+      "case_id": "case_01_numeric_medication_error",
+      "target_category": "numeric_medication_error",
+      "pipeline_caught": true,
+      "baseline_caught": true
+    },
+    {
+      "case_id": "case_02_fabrication",
+      "target_category": "fabrication",
+      "pipeline_caught": false,
+      "baseline_caught": true
+    },
+    {
+      "case_id": "case_03_negation_error",
+      "target_category": "negation_error",
+      "pipeline_caught": true,
+      "baseline_caught": true
+    },
+    {
+      "case_id": "case_04_distortion",
+      "target_category": "distortion",
+      "pipeline_caught": true,
+      "baseline_caught": true
+    },
+    {
+      "case_id": "case_05_misattribution",
+      "target_category": "misattribution",
+      "pipeline_caught": true,
+      "baseline_caught": true
+    },
+    {
+      "case_id": "case_06_clean_control",
+      "pipeline_false_positives": 0,
+      "baseline_false_positives": 3
+    },
+    {
+      "case_id": "case_07_numeric_medication_error_pediatric_dose",
+      "target_category": "numeric_medication_error",
+      "pipeline_caught": true,
+      "baseline_caught": true
+    },
+    {
+      "case_id": "case_08_numeric_medication_error_beta_blocker",
+      "target_category": "numeric_medication_error",
+      "pipeline_caught": true,
+      "baseline_caught": true
+    },
+    {
+      "case_id": "case_09_fabrication_allergy_visit",
+      "target_category": "fabrication",
+      "pipeline_caught": true,
+      "baseline_caught": true
+    },
+    {
+      "case_id": "case_10_fabrication_knee_exam",
+      "target_category": "fabrication",
+      "pipeline_caught": true,
+      "baseline_caught": true
+    },
+    {
+      "case_id": "case_11_negation_error_shortness_of_breath",
+      "target_category": "negation_error",
+      "pipeline_caught": true,
+      "baseline_caught": true
+    },
+    {
+      "case_id": "case_12_negation_error_blood_in_stool",
+      "target_category": "negation_error",
+      "pipeline_caught": true,
+      "baseline_caught": false
+    },
+    {
+      "case_id": "case_13_distortion_fever_duration",
+      "target_category": "distortion",
+      "pipeline_caught": true,
+      "baseline_caught": true
+    },
+    {
+      "case_id": "case_14_misattribution_smoking_history",
+      "target_category": "misattribution",
+      "pipeline_caught": true,
+      "baseline_caught": true
+    },
+    {
+      "case_id": "case_15_omission_otc_medication",
+      "target_category": "omission",
+      "pipeline_caught": true,
+      "baseline_caught": false
+    },
+    {
+      "case_id": "case_16_omission_drug_allergy",
+      "target_category": "omission",
+      "pipeline_caught": true,
+      "baseline_caught": false
+    },
+    {
+      "case_id": "case_17_clean_control_dermatology",
+      "pipeline_false_positives": 1,
+      "baseline_false_positives": 0
+    },
+    {
+      "case_id": "case_18_clean_control_annual_physical",
+      "pipeline_false_positives": 7,
+      "baseline_false_positives": 0
+    }
+  ]
+}

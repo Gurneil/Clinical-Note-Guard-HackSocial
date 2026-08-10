@@ -1,0 +1,74 @@
+{
+  "case_01_numeric_medication_error": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_02_fabrication": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_03_negation_error": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_04_distortion": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_05_misattribution": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_06_clean_control": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_07_numeric_medication_error_pediatric_dose": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_08_numeric_medication_error_beta_blocker": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_09_fabrication_allergy_visit": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_10_fabrication_knee_exam": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_11_negation_error_shortness_of_breath": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_12_negation_error_blood_in_stool": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_13_distortion_fever_duration": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_14_misattribution_smoking_history": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_15_omission_otc_medication": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_16_omission_drug_allergy": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_17_clean_control_dermatology": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_18_clean_control_annual_physical": {
+    "A": "baseline",
+    "B": "pipeline"
+  }
+}

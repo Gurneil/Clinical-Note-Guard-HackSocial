@@ -1,0 +1,2215 @@
+[
+  {
+    "case_id": "case_01_numeric_medication_error",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "numeric_medication_error",
+          "claim_text": "Taking lisinopril 20mg once daily",
+          "correct_value": "lisinopril 10mg once daily",
+          "transcript_evidence": "Patient confirmed 'lisinopril 10 milligrams once a day'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient reports feeling well",
+        "Patient denies headaches",
+        "Patient denies dizziness",
+        "Patient denies cough",
+        "Patient denies leg swelling",
+        "Patient is taking lisinopril",
+        "Lisinopril dose is 20mg",
+        "Lisinopril is taken once daily",
+        "Lisinopril is taken in the morning",
+        "Lisinopril is taken with breakfast",
+        "Blood pressure is 128/82",
+        "Blood pressure was previously higher",
+        "Continue lisinopril at current dose",
+        "Return to clinic in 3 months"
+      ],
+      "transcript_facts_checked": [
+        "Patient has been feeling good since adjusting blood pressure medication",
+        "Patient has not experienced headaches or dizziness",
+        "Patient is taking lisinopril 10 milligrams once a day",
+        "Patient takes lisinopril with breakfast",
+        "Patient has not experienced cough or swelling in legs",
+        "Patient's blood pressure is 128 over 82",
+        "Patient's blood pressure has improved from last visit",
+        "Patient will continue taking lisinopril at the same dose",
+        "Patient will return in three months for a recheck"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Lisinopril dose is 20mg",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "numeric_medication_error",
+          "explanation": "The note states a specific dose of Lisinopril that is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [
+        {
+          "category": "numeric_medication_error",
+          "flagged_value": "20mg",
+          "reason": "This number/dose appears in the note but was not found anywhere in the transcript.",
+          "source": "deterministic_check"
+        }
+      ],
+      "omission_flags": [
+        {
+          "claim": "Patient is taking lisinopril 10 milligrams once a day",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Lisinopril dose is 20mg",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "numeric_medication_error",
+          "explanation": "The note states a specific dose of Lisinopril that is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "category": "numeric_medication_error",
+          "flagged_value": "20mg",
+          "reason": "This number/dose appears in the note but was not found anywhere in the transcript.",
+          "source": "deterministic_check"
+        },
+        {
+          "claim": "Patient is taking lisinopril 10 milligrams once a day",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [
+      {
+        "issue": "Denies headaches, dizziness, or leg swelling.",
+        "explanation": "The patient mentioned he had no headaches or dizziness but did not specifically deny leg swelling.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Taking lisinopril 20mg once daily each morning with breakfast.",
+        "explanation": "The patient is actually taking lisinopril 10mg once daily, not 20mg.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_02_fabrication",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "fabrication",
+          "claim_text": "accompanied by fever and mild nausea",
+          "correct_value": "not mentioned; patient explicitly denied fever and denied nausea/vomiting",
+          "transcript_evidence": "Patient said 'No fever that I've noticed' and, on nausea/vomiting, 'No, none of that.'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient reports a dry cough for 5 days",
+        "Patient reports fever",
+        "Patient reports mild nausea",
+        "Patient reports mild sore throat",
+        "Patient denies chest pain",
+        "Patient denies shortness of breath",
+        "Lungs are clear to auscultation bilaterally",
+        "Oropharynx is mildly erythematous",
+        "No exudate is present in the oropharynx",
+        "Supportive care is prescribed",
+        "Fluids are prescribed",
+        "Rest is prescribed",
+        "OTC cough drops are prescribed as needed",
+        "Return if symptoms worsen",
+        "Return if symptoms persist beyond 2 weeks"
+      ],
+      "transcript_facts_checked": [
+        "Patient has had a cough for about five days",
+        "Cough is dry",
+        "No fever",
+        "Patient has a sore throat",
+        "No chest pain",
+        "No shortness of breath",
+        "No nausea",
+        "No vomiting",
+        "No stomach issues",
+        "Lungs sound clear",
+        "Throat is red",
+        "No white patches on the throat",
+        "Diagnosis: viral upper respiratory infection",
+        "Patient is advised to drink plenty of fluids",
+        "Patient is advised to rest",
+        "Patient is advised to use over-the-counter cough drops as needed",
+        "Follow-up appointment in two weeks if symptoms persist or worsen"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Patient reports fever",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the transcript, indicating a missing detail.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient reports mild nausea",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the transcript, indicating a missing detail.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "No fever",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No nausea",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No vomiting",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No stomach issues",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Patient reports fever",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the transcript, indicating a missing detail.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient reports mild nausea",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the transcript, indicating a missing detail.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "No fever",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No nausea",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No vomiting",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No stomach issues",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [
+      {
+        "issue": "Patient reports a dry cough for 5 days, accompanied by fever and mild nausea.",
+        "explanation": "The patient did not mention having a fever or nausea in the transcript.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Denies chest pain or shortness of breath.",
+        "explanation": "The patient mentioned having a little bit of a sore throat but denied chest pain or shortness of breath in the transcript.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_03_negation_error",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "negation_error",
+          "claim_text": "Reports numbness and tingling radiating into the legs",
+          "correct_value": "Denies numbness or tingling",
+          "transcript_evidence": "Patient said 'No, I don't have any numbness or tingling.'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient reports 1 week of dull, lower back pain",
+        "Patient reports pain is right-sided",
+        "Patient reports pain is worse with bending",
+        "Patient reports numbness and tingling radiating into the legs",
+        "Patient denies bladder dysfunction",
+        "Patient denies bowel dysfunction",
+        "Patient reports lifting furniture last weekend",
+        "Ibuprofen is prescribed",
+        "Ibuprofen dose is not specified",
+        "Heat application is recommended",
+        "Avoid heavy lifting for 1-2 weeks",
+        "Return or seek emergency care if numbness develops",
+        "Return or seek emergency care if weakness develops",
+        "Return or seek emergency care if bladder symptoms develop",
+        "Return or seek emergency care if bowel symptoms develop"
+      ],
+      "transcript_facts_checked": [
+        "Back pain has been present for about a week",
+        "Pain is located in the lower back, mostly on the right side",
+        "Pain is a dull ache",
+        "Pain worsens when bending over",
+        "No numbness or tingling down the legs",
+        "No weakness in the legs",
+        "No problems with bladder or bowels",
+        "Back pain may have been caused by heavy lifting",
+        "Back pain may have been caused by moving furniture",
+        "Diagnosis is a musculoskeletal strain",
+        "Ibuprofen is prescribed as needed",
+        "Ibuprofen dose is not specified",
+        "Apply heat as treatment",
+        "Avoid heavy lifting for the next week or two",
+        "Seek immediate medical attention for numbness, weakness, or bladder/bowel problems",
+        "ER visit is recommended for severe symptoms"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Patient reports numbness and tingling radiating into the legs",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The claim is not mentioned in the source transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Ibuprofen dose is not specified",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "numeric_medication_error",
+          "explanation": "The dose of Ibuprofen is not specified in the transcript.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "Pain is a dull ache",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No numbness or tingling down the legs",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No weakness in the legs",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Ibuprofen dose is not specified",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "ER visit is recommended for severe symptoms",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Patient reports numbness and tingling radiating into the legs",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The claim is not mentioned in the source transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Ibuprofen dose is not specified",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "numeric_medication_error",
+          "explanation": "The dose of Ibuprofen is not specified in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Pain is a dull ache",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No numbness or tingling down the legs",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No weakness in the legs",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Ibuprofen dose is not specified",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "ER visit is recommended for severe symptoms",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [
+      {
+        "issue": "Reports numbness and tingling radiating into the legs.",
+        "explanation": "The patient explicitly stated they do not have any numbness or tingling.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_04_distortion",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "distortion",
+          "claim_text": "recurring episodes of hypoglycemia ... occurring several times",
+          "correct_value": "a single episode, occurred once",
+          "transcript_evidence": "Patient said 'just that one time' when asked if it happened more than once"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient reports recurring episodes of hypoglycemia over the past two weeks",
+        "Symptoms of shakiness and sweating occur during episodes of hypoglycemia",
+        "Episodes of hypoglycemia occur several times",
+        "Most recent episode of hypoglycemia was associated with skipping lunch",
+        "Blood glucose was 58 mg/dL during one episode of hypoglycemia",
+        "Blood glucose readings have ranged 100-140",
+        "Metformin is being taken by the patient",
+        "Current dose of metformin is not specified",
+        "Patient was counseled on avoiding skipped meals"
+      ],
+      "transcript_facts_checked": [
+        "Patient experienced a mild low blood sugar episode",
+        "Blood sugar level was 58",
+        "Episode of low blood sugar occurred 30 minutes after skipping lunch",
+        "Patient's blood sugar control has been mostly steady in the 100 to 140 range",
+        "Metformin dose will remain the same",
+        "Patient will not skip meals, especially lunch"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Patient reports recurring episodes of hypoglycemia over the past two weeks",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The claim is not mentioned in the transcript, and no evidence is provided.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Episodes of hypoglycemia occur several times",
+          "status": "contradicted",
+          "evidence": "",
+          "category": "distortion",
+          "explanation": "The claim contradicts the actual information, indicating a change in severity or frequency.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Current dose of metformin is not specified",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "numeric_medication_error",
+          "explanation": "The current dose of metformin is not specified, indicating an error in the note.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "Episode of low blood sugar occurred 30 minutes after skipping lunch",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Patient reports recurring episodes of hypoglycemia over the past two weeks",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The claim is not mentioned in the transcript, and no evidence is provided.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Episodes of hypoglycemia occur several times",
+          "status": "contradicted",
+          "evidence": "",
+          "category": "distortion",
+          "explanation": "The claim contradicts the actual information, indicating a change in severity or frequency.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Current dose of metformin is not specified",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "numeric_medication_error",
+          "explanation": "The current dose of metformin is not specified, indicating an error in the note.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Episode of low blood sugar occurred 30 minutes after skipping lunch",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [
+      {
+        "issue": "Patient reports recurring episodes of hypoglycemia over the past two weeks",
+        "explanation": "The transcript mentions only one episode of hypoglycemia, not recurring episodes.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "with symptoms of shakiness and sweating, occurring several times",
+        "explanation": "The transcript indicates only one instance of these symptoms, not multiple occurrences.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_05_misattribution",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "misattribution",
+          "claim_text": "Patient has a personal history of type 2 diabetes, diagnosed a few years after a myocardial infarction",
+          "correct_value": "this is the patient's FATHER's history, not the patient's own; patient explicitly denied any personal history",
+          "transcript_evidence": "Patient said 'No, I've never been diagnosed with anything like that' when asked about personal history"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient reports family history of heart disease",
+        "Father had myocardial infarction at age 58",
+        "Patient has personal history of type 2 diabetes",
+        "Diabetes diagnosed a few years after myocardial infarction",
+        "Mother has no cardiac history",
+        "Routine annual visit",
+        "Family history notable for paternal cardiac disease and diabetes",
+        "Routine screening labs ordered",
+        "Follow-up in 1 year"
+      ],
+      "transcript_facts_checked": [
+        "Patient's father had a heart attack at 58",
+        "Patient's father was diagnosed with type 2 diabetes a few years after his heart attack",
+        "Patient has never been diagnosed with heart problems",
+        "Patient's labs have always been normal",
+        "Patient will have routine screening labs today",
+        "Patient will return for an annual visit next year"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Patient has personal history of type 2 diabetes",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "misattribution",
+          "explanation": "The claim is attributed to the patient's personal history, but the transcript does not mention the patient's history at all.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Diabetes diagnosed a few years after myocardial infarction",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is a relevant detail that was stated in the transcript but is entirely missing from the note.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "Patient's father was diagnosed with type 2 diabetes a few years after his heart attack",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient has never been diagnosed with heart problems",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient's labs have always been normal",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Patient has personal history of type 2 diabetes",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "misattribution",
+          "explanation": "The claim is attributed to the patient's personal history, but the transcript does not mention the patient's history at all.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Diabetes diagnosed a few years after myocardial infarction",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is a relevant detail that was stated in the transcript but is entirely missing from the note.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient's father was diagnosed with type 2 diabetes a few years after his heart attack",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient has never been diagnosed with heart problems",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient's labs have always been normal",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [
+      {
+        "issue": "Patient reports family history of heart disease (father, myocardial infarction at age 58).",
+        "explanation": "The patient's mother does not have any heart problems, as stated in the transcript.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Patient has a personal history of type 2 diabetes, diagnosed a few years after a myocardial infarction.",
+        "explanation": "The patient has no personal history of diabetes, as stated in the transcript. The father was the one who was diagnosed with type 2 diabetes after his heart attack.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_06_clean_control",
+    "ground_truth": {
+      "has_error": false,
+      "injected_errors": []
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient reports 3 days of sore throat",
+        "Patient reports pain on swallowing",
+        "Patient reports subjective fever of 100.4F yesterday",
+        "Patient denies cough",
+        "Patient denies rhinorrhea",
+        "Patient reports bilateral tender cervical lymphadenopathy",
+        "Tonsils are erythematous",
+        "Tonsils are enlarged",
+        "Tonsils have white exudate",
+        "Rapid strep test is positive",
+        "Amoxicillin 500mg is prescribed",
+        "Amoxicillin is to be taken twice daily",
+        "Amoxicillin is to be taken for 10 days",
+        "Ibuprofen or acetaminophen is prescribed as needed",
+        "Ibuprofen or acetaminophen is for pain/fever",
+        "Patient is counseled to complete full course of medication",
+        "Patient is counseled to return if not improving in 2-3 days"
+      ],
+      "transcript_facts_checked": [
+        "Throat soreness for 3 days",
+        "Pain when swallowing",
+        "Low fever (100.4) yesterday",
+        "No cough",
+        "No runny nose",
+        "Swollen and tender neck",
+        "Swollen and red tonsils",
+        "White patches on tonsils",
+        "Positive rapid strep test",
+        "Prescribed amoxicillin 500mg",
+        "Twice a day for 10 days",
+        "Use ibuprofen or acetaminophen for pain and fever",
+        "Finish entire antibiotic course",
+        "Return in 2-3 days if not improving"
+      ],
+      "llm_flags": [],
+      "deterministic_flags": [],
+      "omission_flags": [],
+      "all_flags": [],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [
+      {
+        "issue": "Reports subjective fever of 100.4F yesterday.",
+        "explanation": "The patient mentioned having a low fever 'around 100.4' yesterday, but did not specify it as a subjective fever.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Denies cough or rhinorrhea.",
+        "explanation": "The patient reported no cough or runny nose during the conversation.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Tonsils erythematous and enlarged with white exudate.",
+        "explanation": "The patient described white patches on the tonsils, which is more specific than just white exudate.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_07_numeric_medication_error_pediatric_dose",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "numeric_medication_error",
+          "claim_text": "Amoxicillin 500mg three times daily",
+          "correct_value": "amoxicillin 250mg three times daily",
+          "transcript_evidence": "Doctor said 'that's going to be 250 milligrams, three times a day'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Parent reports concern for ear pain",
+        "Right tympanic membrane erythematous and bulging",
+        "Amoxicillin 500mg",
+        "Amoxicillin three times daily",
+        "Amoxicillin for 10 days",
+        "Counseled on loose stools as a side effect",
+        "Counseled on rash as a side effect",
+        "Counseled to discontinue Amoxicillin and call if hives develop",
+        "Children's ibuprofen or acetaminophen as needed",
+        "Follow up in 2 weeks",
+        "Follow up sooner if not improving in 48-72 hours"
+      ],
+      "transcript_facts_checked": [
+        "The right eardrum is red and bulging",
+        "The patient needs antibiotics",
+        "Amoxicillin will be prescribed",
+        "250 milligrams of amoxicillin will be given three times a day",
+        "The amoxicillin will be given for 10 days",
+        "The amoxicillin can be taken with or without food",
+        "Loose stools are a possible side effect",
+        "A mild rash is a possible side effect",
+        "A rash that looks like hives requires immediate medical attention",
+        "Children's ibuprofen or acetaminophen can be used for ear pain",
+        "Follow up in 2 weeks",
+        "Follow up sooner if the patient is not improving in 48-72 hours"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Amoxicillin 500mg",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "numeric_medication_error",
+          "explanation": "The medication name and dose were not mentioned in the source transcript.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [
+        {
+          "category": "numeric_medication_error",
+          "flagged_value": "500mg",
+          "reason": "This number/dose appears in the note but was not found anywhere in the transcript.",
+          "source": "deterministic_check"
+        }
+      ],
+      "omission_flags": [
+        {
+          "claim": "250 milligrams of amoxicillin will be given three times a day",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "The amoxicillin can be taken with or without food",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Amoxicillin 500mg",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "numeric_medication_error",
+          "explanation": "The medication name and dose were not mentioned in the source transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "category": "numeric_medication_error",
+          "flagged_value": "500mg",
+          "reason": "This number/dose appears in the note but was not found anywhere in the transcript.",
+          "source": "deterministic_check"
+        },
+        {
+          "claim": "250 milligrams of amoxicillin will be given three times a day",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "The amoxicillin can be taken with or without food",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [
+      {
+        "issue": "Amoxicillin 500mg three times daily for 10 days.",
+        "explanation": "The dose prescribed in the note (500mg) does not match the dose mentioned in the transcript (250mg three times a day).",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Counseled on side effects (loose stools, rash - discontinue and call if hives develop).",
+        "explanation": "The note mentions 'loose stools' as a side effect, but the doctor only mentioned 'loose stools or a mild rash'. Additionally, the note states to call if hives develop, but the doctor said to call if a rash that looks like hives develops.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_08_numeric_medication_error_beta_blocker",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "numeric_medication_error",
+          "claim_text": "Continue metoprolol 50mg twice daily",
+          "correct_value": "metoprolol 25mg twice daily",
+          "transcript_evidence": "Patient confirmed 'taking the metoprolol 25 milligrams twice a day'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient denies palpitations since starting metoprolol",
+        "Patient reports mild fatigue",
+        "Patient denies dizziness or syncope",
+        "Heart rate is 68",
+        "Heart rate is regular",
+        "Patient is taking metoprolol",
+        "Metoprolol dose is 50mg",
+        "Metoprolol is taken twice daily",
+        "Recheck in 1 month",
+        "Call if fatigue worsens"
+      ],
+      "transcript_facts_checked": [
+        "Patient reports no palpitations",
+        "Patient reports feeling tired",
+        "Patient's heart rate is 68",
+        "Patient is taking metoprolol 25 milligrams twice a day",
+        "Patient denies dizziness or fainting spells",
+        "Plan to recheck in a month",
+        "Plan to increase dose if tiredness worsens"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Metoprolol dose is 50mg",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "numeric_medication_error",
+          "explanation": "The note states a specific dose of Metoprolol that is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [
+        {
+          "category": "numeric_medication_error",
+          "flagged_value": "50mg",
+          "reason": "This number/dose appears in the note but was not found anywhere in the transcript.",
+          "source": "deterministic_check"
+        }
+      ],
+      "omission_flags": [
+        {
+          "claim": "Patient is taking metoprolol 25 milligrams twice a day",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Plan to increase dose if tiredness worsens",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Metoprolol dose is 50mg",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "numeric_medication_error",
+          "explanation": "The note states a specific dose of Metoprolol that is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "category": "numeric_medication_error",
+          "flagged_value": "50mg",
+          "reason": "This number/dose appears in the note but was not found anywhere in the transcript.",
+          "source": "deterministic_check"
+        },
+        {
+          "claim": "Patient is taking metoprolol 25 milligrams twice a day",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Plan to increase dose if tiredness worsens",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [
+      {
+        "issue": "Atrial fibrillation, rate-controlled on current beta blocker.",
+        "explanation": "The patient does not have atrial fibrillation as stated in the note. The conversation indicates the patient is being treated for palpitations with metoprolol, but there is no mention of atrial fibrillation.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Continue metoprolol 50mg twice daily.",
+        "explanation": "The patient is currently taking 25 mg twice daily, as confirmed in the conversation. The note suggests increasing the dose to 50 mg, which is not supported by the transcript.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_09_fabrication_allergy_visit",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "fabrication",
+          "claim_text": "Patient reports a known penicillin allergy",
+          "correct_value": "not mentioned; patient explicitly denied any drug allergy",
+          "transcript_evidence": "Patient said 'No, I've never had a reaction to any medication that I know of.'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient reports seasonal allergy symptoms",
+        "Patient reports sneezing",
+        "Patient reports itchy eyes",
+        "Patient reports rhinorrhea",
+        "Patient reports symptoms worse outdoors",
+        "Patient reports pollen exposure",
+        "Patient reports a known penicillin allergy",
+        "Start daily oral antihistamine",
+        "Add nasal spray if inadequate control"
+      ],
+      "transcript_facts_checked": [
+        "Patient has bad allergies this year",
+        "Patient experiences sneezing",
+        "Patient experiences itchy eyes",
+        "Patient experiences runny nose",
+        "Patient's symptoms occur mostly outdoors",
+        "Patient believes symptoms are caused by pollen",
+        "Patient has no known medication allergies",
+        "Patient will start daily antihistamine",
+        "Patient will use nasal spray if antihistamine is not enough"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Patient reports a known penicillin allergy",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The claim is not mentioned in the source transcript.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "Patient has no known medication allergies",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Patient reports a known penicillin allergy",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The claim is not mentioned in the source transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient has no known medication allergies",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [
+      {
+        "issue": "Patient reports a known penicillin allergy.",
+        "explanation": "The patient explicitly stated they have never had a reaction to any medication.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_10_fabrication_knee_exam",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "fabrication",
+          "claim_text": "Notable right knee swelling on exam",
+          "correct_value": "not mentioned; patient explicitly denied noticing any swelling",
+          "transcript_evidence": "Patient said 'No swelling that I've seen'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient reports 2 weeks of right knee pain",
+        "Patient reports pain worsens with stairs",
+        "Patient denies warmth",
+        "Right knee swelling is notable on exam",
+        "Range of motion is intact",
+        "No instability is present",
+        "No joint line tenderness is present",
+        "Ice is prescribed after activity",
+        "Home strengthening exercises are prescribed",
+        "Avoiding stairs is recommended for 2 weeks"
+      ],
+      "transcript_facts_checked": [
+        "Patient has right knee pain",
+        "Pain has been present for about two weeks",
+        "Pain is exacerbated by going up and down stairs",
+        "No swelling is present",
+        "No warmth is present",
+        "Range of motion is good",
+        "No instability is present",
+        "No tenderness along the joint line",
+        "Diagnosis is likely patellofemoral pain",
+        "Patellofemoral pain is common with stair use",
+        "Patient will use ice after activity",
+        "Patient will receive exercises to strengthen muscles around the knee",
+        "Patient should avoid stairs for the next couple weeks"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Right knee swelling is notable on exam",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the source transcript.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "No swelling is present",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patellofemoral pain is common with stair use",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Right knee swelling is notable on exam",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the source transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "No swelling is present",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patellofemoral pain is common with stair use",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [
+      {
+        "issue": "Notable right knee swelling on exam.",
+        "explanation": "The patient explicitly stated there was no swelling during the conversation.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Range of motion intact, no instability, no joint line tenderness.",
+        "explanation": "The patient mentioned that the doctor noted no tenderness along the joint line, but the note incorrectly states 'no instability'. The transcript did not mention instability.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_11_negation_error_shortness_of_breath",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "negation_error",
+          "claim_text": "Reports shortness of breath with exertion, including with stair climbing",
+          "correct_value": "Denies shortness of breath",
+          "transcript_evidence": "Patient said 'No, I don't get short of breath. I've actually been walking more and it's been fine.'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient denies chest pain this month.",
+        "Patient reports shortness of breath with exertion.",
+        "Patient reports shortness of breath with stair climbing.",
+        "Patient denies lower extremity edema.",
+        "Patient has exertional dyspnea.",
+        "Follow up in 6 months.",
+        "Continue current medications unchanged."
+      ],
+      "transcript_facts_checked": [
+        "No chest pain at all this month",
+        "No shortness of breath",
+        "No swelling in ankles or legs",
+        "Walking more has been fine",
+        "Current medications will remain the same",
+        "Follow-up appointment in 6 months"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Patient reports shortness of breath with exertion.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the transcript, but a similar claim is mentioned.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient reports shortness of breath with stair climbing.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the transcript, but a similar claim is mentioned.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient has exertional dyspnea.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The claim is not mentioned in the transcript and does not appear to be a direct quote or paraphrase of any information.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "No shortness of breath",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Walking more has been fine",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Patient reports shortness of breath with exertion.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the transcript, but a similar claim is mentioned.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient reports shortness of breath with stair climbing.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the transcript, but a similar claim is mentioned.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient has exertional dyspnea.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The claim is not mentioned in the transcript and does not appear to be a direct quote or paraphrase of any information.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "No shortness of breath",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Walking more has been fine",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [
+      {
+        "issue": "Reports shortness of breath with exertion, including with stair climbing.",
+        "explanation": "The patient explicitly stated they do not get short of breath and that they have been walking more without issues.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_12_negation_error_blood_in_stool",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "negation_error",
+          "claim_text": "Reports blood in stool",
+          "correct_value": "Denies blood in stool",
+          "transcript_evidence": "Patient said 'No, definitely no blood, I would have noticed that.'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient reports 1 week of intermittent crampy lower abdominal pain",
+        "Patient reports mildly loose stools",
+        "Patient reports blood in stool",
+        "Patient denies fever",
+        "Patient denies vomiting",
+        "Patient reports occasional mild nausea"
+      ],
+      "transcript_facts_checked": [
+        "Stomach pain has been present for about a week",
+        "Pain is crampy and located in the lower belly",
+        "Bowel movements have been a little loose",
+        "No blood in stool",
+        "No fever",
+        "Some nausea",
+        "Diagnosis of gastroenteritis or IBS",
+        "Plan to start with a bland diet",
+        "Patient agrees to try the bland diet"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Patient reports blood in stool",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the source transcript.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "No blood in stool",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No fever",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient agrees to try the bland diet",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Patient reports blood in stool",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the source transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "No blood in stool",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No fever",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient agrees to try the bland diet",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [
+      {
+        "issue": "Reports blood in stool.",
+        "explanation": "The patient explicitly stated they did not notice any blood in their stool.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_13_distortion_fever_duration",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "distortion",
+          "claim_text": "5 days of fever",
+          "correct_value": "fever since the prior night, about 1 day",
+          "transcript_evidence": "Parent said the fever started 'just since last night, so about a day now'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Parent reports 5 days of fever",
+        "Parent reports fever currently at 101-102F",
+        "Parent denies cough",
+        "Parent denies rash",
+        "Parent reports right ear pain this morning",
+        "Right tympanic membrane is mildly erythematous",
+        "Watchful waiting is planned",
+        "Recheck in 24-48 hours is planned",
+        "Start antibiotics if fever persists is planned",
+        "Start antibiotics if ear pain worsens is planned",
+        "Acetaminophen is being managed for fever"
+      ],
+      "transcript_facts_checked": [
+        "Fever started about a day ago",
+        "Fever has been around 101 to 102",
+        "Acetaminophen has been given",
+        "Ear pain is present",
+        "Right ear is red",
+        "Ear infection is suspected",
+        "Antibiotics will be held off for now",
+        "Fever and ear pain will be rechecked in 24 to 48 hours",
+        "Parent will keep an eye on symptoms"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Parent reports 5 days of fever",
+          "status": "contradicted",
+          "evidence": "Just since last night, so about a day now.",
+          "category": "distortion",
+          "explanation": "The claim states 5 days of fever, but the evidence found indicates only 1 day of fever.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Start antibiotics if fever persists is planned",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim mentions a plan to start antibiotics if fever persists, but this detail is not mentioned in the evidence found.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "Antibiotics will be held off for now",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Parent reports 5 days of fever",
+          "status": "contradicted",
+          "evidence": "Just since last night, so about a day now.",
+          "category": "distortion",
+          "explanation": "The claim states 5 days of fever, but the evidence found indicates only 1 day of fever.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Start antibiotics if fever persists is planned",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim mentions a plan to start antibiotics if fever persists, but this detail is not mentioned in the evidence found.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Antibiotics will be held off for now",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [
+      {
+        "issue": "Parent reports 5 days of fever, currently 101-102F",
+        "explanation": "The parent only reported the fever lasting about a day, not five days.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Right tympanic membrane mildly erythematous",
+        "explanation": "The doctor described checking both ears and only noted redness in the right ear, not specifically mentioning erythema in the right tympanic membrane.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_14_misattribution_smoking_history",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "misattribution",
+          "claim_text": "Patient has a smoking history, approximately one pack per day for years",
+          "correct_value": "this is the patient's HUSBAND's smoking history (secondhand exposure), not the patient's own; patient explicitly denied ever smoking",
+          "transcript_evidence": "Patient said 'No, never smoked a day in my life' and identified the pack-a-day smoker as 'my husband'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient has a smoking history",
+        "Patient smokes approximately one pack per day",
+        "Patient smokes for years",
+        "Patient reports social alcohol use",
+        "Patient consumes wine on weekends"
+      ],
+      "transcript_facts_checked": [
+        "Patient has never smoked",
+        "Patient's husband smokes a pack a day",
+        "Patient is exposed to secondhand smoke",
+        "Patient consumes alcohol socially"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Patient has a smoking history",
+          "status": "contradicted",
+          "evidence": "Patient: No, never smoked a day in my life.",
+          "category": "negation_error",
+          "explanation": "The note contradicts the patient's statement that they never smoked.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient smokes approximately one pack per day",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The note states a smoking habit that is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient smokes for years",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The note states a smoking habit that is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "Patient has never smoked",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient's husband smokes a pack a day",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient is exposed to secondhand smoke",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Patient has a smoking history",
+          "status": "contradicted",
+          "evidence": "Patient: No, never smoked a day in my life.",
+          "category": "negation_error",
+          "explanation": "The note contradicts the patient's statement that they never smoked.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient smokes approximately one pack per day",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The note states a smoking habit that is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient smokes for years",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The note states a smoking habit that is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient has never smoked",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient's husband smokes a pack a day",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient is exposed to secondhand smoke",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [
+      {
+        "issue": "Patient has a smoking history, approximately one pack per day for years.",
+        "explanation": "The patient explicitly stated they have never smoked.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Reports social alcohol use, occasional wine on weekends.",
+        "explanation": "The patient reported drinking socially, not having a smoking history.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_15_omission_otc_medication",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "omission",
+          "claim_text": "regular OTC ibuprofen use (3-4 days/week) for headaches, and the counseling to switch to acetaminophen given the interaction risk with lisinopril",
+          "correct_value": "the note should document the ibuprofen use, the interaction discussion, and the plan to switch to acetaminophen",
+          "transcript_evidence": "Patient reported taking ibuprofen '3 to 4 days a week' and the doctor said it 'can interact with your blood pressure medication' and recommended switching to acetaminophen"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient continues lisinopril",
+        "Lisinopril dose is 10mg",
+        "Lisinopril is taken once daily",
+        "Patient takes lisinopril for hypertension",
+        "Patient reports no side effects from lisinopril",
+        "Follow up is scheduled"
+      ],
+      "transcript_facts_checked": [
+        "lisinopril 10 milligrams once a day",
+        "ibuprofen 200 milligram tablets taken 3 to 4 days a week",
+        "ibuprofen can interact with blood pressure medication and affect kidneys",
+        "alternatives for headaches suggested: acetaminophen",
+        "headaches should be investigated if they continue"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Patient takes lisinopril for hypertension",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The claim is not mentioned in the source transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient reports no side effects from lisinopril",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "negation_error",
+          "explanation": "The claim is not mentioned in the source transcript, implying a negation error since the patient reports no side effects.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Follow up is scheduled",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the source transcript, indicating a clinically relevant detail was omitted.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "ibuprofen 200 milligram tablets taken 3 to 4 days a week",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "ibuprofen can interact with blood pressure medication and affect kidneys",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Patient takes lisinopril for hypertension",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The claim is not mentioned in the source transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient reports no side effects from lisinopril",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "negation_error",
+          "explanation": "The claim is not mentioned in the source transcript, implying a negation error since the patient reports no side effects.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Follow up is scheduled",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the source transcript, indicating a clinically relevant detail was omitted.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "ibuprofen 200 milligram tablets taken 3 to 4 days a week",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "ibuprofen can interact with blood pressure medication and affect kidneys",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [
+      {
+        "issue": "Patient continues lisinopril 10mg once daily for hypertension, no side effects reported.",
+        "explanation": "The patient mentioned taking ibuprofen regularly for headaches, which could indicate side effects or other issues not addressed in the note.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Assessment: Hypertension, stable on current regimen.",
+        "explanation": "The note does not mention the patient's ibuprofen use, which could be affecting their blood pressure and kidney function, making the assessment incomplete.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_16_omission_drug_allergy",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "omission",
+          "claim_text": "known sulfa drug allergy (hives on prior exposure)",
+          "correct_value": "the note should document the sulfa allergy in the allergy section, since it is safety-critical for future prescribing",
+          "transcript_evidence": "Patient said 'I'm allergic to sulfa drugs. I broke out in hives the last time I took one'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient is a new patient establishing care",
+        "Patient is requesting a general checkup",
+        "Patient is taking a daily multivitamin",
+        "Patient is not taking any other current medications",
+        "Exam findings are pending",
+        "No acute concerns are present",
+        "Baseline labs have been ordered"
+      ],
+      "transcript_facts_checked": [
+        "Patient is allergic to sulfa drugs",
+        "Patient broke out in hives after taking sulfa drugs",
+        "Patient has no other allergies",
+        "Patient is taking a daily multivitamin",
+        "Patient is seeking a general checkup",
+        "Patient is establishing care with the doctor",
+        "A quick exam will be performed",
+        "Baseline labs will be ordered"
+      ],
+      "llm_flags": [
+        {
+          "claim": "No acute concerns are present",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "negation_error",
+          "explanation": "The claim is a denial that is flipped into an affirmation.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "Patient is allergic to sulfa drugs",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient broke out in hives after taking sulfa drugs",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient has no other allergies",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "A quick exam will be performed",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "No acute concerns are present",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "negation_error",
+          "explanation": "The claim is a denial that is flipped into an affirmation.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient is allergic to sulfa drugs",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient broke out in hives after taking sulfa drugs",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient has no other allergies",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "A quick exam will be performed",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_17_clean_control_dermatology",
+    "ground_truth": {
+      "has_error": false,
+      "injected_errors": []
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient reports a back mole",
+        "Mole was noted by partner to have darkened over the past 2 months",
+        "Mole was possibly enlarged over the past 2 months",
+        "Patient denies itching from the lesion",
+        "Patient denies bleeding from the lesion",
+        "Patient denies pain from the lesion",
+        "Approximately 6mm pigmented lesion was observed",
+        "Lesion was generally even in color",
+        "Lesion was generally even in border",
+        "Shave biopsy was performed today",
+        "Follow up is scheduled in 2 weeks"
+      ],
+      "transcript_facts_checked": [
+        "Patient has a mole on their back",
+        "Mole has changed in color and size over the last couple months",
+        "No itching, bleeding, or pain from the mole",
+        "Mole is 6 millimeters in size",
+        "Mole has an even color and border",
+        "Biopsy will be performed",
+        "Biopsy results will be available in 2 weeks"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Shave biopsy was performed today",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the source transcript.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [],
+      "all_flags": [
+        {
+          "claim": "Shave biopsy was performed today",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim is not mentioned in the source transcript.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_18_clean_control_annual_physical",
+    "ground_truth": {
+      "has_error": false,
+      "injected_errors": []
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient reports feeling well overall",
+        "Patient denies chest pain",
+        "Patient denies shortness of breath",
+        "Patient denies changes in weight",
+        "Patient denies changes in appetite",
+        "Patient denies changes in sleep",
+        "Patient denies changes in energy",
+        "Heart and lungs are normal on auscultation",
+        "Abdomen is soft",
+        "Abdomen is non-tender",
+        "Routine annual labs ordered (lipid panel)",
+        "Routine annual labs ordered (basic metabolic panel)",
+        "Continue current diet",
+        "Continue current exercise",
+        "Follow up in 1 year",
+        "Follow up sooner if needed"
+      ],
+      "transcript_facts_checked": [
+        "No chest pain",
+        "No shortness of breath",
+        "Sleeping well",
+        "Eating well",
+        "No changes in weight",
+        "No changes in appetite",
+        "No changes in energy levels",
+        "Heart and lungs sound normal",
+        "Abdomen is soft and non-tender",
+        "Routine annual labs ordered",
+        "Cholesterol panel ordered",
+        "Basic metabolic panel ordered",
+        "Exercise and diet to continue",
+        "Follow-up appointment in one year"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Patient denies changes in weight",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "negation_error",
+          "explanation": "The patient denies changes in weight, but this is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient denies changes in appetite",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "negation_error",
+          "explanation": "The patient denies changes in appetite, but this is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient denies changes in sleep",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "negation_error",
+          "explanation": "The patient denies changes in sleep, but this is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient denies changes in energy",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "negation_error",
+          "explanation": "The patient denies changes in energy, but this is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Routine annual labs ordered (lipid panel)",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "Routine annual labs ordered (lipid panel) is a clinically relevant detail that was stated in the transcript but is entirely missing from the note.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "Sleeping well",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Eating well",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Patient denies changes in weight",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "negation_error",
+          "explanation": "The patient denies changes in weight, but this is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient denies changes in appetite",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "negation_error",
+          "explanation": "The patient denies changes in appetite, but this is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient denies changes in sleep",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "negation_error",
+          "explanation": "The patient denies changes in sleep, but this is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient denies changes in energy",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "negation_error",
+          "explanation": "The patient denies changes in energy, but this is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Routine annual labs ordered (lipid panel)",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "Routine annual labs ordered (lipid panel) is a clinically relevant detail that was stated in the transcript but is entirely missing from the note.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Sleeping well",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Eating well",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "featherless",
+      "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    "baseline_result": [],
+    "core_reasoning_provider": "featherless",
+    "core_reasoning_model": "Qwen/Qwen2.5-7B-Instruct",
+    "baseline_provider": "featherless",
+    "baseline_model": "Qwen/Qwen2.5-7B-Instruct",
+    "fairness_mismatch": false
+  }
+]
