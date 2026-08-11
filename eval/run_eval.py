@@ -43,18 +43,36 @@ SCORECARD_PATH = os.path.join(os.path.dirname(__file__), "scorecard_blind.csv")
 KEY_PATH = os.path.join(os.path.dirname(__file__), "blind_key.json")
 
 
+# The blinding is only real if the two systems' cells are INDISTINGUISHABLE.
+# The first version of this leaked in two ways at once, and a 100% reliable
+# tell means the grading sheet was blind in name only:
+#   1. pipeline rows carried "[category] " prefixes; baseline rows never did
+#   2. the empty cells differed - "(no flags raised)" vs "(no issues found)"
+# Both are normalised away below. Items are also sorted, so neither system's
+# internal ordering (pipeline emits node 3's flags, then node 4's, then
+# node 5's) survives as a structural hint.
+#
+# One tell CANNOT be removed and is documented rather than hidden: the
+# pipeline usually raises more items per case, because decomposition is what
+# it does. A grader may still guess from volume. That is inherent to the
+# systems being compared, not an artifact of presentation.
+EMPTY_CELL = "(nothing flagged)"
+
+
+def _blinded_cell(items: list) -> str:
+    cleaned = sorted({(i or "").strip() for i in items if (i or "").strip()})
+    return " | ".join(cleaned) if cleaned else EMPTY_CELL
+
+
 def summarize_pipeline_flags(guard_result: dict) -> str:
-    lines = []
-    for f in guard_result["all_flags"]:
-        label = f.get("claim") or f.get("flagged_value")
-        cat = f.get("category", "")
-        lines.append(f"[{cat}] {label}")
-    return " | ".join(lines) if lines else "(no flags raised)"
+    return _blinded_cell([
+        f.get("claim") or f.get("flagged_value")
+        for f in guard_result["all_flags"]
+    ])
 
 
 def summarize_baseline_flags(baseline_result: list) -> str:
-    lines = [f"{item.get('issue')}" for item in baseline_result]
-    return " | ".join(lines) if lines else "(no issues found)"
+    return _blinded_cell([item.get("issue") for item in baseline_result])
 
 
 def main():
