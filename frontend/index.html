@@ -291,7 +291,41 @@ mark.ev.hot{background:rgba(176,64,45,.24); box-shadow:0 0 0 1px rgba(176,64,45,
    ───────────────────────────────────────────── */
 .flowfilm{margin-top:46px; border:1px solid var(--hair); border-radius:20px; overflow:hidden; background:var(--ink); box-shadow:0 24px 60px rgba(11,11,12,.1)}
 .film-stage{position:relative; aspect-ratio:16/9; background:#08090A}
-.film-stage video{width:100%; height:100%; object-fit:cover; display:block}
+/* the generated clip is atmosphere now, not the content - the mechanism
+   is drawn on top of it, because no video model can render a note
+   decomposing into legible claims */
+.film-stage video{width:100%; height:100%; object-fit:cover; display:block; opacity:.22; filter:blur(1px) saturate(.8)}
+
+.mech{position:absolute; inset:0; padding:56px 26px 118px; display:flex; align-items:center; justify-content:center; font-size:12.5px; pointer-events:none}
+.mech-in{width:100%; max-width:760px; animation:mechIn .5s ease both}
+@keyframes mechIn{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
+.mech-cols{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.mech-pane{border:1px solid rgba(232,230,223,.16); border-radius:10px; padding:11px 13px; background:rgba(8,9,10,.55); backdrop-filter:blur(3px)}
+.mech-cap{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:rgba(232,230,223,.45); margin-bottom:8px}
+.mech-line{font-family:var(--f-mono); font-size:11.5px; line-height:1.75; color:rgba(232,230,223,.72); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.mech-line b{color:#fff; font-weight:500}
+.mech-line.dim{color:rgba(232,230,223,.34)}
+.mech-chip{display:inline-flex; align-items:center; gap:7px; padding:5px 10px; margin:0 6px 6px 0; border-radius:7px; border:1px solid rgba(232,230,223,.18); background:rgba(232,230,223,.06); font-family:var(--f-mono); font-size:11px; color:rgba(232,230,223,.8); animation:mechIn .4s ease both}
+.mech-chip .tick{font-size:10px}
+.mech-chip[data-v="ok"]{border-color:rgba(62,142,107,.55); color:#7FD8B0}
+.mech-chip[data-v="bad"]{border-color:rgba(176,64,45,.75); color:#F09A85; background:rgba(176,64,45,.15)}
+.mech-chip[data-v="unk"]{border-color:rgba(184,50,128,.7); color:#F0A0CE; background:rgba(184,50,128,.14)}
+.mech-chip[data-v="wait"]{border-color:rgba(91,91,214,.5); color:#AFAFF2}
+.mech-eq{display:flex; align-items:center; justify-content:center; gap:18px; font-family:var(--f-mono); font-size:clamp(15px,2.6vw,22px); padding:10px 0}
+.mech-eq .bad{color:#F09A85} .mech-eq .good{color:#7FD8B0} .mech-eq .op{color:rgba(232,230,223,.5)}
+.mech-wave{display:flex; align-items:flex-end; gap:3px; height:52px; margin:6px 0 10px}
+.mech-wave i{flex:1; background:rgba(127,216,206,.45); border-radius:2px; animation:mechIn .4s ease both}
+.mech-wave i[data-low="true"]{background:rgba(184,50,128,.85)}
+.mech-note{font-family:var(--f-mono); font-size:10.5px; color:rgba(232,230,223,.5); margin-top:8px}
+.mech-act{display:flex; gap:8px; margin-top:10px}
+.mech-btn{font-family:var(--f-body); font-size:11.5px; padding:6px 12px; border-radius:999px; border:1px solid rgba(232,230,223,.3); color:rgba(232,230,223,.85)}
+.mech-btn.solid{background:var(--vanilla); color:var(--ink); border-color:var(--vanilla)}
+@media(max-width:820px){
+  .mech{padding:44px 14px 104px; font-size:11px}
+  .mech-cols{grid-template-columns:1fr}
+  .mech-cols .mech-pane:nth-child(2){display:none}
+  .mech-line{font-size:10.5px}
+}
 .film-vignette{position:absolute; inset:0; pointer-events:none; background:radial-gradient(120% 80% at 50% 45%, transparent 40%, rgba(8,9,10,.55) 100%)}
 .film-stamp{position:absolute; left:18px; top:16px; font-family:var(--f-mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:rgba(232,230,223,.6)}
 .film-now{position:absolute; left:18px; right:18px; bottom:18px; color:var(--vanilla); display:flex; align-items:flex-end; gap:14px}
@@ -711,7 +745,7 @@ mark.ev.hot{background:rgba(176,64,45,.24); box-shadow:0 0 0 1px rgba(176,64,45,
     <div class="sec-head">
       <p class="eyebrow">The pipeline</p>
       <h2 class="h2">Nine nodes, in order</h2>
-      <p class="lead">Six seconds, start to finish: a note comes apart into separate claims, each one gets scanned on its own, and the one that doesn't match the transcript lights up. Scrub the timeline to read what each node does.</p>
+      <p class="lead">Every node drawn with the real data from <span class="mono">case_01</span> — the claims it produces, the verdicts it assigns, the dose it compares. Scrub the timeline, or let it run.</p>
     </div>
 
     <div class="flowfilm">
@@ -728,6 +762,8 @@ mark.ev.hot{background:rgba(176,64,45,.24); box-shadow:0 0 0 1px rgba(176,64,45,
              the timeline paces itself off the file's own duration. -->
         <video id="flowVideo" src="media/pipeline-flow.mp4" muted loop playsinline autoplay preload="metadata" aria-label="Abstract film of a note separating into claims, each scanned in turn, with one flagged"></video>
         <div class="film-vignette"></div>
+        <!-- the mechanism, drawn per node from the real case_01 data -->
+        <div class="mech" id="mech" aria-hidden="true"></div>
         <span class="film-stamp">The flow, end to end</span>
         <div class="film-now">
           <button class="film-play" id="filmPlay" aria-label="Pause the film">❚❚</button>
@@ -742,7 +778,7 @@ mark.ev.hot{background:rgba(176,64,45,.24); box-shadow:0 0 0 1px rgba(176,64,45,
 
       <div class="film-foot">
         <span><b style="color:var(--ink)">Three of the nine never call a model.</b> Nodes 4 and 3b are plain Python; node 7 is a person.</span>
-        <span class="mono" style="margin-left:auto">generated with higgsfield · minimax 2.3</span>
+        <span class="mono" style="margin-left:auto">backdrop generated with higgsfield · minimax 2.3</span>
       </div>
     </div>
 
@@ -1292,8 +1328,119 @@ mark.ev.hot{background:rgba(176,64,45,.24); box-shadow:0 0 0 1px rgba(176,64,45,
       {n:7, tag:"sign",   title:"Human review checkpoint",    desc:"Required, not optional. Every flag is a suggestion with its evidence attached, and a person decides. Nothing is edited automatically.", kind:"human"}
     ];
 
+    /* ── what each node actually does, drawn from case_01 ──────────────
+       The generated clip can't show a note coming apart into claims - no
+       video model renders legible text - so the mechanism is drawn here
+       and the clip runs behind it as atmosphere. */
+    var TRANSCRIPT = [
+      "Doctor: …still taking the lisinopril 10 milligrams once a day?",
+      "Patient: Yes, every morning with breakfast.",
+      "Doctor: …blood pressure today… 128 over 82.",
+      "Doctor: …come back in three months for a recheck."
+    ];
+    var NOTE = [
+      "Taking lisinopril 20mg once daily with breakfast.",
+      "Blood pressure 128/82, improved from previous visit.",
+      "Hypertension, well-controlled on current regimen.",
+      "Return to clinic in 3 months."
+    ];
+    var CLAIMS = [
+      ["Feeling well since adjustment", "ok"],
+      ["Denies headaches, dizziness", "ok"],
+      ["Lisinopril dose is 20 mg", "bad"],
+      ["Blood pressure 128/82", "ok"],
+      ["Return in 3 months", "ok"]
+    ];
+
+    function pane(cap, body){
+      return '<div class="mech-pane"><p class="mech-cap">' + cap + '</p>' + body + '</div>';
+    }
+    function lines(arr, cls){
+      return arr.map(function(l){ return '<div class="mech-line ' + (cls || "") + '">' + l + '</div>'; }).join("");
+    }
+    function claimChips(upTo, showVerdict){
+      return CLAIMS.map(function(c, i){
+        if (i >= upTo) return "";
+        var v = showVerdict ? c[1] : "wait";
+        var tick = !showVerdict ? "…" : c[1] === "ok" ? "✓" : "✗";
+        return '<span class="mech-chip" data-v="' + v + '" style="animation-delay:' + (i * 90) + 'ms">'
+             + '<i class="tick">' + tick + '</i>' + c[0] + '</span>';
+      }).join("");
+    }
+    function wave(lowFrom, lowTo){
+      var bars = "";
+      for (var i = 0; i < 34; i++) {
+        var h = 22 + Math.round(Math.abs(Math.sin(i * 1.7)) * 60) + (i % 3) * 6;
+        var low = i >= lowFrom && i <= lowTo;
+        if (low) h = Math.round(h * .35) + 8;
+        bars += '<i style="height:' + h + '%;animation-delay:' + (i * 12) + 'ms"'
+             + (low ? ' data-low="true"' : '') + '></i>';
+      }
+      return '<div class="mech-wave">' + bars + '</div>';
+    }
+
+    var MECH = {
+      0: function(){
+        return pane("Encounter transcript — the source everything is checked against",
+                    lines(TRANSCRIPT));
+      },
+      1: function(){
+        return '<div class="mech-cols">'
+             + pane("Transcript", lines(TRANSCRIPT.slice(0, 3), "dim"))
+             + pane("Note the scribe produced", lines(NOTE))
+             + '</div>';
+      },
+      2: function(){
+        return pane("The note, broken into separately checkable claims",
+                    '<div>' + claimChips(5, false) + '</div>'
+                    + '<p class="mech-note">One fact each. Nothing is judged yet.</p>');
+      },
+      3: function(){
+        return pane("Every claim checked against the transcript, on its own",
+                    '<div>' + claimChips(5, true) + '</div>'
+                    + '<p class="mech-note">supported · supported · <b style="color:#F09A85">contradicted</b> · supported · supported</p>');
+      },
+      "3b": function(){
+        return pane("Is the audio behind that verdict trustworthy?",
+                    wave(11, 17)
+                    + '<div><span class="mech-chip" data-v="unk"><i class="tick">?</i>Lisinopril dose is 20 mg</span></div>'
+                    + '<p class="mech-note">confidence 0.36 at 00:19–00:24 → <b>unverifiable</b>, not supported</p>');
+      },
+      4: function(){
+        return pane("Doses matched exactly — no model, no judgement",
+                    '<div class="mech-eq"><span class="bad">note: 20 mg</span>'
+                    + '<span class="op">≠</span>'
+                    + '<span class="good">transcript: 10 milligrams</span></div>'
+                    + '<p class="mech-note">Plain regex. Zero ambiguity, zero false positives on the controls.</p>');
+      },
+      5: function(){
+        return '<div class="mech-cols">'
+             + pane("Facts the transcript stated", lines([
+                 "lisinopril 10 milligrams ✓",
+                 "blood pressure 128 over 82 ✓",
+                 "recheck in three months ✓",
+                 "takes it with breakfast ✓"]))
+             + pane("…and whether the note says them", lines([
+                 "<b style='color:#F09A85'>missing — the correct dose</b>",
+                 "present", "present", "present"]))
+             + '</div>';
+      },
+      6: function(){
+        return pane("The flag gets a name from a fixed taxonomy",
+                    '<div><span class="mech-chip" data-v="bad"><i class="tick">✗</i>Lisinopril dose is 20 mg</span></div>'
+                    + '<p class="mech-note">→ <b>numeric_medication_error</b> · severity: critical · 1 of 6 categories</p>');
+      },
+      7: function(){
+        return pane("A person decides. Nothing was changed automatically.",
+                    '<div><span class="mech-chip" data-v="bad"><i class="tick">✗</i>Note says 20 mg · transcript says 10 mg</span></div>'
+                    + '<div class="mech-act"><span class="mech-btn solid">Confirm</span>'
+                    + '<span class="mech-btn">Dismiss</span></div>');
+      }
+    };
+
     var video = document.getElementById("flowVideo");
     if (!video) return;
+    var mech = document.getElementById("mech");
     var track = document.getElementById("filmTrack"),
         titleEl = document.getElementById("filmTitle"),
         descEl = document.getElementById("filmDesc"),
@@ -1328,6 +1475,8 @@ mark.ev.hot{background:rgba(176,64,45,.24); box-shadow:0 0 0 1px rgba(176,64,45,
         titleEl.textContent = NODES[i].title;
         descEl.textContent = NODES[i].desc;
         nowEl.dataset.swap = "false";
+        var draw = MECH[NODES[i].n];
+        if (mech) mech.innerHTML = draw ? '<div class="mech-in">' + draw() + '</div>' : "";
       }, reduce ? 0 : 300);
     }
 
