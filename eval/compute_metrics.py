@@ -96,12 +96,19 @@ def main():
                     results[system]["hits"] += 1
                     results[system]["weighted_hits"] += weight
             else:
+                # An UNGRADED control must not count toward control_cases.
+                # It used to: the denominator grew while the numerator
+                # couldn't, so a partially-graded sheet silently reported a
+                # better false-positive rate than the grading supported.
+                # Harmless on a fully-filled sheet, wrong on a subsample.
+                if fp_cell == "":
+                    missing_cells.append((case_id, label, "false_positive_count"))
+                    continue
                 results[system]["control_cases"] += 1
-                if fp_cell not in ("", "0"):
-                    try:
-                        results[system]["false_positives"] += int(fp_cell)
-                    except ValueError:
-                        pass
+                try:
+                    results[system]["false_positives"] += int(fp_cell)
+                except ValueError:
+                    missing_cells.append((case_id, label, "false_positive_count (unparseable)"))
 
     if missing_cells:
         print("WARNING: some scorecard cells are still blank, skipped in scoring:")
