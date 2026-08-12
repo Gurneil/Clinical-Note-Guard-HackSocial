@@ -332,6 +332,53 @@ python eval/asr_confidence_check.py data/audio/case_01_synthetic.wav
   category as `misattribution` in the taxonomy, now one level lower, and
   nothing here addresses it.
 
+## The false-positive cost, and a mitigation that didn't work
+
+The pipeline's honest weakness is precision: 15 false positives across 6
+clean control notes (~2.5/note) against the baseline's 11 (~1.8/note). The
+obvious mitigation is triage — rank the flags by severity so a reviewer
+meets numeric/medication and negation errors first, and the false alarms
+last. It is a good idea, it costs a reviewer nothing, and the argument for
+it is intuitive: what matters clinically is not the false-positive count
+but how many wrong flags a person reads before reaching a real one.
+
+So it was built (`src/triage.py`) and then measured against the committed
+run (`eval/review_burden.py`), scoring the position of the planted error in
+the list a reviewer would actually read:
+
+| Order | Real error first | In top 3 | Mean rank | Wrong flags read first |
+|---|---|---|---|---|
+| Pipeline emission order | 35/45 | 43/45 | 1.36 | 0.36 |
+| Severity-triaged | 34/45 | 44/45 | 1.36 | 0.36 |
+
+**It changes nothing.** Four cases moved earlier, six moved later, and the
+mean rank is identical to two decimal places.
+
+The reason is the interesting part, and it corrects the intuition behind
+the fix. Triage assumes false positives *bury* the real error. On this
+benchmark they don't: the real error already sits at rank 1 in 35 of 45
+caught cases, and at mean rank **1.36** out of ~4.9 flags per note. There
+is almost no burial to undo.
+
+The false-positive cost is real, but it is concentrated somewhere ranking
+cannot reach — the **clean control notes**, which average 2.5 flags on a
+note with no planted error at all. There is nothing true to rank above
+them. Ordering a list of five wrong flags does not make it cheaper to
+discover that all five are wrong.
+
+So node 6b is not wired into the pipeline. `rank_flags()` exists, is
+tested, and is called by nothing, because a feature that measures as inert
+should not be shipped with a story attached to it. The honest description
+of the precision cost remains the one under "Current auto-scored results":
+decomposition buys recall and pays for it in false alarms on clean notes,
+and the fix for that is better per-claim judgement, not better sorting.
+
+Reproduce with:
+
+```
+python eval/review_burden.py
+```
+
 ## Does each node earn its place? (node ablation)
 
 Everything above argues that nodes 4 and 5 exist because node 3

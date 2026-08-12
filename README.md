@@ -54,6 +54,8 @@ clinical-note-guard/
 │   ├── usage.py                  # per-call token/latency recorder - real cost data, not estimated
 │   ├── transcribe.py             # node 0 for real audio: Whisper via Groq (or a local
 │   │                              # faster-whisper failover), with per-segment confidence
+│   ├── triage.py                 # node 6b: severity ordering - built, measured, and
+│   │                              # NOT wired in (see ARCHITECTURE.md, it changed nothing)
 │   ├── transcript_confidence.py  # node 3b: a verdict is only as good as the audio it was
 │   │                              # checked against - downgrades claims resting on
 │   │                              # unreliable audio to "unverifiable"
@@ -74,6 +76,9 @@ clinical-note-guard/
 │   │                        # what each node actually contributed (zero API calls)
 │   ├── ablation_results.json # committed: the ablation table reported in ARCHITECTURE.md
 │   ├── measure_usage.py    # measures real token/latency cost per note, pipeline vs. baseline
+│   ├── review_burden.py    # measures where the real error sits in the flag list a
+│   │                        # reviewer reads - the test that rejected severity triage
+│   ├── review_burden_results.json # committed: that measurement
 │   ├── asr_confidence_check.py    # calibrates node 3b's threshold: degrades audio in steps and
 │   │                        # measures confidence against whether the clinical facts survived
 │   ├── asr_confidence_results.json # committed: the calibration run reported in ARCHITECTURE.md

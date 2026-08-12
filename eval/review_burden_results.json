@@ -1,0 +1,144 @@
+{
+  "threshold": 0.2,
+  "cases": 51,
+  "pipeline_emission_order": {
+    "caught": 45,
+    "of_cases": 51,
+    "hit_at_1": 35,
+    "hit_at_3": 43,
+    "mean_rank": 1.36,
+    "mean_flags_read_first": 0.36
+  },
+  "severity_triaged": {
+    "caught": 45,
+    "of_cases": 51,
+    "hit_at_1": 34,
+    "hit_at_3": 44,
+    "mean_rank": 1.36,
+    "mean_flags_read_first": 0.36
+  },
+  "moved_earlier": 4,
+  "moved_later": 6,
+  "per_case": [
+    {
+      "case_id": "case_24_numeric_medication_error_drug_name",
+      "flags": 7,
+      "rank_natural": 5,
+      "rank_triaged": 1,
+      "moved": 4,
+      "severity": "critical"
+    },
+    {
+      "case_id": "case_20_numeric_medication_error_insulin_units",
+      "flags": 6,
+      "rank_natural": 2,
+      "rank_triaged": 1,
+      "moved": 1,
+      "severity": "critical"
+    },
+    {
+      "case_id": "case_34_negation_error_suicidal_ideation",
+      "flags": 7,
+      "rank_natural": 2,
+      "rank_triaged": 1,
+      "moved": 1,
+      "severity": "critical"
+    },
+    {
+      "case_id": "case_36_negation_error_smoking_status",
+      "flags": 7,
+      "rank_natural": 2,
+      "rank_triaged": 1,
+      "moved": 1,
+      "severity": "critical"
+    },
+    {
+      "case_id": "case_01_numeric_medication_error",
+      "flags": 3,
+      "rank_natural": 1,
+      "rank_triaged": 1,
+      "moved": 0,
+      "severity": "critical"
+    },
+    {
+      "case_id": "case_03_negation_error",
+      "flags": 5,
+      "rank_natural": 1,
+      "rank_triaged": 1,
+      "moved": 0,
+      "severity": "critical"
+    },
+    {
+      "case_id": "case_04_distortion",
+      "flags": 3,
+      "rank_natural": 2,
+      "rank_triaged": 2,
+      "moved": 0,
+      "severity": "medium"
+    },
+    {
+      "case_id": "case_07_numeric_medication_error_pediatric_dose",
+      "flags": 4,
+      "rank_natural": 1,
+      "rank_triaged": 1,
+      "moved": 0,
+      "severity": "critical"
+    },
+    {
+      "case_id": "case_08_numeric_medication_error_beta_blocker",
+      "flags": 4,
+      "rank_natural": 1,
+      "rank_triaged": 1,
+      "moved": 0,
+      "severity": "critical"
+    },
+    {
+      "case_id": "case_09_fabrication_allergy_visit",
+      "flags": 2,
+      "rank_natural": 1,
+      "rank_triaged": 1,
+      "moved": 0,
+      "severity": "high"
+    },
+    {
+      "case_id": "case_10_fabrication_knee_exam",
+      "flags": 3,
+      "rank_natural": 1,
+      "rank_triaged": 1,
+      "moved": 0,
+      "severity": "high"
+    },
+    {
+      "case_id": "case_12_negation_error_blood_in_stool",
+      "flags": 3,
+      "rank_natural": 1,
+      "rank_triaged": 1,
+      "moved": 0,
+      "severity": "critical"
+    },
+    {
+      "case_id": "case_13_distortion_fever_duration",
+      "flags": 3,
+      "rank_natural": 1,
+      "rank_triaged": 1,
+      "moved": 0,
+      "severity": "medium"
+    },
+    {
+      "case_id": "case_14_misattribution_smoking_history",
+      "flags": 5,
+      "rank_natural": 2,
+      "rank_triaged": 2,
+      "moved": 0,
+      "severity": "medium"
+    },
+    {
+      "case_id": "case_15_omission_otc_medication",
+      "flags": 8,
+      "rank_natural": 3,
+      "rank_triaged": 3,
+      "moved": 0,
+      "severity": "medium"
+    }
+  ]
+}
