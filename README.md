@@ -30,13 +30,17 @@ clinical-note-guard/
 ├── .env.example            # API key variable names (copy to .env, fill in, never commit)
 ├── smoke_test.py            # verifies every provider + the failover router, no eval cost
 ├── demo.py                  # interactive walkthrough of a single benchmark case
-├── frontend/
-│   ├── index.html          # project site: the problem, the pipeline film, a runnable
-│   │                        # claim-by-claim demo of case_01, and the measured results.
-│   │                        # Static, no build step - open the file in a browser.
+├── frontend/               # project site - static, no build step, open index.html
+│   ├── index.html          # home: the problem, and the three ways into the project
+│   ├── guard.html          # the guard itself: a runnable claim-by-claim check of
+│   │                        # case_01, the pipeline film, and the audio problem
+│   ├── evidence.html       # measured results, node ablation, cost, taxonomy, limits
+│   ├── about.html          # what the project is, and who built it
+│   ├── assets/
+│   │   ├── site.css        # every page shares one stylesheet
+│   │   └── site.js         # ...and one script; each block guards for its own markup
 │   └── media/
-│       └── pipeline-flow.mp4  # 6s pipeline film shown in the site's pipeline section
-│                              # (generated with Higgsfield / MiniMax 2.3)
+│       └── pipeline-flow.mp4  # 6s pipeline film (generated with Higgsfield / MiniMax 2.3)
 ├── data/
 │   ├── audio/
 │   │   └── case_01_synthetic.wav  # case_01 spoken by two Windows TTS voices, so

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — Clinical Note Guard</title>
+<meta name="description" content="Why a grade-ten IB student in a future health professionals programme built a QA layer for AI-drafted clinical notes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<header class="nav" id="nav" data-over="light">
+  <div class="nav-in">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="1" y="1" width="30" height="30" rx="9" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5"/>
+        <path d="M9 16.4l4.4 4.3L23 11.2" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>
+        <span class="brand-name"><em>Note</em>&thinsp;Guard</span>
+        <span class="brand-sub">Clinical documentation QA</span>
+      </span>
+    </a>
+
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="navlinks"><span></span></button>
+
+    <nav class="nav-links" id="navlinks">
+      <a class="navbtn " href="guard.html">The guard</a>
+      <a class="navbtn " href="evidence.html">Evidence</a>
+      <a class="navbtn is-active" href="about.html">About</a>
+      <div class="drop" data-drop>
+        <button class="navbtn" aria-expanded="false" data-drop-toggle>Docs <i class="chev"></i></button>
+        <div class="drop-panel">
+          <a class="drop-item" href="../docs/ARCHITECTURE.md">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 2.5h7L16 7v10.5H4.5z"/><path d="M11 2.5V7h5M7 11h6M7 14h4"/></svg>
+            <span><b>ARCHITECTURE.md</b><small>Every design decision, with reasons</small></span>
+          </a>
+          <a class="drop-item" href="../docs/PROMPTS.md">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5h13M3.5 10h9M3.5 14.5h11"/><path d="M15.5 12.6l2.2 2.2-3 .8z"/></svg>
+            <span><b>PROMPTS.md</b><small>Every prompt, and what each rule prevents</small></span>
+          </a>
+          <a class="drop-item" href="../docs/SAMPLES.md">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="15" height="11" rx="2"/><path d="M2.5 9h15M8 9v6.5"/></svg>
+            <span><b>SAMPLES.md</b><small>Real outputs, pipeline vs. baseline</small></span>
+          </a>
+          <a class="drop-item" href="../docs/SAMPLES_AUDIO.md">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5v-1M6.5 13V7M10 16V4M13.5 13V7M17 10.5v-1"/></svg>
+            <span><b>SAMPLES_AUDIO.md</b><small>The run where the transcript was fiction</small></span>
+          </a>
+          <a class="drop-item" href="../docs/workflow_flowchart.png">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="15" height="13" rx="2"/><circle cx="7" cy="8" r="1.4"/><path d="M3.5 14l4-3.5 3.5 3 2.5-2 3 2.5"/></svg>
+            <span><b>Workflow diagram</b><small>The submitted flowchart</small></span>
+          </a>
+          <a class="drop-item" href="../README.md">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5c2.6-1 4.6-1 7 .4v11c-2.4-1.4-4.4-1.4-7-.4z"/><path d="M17 4.5c-2.6-1-4.6-1-7 .4v11c2.4-1.4 4.4-1.4 7-.4z"/></svg>
+            <span><b>README</b><small>Setup, and how to run the eval</small></span>
+          </a>
+        </div>
+      </div>
+      <a class="cta-solid" href="guard.html#demo" data-run-demo>Run a check</a>
+    </nav>
+  </div>
+</header>
+<main id="top">
+<div class="layer-light">
+<div class="page-top"></div>
+
+  <section class="sec sec-first wrap" id="me">
+    <div class="me">
+      <div>
+        <p class="eyebrow">The person behind it</p>
+        <h1>Hey, I'm Gurneil.</h1>
+        <p class="lead">
+          I'm in grade ten, in the IB programme at Turner Fenton in Brampton, and I'm in HOSA —
+          the future health professionals club. Last year I competed in CPR and Basic Life Support
+          at two leadership conferences. You learn the protocol properly: check, call, compress.
+          Every step is written down because under pressure people skip things.
+        </p>
+        <p class="lead">
+          Then I started reading about AI scribes — tools that listen to a doctor's appointment and
+          write the note afterwards. They're already being used on real patients. And the studies
+          on them keep finding the same thing: the notes come out fluent, professional, and
+          sometimes wrong. A dose that was never said. A "denies chest pain" turned into "reports
+          chest pain." One word, and the chart now says something the patient didn't.
+        </p>
+        <p class="lead">
+          What got me was that nobody catches it by reading harder. A wrong note doesn't look
+          wrong — that's the whole problem. So I built the thing that checks, instead of the thing
+          that writes.
+        </p>
+      </div>
+      <div>
+        <div class="frame">
+          <!-- Drop a photo at frontend/media/gurneil.jpg and this picks it up.
+               Until then the placeholder below says so rather than showing a broken image. -->
+          <div class="frame-empty">
+            <span>
+              Save a photo as<br>
+              <b style="color:var(--ink)">frontend/media/gurneil.jpg</b><br><br>
+              then delete this block and<br>uncomment the &lt;img&gt; below it
+            </span>
+          </div>
+          <!-- <img src="media/gurneil.jpg" alt="Gurneil Bhullar"> -->
+        </div>
+        <p class="frame-cap">Brampton, Ontario</p>
+      </div>
+    </div>
+
+    <dl class="facts">
+      <div class="fact">
+        <dt>School</dt>
+        <dd><b>Turner Fenton Secondary</b> — International Baccalaureate programme, grade 10</dd>
+      </div>
+      <div class="fact">
+        <dt>Health</dt>
+        <dd><b>HOSA — Future Health Professionals</b>, competed in CPR / Basic Life Support at the
+          Spring and Fall Leadership Conferences</dd>
+      </div>
+      <div class="fact">
+        <dt>Science</dt>
+        <dd><b>First place, Physics</b> at the annual science fair, and selected to represent the
+          school at the Peel Regional Science Fair</dd>
+      </div>
+      <div class="fact">
+        <dt>Teaching</dt>
+        <dd><b>Spark2Stem</b> volunteer presenter — turning complicated science into something a
+          nine-year-old actually follows</dd>
+      </div>
+      <div class="fact">
+        <dt>Community</dt>
+        <dd><b>Brampton Library</b> program volunteer, and on the executive team of the Sikh
+          Student Association</dd>
+      </div>
+      <div class="fact">
+        <dt>Off the screen</dt>
+        <dd><b>Varsity soccer</b> — helped the team to its first ROPSAA qualifiers appearance in
+          over eight years; club captain at SSE90</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="sec wrap" id="project">
+    <div class="sec-head">
+      <p class="eyebrow">The project</p>
+      <h2 class="h2">What Clinical Note Guard<br>actually is</h2>
+      <p class="lead">
+        An ambient scribe records a visit and writes the clinical note. This is the layer that
+        checks that note before a human signs it — not by re-reading it, but by taking it apart.
+      </p>
+    </div>
+
+    <div class="tl">
+      <div class="tl-row">
+        <div class="tl-when">The problem</div>
+        <div class="tl-what">
+          <h3>A wrong note reads exactly like a right one</h3>
+          <p>That's what makes it dangerous. Asking a model to "check this note for errors" fails
+            for the same reason a tired human does: nothing forces it to check every single claim,
+            so it skims a paragraph that reads fine and moves on.</p>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-when">The idea</div>
+        <div class="tl-what">
+          <h3>Decompose, then verify one fact at a time</h3>
+          <p>The note is broken into atomic claims — one dose, one vital, one denial each. Every
+            claim is checked against the transcript on its own, and has to come back supported,
+            contradicted, or not mentioned, with a quote. You can't skim a checklist.</p>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-when">The mirror</div>
+        <div class="tl-what">
+          <h3>And check what the note left out</h3>
+          <p>Reading the note can only find things that are wrong in it, never things missing from
+            it. So a separate step reads the <em>transcript</em> and asks whether each fact made it
+            into the note — which is how a documented allergy that vanished gets caught.</p>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-when">The catch</div>
+        <div class="tl-what">
+          <h3>The transcript is a model's output too</h3>
+          <p>Everything above trusts the transcript. But if it came from speech recognition, it's
+            an unverified model output — and this project is built on not trusting those. On
+            degraded audio, Whisper invented an entire conversation and the checker passed all
+            eight claims, correctly, because they matched the fiction it was given. So claims
+            resting on audio the recogniser was unsure of now come back
+            <em>unverifiable</em>, with a timestamp.</p>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-when">The rule</div>
+        <div class="tl-what">
+          <h3>Nothing is ever corrected automatically</h3>
+          <p>Every flag is a suggestion with its evidence attached, and a person confirms or
+            dismisses it. The tool doesn't diagnose, doesn't recommend treatment, and doesn't edit
+            a chart. It decides whether the note matches the transcript, and hands that to a human.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec wrap" id="honest">
+    <div class="sec-head">
+      <p class="eyebrow">How I worked on it</p>
+      <h2 class="h2">Measured, including<br>when it lost</h2>
+      <p class="lead">
+        Three things in this project are results I didn't want, and they're the ones I'd point a
+        judge at first.
+      </p>
+    </div>
+    <div class="cardgrid">
+      <div class="pcard" style="cursor:default">
+        <span class="pcard-n">01</span>
+        <h3>A node that earns nothing</h3>
+        <p>I re-scored the run with each node withheld. My deterministic dose checker contributed
+          <b>zero</b> extra recall — everything it caught, the entailment step already had.
+          It's in the docs, not buried.</p>
+      </div>
+      <div class="pcard" style="cursor:default">
+        <span class="pcard-n">02</span>
+        <h3>A fix that didn't work</h3>
+        <p>The obvious answer to my false-positive rate was ranking flags by severity. I built it,
+          measured it, and it changed nothing — the real error was already first. So it isn't
+          shipped.</p>
+      </div>
+      <div class="pcard" style="cursor:default">
+        <span class="pcard-n">03</span>
+        <h3>A baseline I made stronger</h3>
+        <p>The comparison prompt originally couldn't spot omissions, which would have handed me a
+          free win. I told it to look for them. My lead survived, which is the only reason the
+          comparison means anything.</p>
+      </div>
+    </div>
+    <p class="metric-note" style="margin-top:30px">
+      All data is synthetic — sixty invented transcripts about fictional patients, written for this
+      project. No real patient data is used or needed anywhere, and this is not a medical device.
+    </p>
+  </section>
+
+  <section class="sec wrap" id="contact">
+    <div class="sec-head">
+      <p class="eyebrow">Say hello</p>
+      <h2 class="h2">gurneilbhullar11<br>@gmail.com</h2>
+      <p class="lead">
+        Built for ReverieHacks 2026, ML prompt engineering track. The code, the benchmark, the eval
+        scripts and every number on this site are in the repository.
+      </p>
+      <div class="hero-actions" style="justify-content:flex-start">
+        <a class="btn-lg btn-primary" href="guard.html#demo" data-run-demo
+           style="background:var(--ink); color:var(--vanilla)">See the guard run</a>
+        <a class="btn-lg btn-quiet" href="../README.md" style="border-color:var(--hair); color:var(--ink)">Read the repo</a>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="wave-wrap dark" aria-hidden="true">
+  <svg viewBox="0 0 1440 130" preserveAspectRatio="none">
+    <path d="M0,70 C300,20 520,120 780,88 C1030,58 1220,10 1440,58 L1440,130 L0,130 Z"></path>
+  </svg>
+</div>
+<div class="layer-dark">
+<footer class="foot wrap">
+    <div class="foot-in">
+      <div>
+        <span class="brand-name" style="font-size:27px"><em>Note</em>&thinsp;Guard</span>
+        <div class="foot-links">
+          <a href="#demo" data-run-demo>Run a check</a>
+          <a href="#pipeline">The pipeline</a>
+          <a href="../docs/ARCHITECTURE.md">Architecture</a>
+          <a href="../docs/SAMPLES.md">Sample outputs</a>
+          <a href="../README.md">Read me first</a>
+        </div>
+      </div>
+      <div>
+        <p class="quote">“Every clinical body involved agrees on one thing: a human reads it before it's signed.”</p>
+        <p class="quote-by">— the assumption this whole pipeline is built around</p>
+      </div>
+    </div>
+    <div class="foot-fine">
+      <span>MIT licensed · synthetic data only · not a medical device</span>
+      <span>Built for ReverieHacks 2026 · ML prompt engineering</span>
+    </div>
+  </footer>
+</div>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="assets/site.js"></script>
+</body>
+</html>
