@@ -52,7 +52,7 @@ def arrow(ax, start, end, color="#2d3748", style="-|>", lw=1.6, connectionstyle=
 
 
 def main():
-    W, H = 12.5, 15.9
+    W, H = 12.5, 19.4
     fig, ax = plt.subplots(figsize=(W, H), dpi=200)
     ax.set_xlim(0, W)
     ax.set_ylim(0, H)
@@ -89,11 +89,13 @@ def main():
                    COLOR_HUMAN, fontsize=9)
 
     # --- Node 1: Draft note ---
-    b1, t1 = place(1.15,
+    b1, t1 = place(1.6,
                     "1. DRAFT NOTE  (live demo only, not in eval)\n"
                     "LLM \u2014 DRAFT_CHAIN:\ngemini-3.6-flash \u2192 Groq \u2192 Featherless\n"
-                    "Simulates an ambient scribe producing a SOAP note",
-                    COLOR_LLM_MECH)
+                    "Simulates an ambient scribe producing a SOAP note\n"
+                    "QUERY: “read this transcript, produce a structured SOAP\n"
+                    "note; only include information actually discussed”",
+                    COLOR_LLM_MECH, fontsize=9)
     arrow(ax, b0, t1)
 
     label_y_1 = (b1[1] - gap / 2)
@@ -101,21 +103,26 @@ def main():
             style="italic", color="#718096")
 
     # --- Node 2: extract claims ---
-    b2, t2 = place(1.15,
+    b2, t2 = place(1.6,
                     "2. EXTRACT CLAIMS\nLLM \u2014 EXTRACT_CHAIN:\nGroq llama-3.1-8b-instant \u2192 Featherless\n"
-                    "Note \u2192 atomic, checkable claims",
-                    COLOR_LLM_MECH)
+                    "Note \u2192 atomic, checkable claims\n"
+                    "QUERY: \u201cbreak this note into atomic, independently-\n"
+                    "checkable claims, one fact each; exclude the diagnosis\u201d",
+                    COLOR_LLM_MECH, fontsize=9)
     arrow(ax, b1, t2)
 
     # --- Node 3: entailment check (core reasoning, fairness-linked) ---
-    b3, t3 = place(1.3,
+    b3, t3 = place(2.1,
                     "3. ENTAILMENT CHECK (batched, 1 call/case)\n"
                     "LLM \u2014 CORE_REASONING_CHAIN:\ngemini-3.6-flash \u2192 Groq \u2192 Featherless\n"
                     "FAIRNESS-LINKED to the baseline (same tier, always)\n"
-                    "Claims vs. transcript \u2192 supported /\ncontradicted / not_mentioned",
-                    COLOR_LLM_CORE)
+                    "Claims vs. transcript \u2192 supported /\ncontradicted / not_mentioned\n"
+                    "QUERY: \u201cfor EACH claim, is it supported / contradicted /\n"
+                    "not_mentioned by the transcript? quote the evidence.\n"
+                    "Return EXACTLY N objects, in the same order\u201d",
+                    COLOR_LLM_CORE, fontsize=9)
     arrow(ax, b2, t3)
-    node3_fairness_y = b3[1] + 1.3 * 0.5  # mid-height, used by the fairness-link arrow below
+    node3_fairness_y = b3[1] + 2.1 * 0.5  # mid-height, used by the fairness-link arrow below
 
     # --- Node 3b: transcript confidence (only fires on --audio runs) ---
     b3b, t3b = place(1.25,
@@ -138,22 +145,26 @@ def main():
     node4_bottom_y = b4[1]
 
     # --- Node 5: omission check ---
-    b5, t5 = place(1.3,
+    b5, t5 = place(1.85,
                     "5. OMISSION CHECK (batched, mirror of 2+3)\n"
                     "LLM \u2014 OMISSION_CHAIN:\nGroq llama-3.1-8b-instant \u2192 Featherless\n"
                     "Transcript \u2192 atomic facts \u2192 checked vs. note\n"
-                    "Catches OMISSION errors (opposite of node 3)",
-                    COLOR_LLM_MECH, fontsize=9)
+                    "Catches OMISSION errors (opposite of node 3)\n"
+                    "QUERY: “for EACH transcript fact, is it mentioned in the\n"
+                    "note — directly, as a synonym, or inside a summary?”",
+                    COLOR_LLM_MECH, fontsize=8.8)
     arrow(ax, b4, t5)
     ax.text(x_center, b4[1] - gap / 2, "(also reads note + transcript directly)", ha="center",
             fontsize=7.7, style="italic", color="#718096")
 
     # --- Node 6: classify ---
-    b6, t6 = place(1.15,
+    b6, t6 = place(1.65,
                     "6. CLASSIFY FLAGGED CLAIMS (batched)\n"
                     "LLM \u2014 CLASSIFY_CHAIN:\nGroq llama-3.1-8b-instant \u2192 Featherless\n"
-                    "Only node 3's flags - node 5's are\nalready \"omission\"",
-                    COLOR_LLM_MECH, fontsize=9)
+                    "Only node 3's flags - node 5's are already \"omission\"\n"
+                    "QUERY: “classify each flagged claim into exactly ONE\n"
+                    "category from this list” (list injected from taxonomy.json)",
+                    COLOR_LLM_MECH, fontsize=8.8)
     arrow(ax, b5, t6)
 
     # --- Node 7: human review (human) ---
@@ -204,15 +215,20 @@ def main():
     bB0, tB0 = place_r(1.0,
                         "SINGLE-PROMPT BASELINE\n(comparison point, not part of the pipeline)\n"
                         "Same transcript + note, given directly", COLOR_BASELINE)
-    bB1, tB1 = place_r(1.15,
+    bB1, tB1 = place_r(2.35,
                         "ONE call \u2014 CORE_REASONING_CHAIN\n(same tier as node 3, same case, always)\n"
-                        "\"Find any issues\" \u2014 no decomposition,\n"
-                        "no forced per-claim coverage,\nno taxonomy",
+                        # narrower column than the left one - keep these lines short
+                        "QUERY: \u201creview this note against\n"
+                        "the transcript and identify any\n"
+                        "documentation errors \u2014 both\n"
+                        "unsupported content AND anything\n"
+                        "relevant the note leaves out\u201d\n"
+                        "no decomposition, no forced\nper-claim coverage, no taxonomy",
                         COLOR_LLM_CORE)
     arrow(ax, bB0, tB1)
 
     # Fairness link annotation between node 3 and the baseline call
-    baseline_mid_y = bB1[1] + 1.15 * 0.5
+    baseline_mid_y = bB1[1] + 2.35 * 0.5
     arrow(ax, (left_x + col_w, node3_fairness_y), (right_x, baseline_mid_y),
           color="#c05621", lw=1.3, style="<|-|>", connectionstyle="arc3,rad=-0.1")
     ax.text((left_x + col_w + right_x) / 2, node3_fairness_y + 0.55,
