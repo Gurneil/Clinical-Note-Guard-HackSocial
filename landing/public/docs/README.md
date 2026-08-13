@@ -30,17 +30,15 @@ clinical-note-guard/
 ├── .env.example            # API key variable names (copy to .env, fill in, never commit)
 ├── smoke_test.py            # verifies every provider + the failover router, no eval cost
 ├── demo.py                  # interactive walkthrough of a single benchmark case
-├── frontend/               # project site - static, no build step, open index.html
-│   ├── index.html          # home: the problem, and the three ways into the project
-│   ├── guard.html          # the guard itself: a runnable claim-by-claim check of
-│   │                        # case_01, the pipeline film, and the audio problem
-│   ├── evidence.html       # measured results, node ablation, cost, taxonomy, limits
-│   ├── about.html          # what the project is, and who built it
-│   ├── assets/
-│   │   ├── site.css        # every page shares one stylesheet
-│   │   └── site.js         # ...and one script; each block guards for its own markup
-│   └── media/
-│       └── pipeline-flow.mp4  # 6s pipeline film (generated with Higgsfield / MiniMax 2.3)
+├── landing/                # project site - Vite + React (see landing/README.md)
+│   ├── src/                # hero, the runnable guard console, and five content pages
+│   ├── public/
+│   │   ├── pipeline-flow.mp4  # 6s pipeline film (generated with Higgsfield / MiniMax 2.3)
+│   │   └── docs/           # the documents below, served as downloads
+│   └── scripts/
+│       ├── build_cases.py  # bakes the committed eval run into the console's data
+│       └── sync-docs.mjs   # copies docs/ into public/docs for the downloads page
+│   # (the earlier static site is kept at _archive/frontend/ - see "Project site" below)
 ├── data/
 │   ├── audio/
 │   │   └── case_01_synthetic.wav  # case_01 spoken by two Windows TTS voices, so
@@ -280,24 +278,28 @@ table for the pipeline vs. the baseline - see `docs/ARCHITECTURE.md`,
       (`eval/asr_confidence_check.py`) and a worked example in
       `docs/SAMPLES_AUDIO.md`
 - [x] LICENSE (MIT)
-- [x] Project site (`frontend/index.html`) - static, no build step. Not a
-      track requirement for ML Prompt Engineering; included because it
-      explains the workflow to a reader who won't run the code, and it
-      doubles as the backdrop for a demo video.
-- [ ] **Blind human grading pass.** The numbers currently in `docs/` come
-      from `eval/auto_score.py`, an automated proxy explicitly labeled as
-      such everywhere it's cited - not the blind human-graded workflow
-      (`compute_metrics.py` + `scorecard_blind.csv`) that's this project's
-      own stated methodology. Filling in the blind scorecard by hand is the
-      one remaining step before treating any number here as a final,
-      citable result. Do this WITHOUT looking at `blind_key.json` first.
+- [x] Project site (`landing/`) - Vite + React; `cd landing && npm install &&
+      npm run dev`. Not a track requirement for ML Prompt Engineering;
+      included because it explains the workflow to a reader who won't run the
+      code, it runs the committed eval output claim-by-claim in the browser,
+      and it doubles as the backdrop for a demo video. It replaces the earlier
+      static site, which is kept at `_archive/frontend/` and is no longer
+      maintained - delete that folder once you're happy with the new one.
+- [x] **Blind human grading pass.** Done: 57 of 58 rows graded by hand from
+      `scorecard_blind.csv`, seeing only "System A" / "System B" randomised
+      per case, with `blind_key.json` unopened until `compute_metrics.py`
+      ran. Headline result: pipeline 47/50 (94%) vs baseline 41/50 (82%),
+      over 56 scored cases. `case_02_fabrication` was skipped mid-session
+      and left ungraded on purpose - by the time it was noticed the
+      aggregate had been unblinded, so filling it in would no longer have
+      been blind. See `docs/ARCHITECTURE.md`, "Results: blind human-graded".
 - [ ] **Rerun on a full, fresh Gemini quota.** This eval run's core-reasoning
       comparison landed on `featherless/Qwen2.5-7B-Instruct` for 53 of 60
       cases because the daily 20-request Gemini cap was exhausted early in
-      an earlier same-day run - see `docs/ARCHITECTURE.md`, "Current
-      auto-scored results". The workflow-design claim should hold on a
-      stronger core-reasoning model too, but that isn't yet directly
-      confirmed at the full 60-case scale.
+      an earlier same-day run - see `docs/ARCHITECTURE.md`, "Results: blind
+      human-graded". The workflow-design claim should hold on a stronger
+      core-reasoning model too, but that isn't yet directly confirmed at the
+      full 60-case scale. This is now the largest remaining caveat.
 - [ ] Samples/demo VIDEO, if the written `docs/SAMPLES.md` document isn't
       sufficient for the submission (the track requirements say
       video **or** document; a document is provided).

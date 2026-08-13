@@ -2,7 +2,7 @@
 
 The project site for Clinical Note Hallucination Guard, with the guard itself
 running in the hero. Vite + React. This replaces the earlier static site,
-which is archived at `_archive/frontend/`.
+which now exists only in git history (`git checkout 5921049 -- _archive/`).
 
 ```bash
 npm install
@@ -117,8 +117,7 @@ python landing/scripts/build_cases.py
 ```
 
 This used to live at `frontend/build_cases.py` and emit a second bundle for
-the old static site; that site has been replaced by this one and is archived
-at `_archive/frontend/`.
+the old static site, which this one replaced.
 
 ## Layout and interaction
 

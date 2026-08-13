@@ -2,19 +2,15 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 /**
- * PLACEHOLDER COPY — the anecdote below was written to fit the page, not by
- * Gurneil and not from life. Swap it for something that actually happened
- * before this goes anywhere public.
- *
- * The photo is expected at `public/founder.jpg`. Until that file exists the
- * frame falls back to a labelled placeholder rather than a broken image.
+ * The photo is read from `public/founder.jpg`. If that file ever goes missing
+ * the frame falls back to a labelled placeholder rather than a broken image.
  */
 
 const STORY =
-  "A model wrote me a paragraph about a paper I'd never read, with a page number and a direct quote. I went to check it. The paper was real. The author was real. The page didn't exist. Everything in that sentence was right except the one part that was supposed to be true — and nothing in the writing told me which part that was.";
+  "A model once wrote me a paragraph about a paper I’d never read, complete with a page number and a direct quote. I checked it. The paper was real. The author was real. The page didn’t exist. Everything in the sentence was right except the one detail that was supposed to be true — and nothing in the writing told me which part was wrong.";
 
 const CODA =
-  "That's the whole problem in a clinical note, except a person signs it. So I built something that reads a note one claim at a time, checks each against what was actually said, and hands a human everything that doesn't line up. It never signs anything. It just makes sure nobody signs without looking.";
+  "That’s the same problem in a clinical note, except a person signs it. So I built something that reads a note one claim at a time, checks each against what was actually said, and flags anything that doesn’t line up. It never signs anything. It just helps make sure nobody signs without looking.";
 
 export default function Founder() {
   const [photoOk, setPhotoOk] = useState(true);

@@ -18,9 +18,9 @@ export default function Evidence() {
     >
       <Stats
         items={[
-          { label: "Recall", value: "88%", note: "45 of 51 planted errors" },
-          { label: "Severity-weighted", value: "92%", note: "numeric and negation count more" },
-          { label: "False positives", value: "15", note: "across 6 clean controls" },
+          { label: "Recall", value: "94%", note: "47 of 50 planted errors" },
+          { label: "Severity-weighted", value: "93%", note: "numeric and negation count more" },
+          { label: "False positives", value: "13", note: "across 6 clean controls" },
         ]}
       />
 
@@ -28,20 +28,21 @@ export default function Evidence() {
         <Table
           columns={["System", "Recall", "Severity-weighted", "False positives"]}
           rows={[
-            ["Pipeline", "45/51 (88%)", "92%", "15"],
-            ["Baseline", "39/51 (76%)", "83%", "11"],
+            ["Pipeline", "47/50 (94%)", "93%", "13"],
+            ["Baseline", "41/50 (82%)", "87%", "9"],
           ]}
-          caption="57 scored cases — 51 with a planted error, 6 clean controls. Of the 60, two errored outright and one was excluded for a provider mismatch. The baseline prompt was fixed to ask for omissions too, so this tests workflow structure rather than a prompt gap."
+          caption="56 scored cases — 50 with a planted error, 6 clean controls. Of the 60, two errored outright, one was excluded for a provider mismatch, and one was skipped during grading. The baseline prompt was fixed to ask for omissions too, so this tests workflow structure rather than a prompt gap."
         />
-        <Source>eval/auto_scorecard.json, eval/raw_outputs.json</Source>
+        <Source>eval/scorecard_blind.csv, eval/raw_outputs.json</Source>
       </Section>
 
-      <Callout tone="warn" title="Auto-scored, not blind human-graded">
-        These come from <code>eval/auto_score.py</code>, which matches outputs
-        against ground truth by keyword overlap rather than a person's
-        judgment. Blind human grading — the project's stated methodology — has
-        not been run at 60-case scale. Nothing here is a final, citable result
-        until it has.
+      <Callout tone="accent" title="Graded blind, by a human">
+        A person graded every case seeing only "System A" and "System B",
+        randomised per case, with no idea which was the pipeline — and the key
+        stayed sealed until scoring ran. The automated proxy this project used
+        while iterating predicted the result almost exactly: 88% vs 76%,
+        against the human's 94% vs 82%. Harsher on both systems in absolute
+        terms, and the same 12-point gap between them.
       </Callout>
 
       <Callout title="Which model produced this run">
@@ -55,8 +56,8 @@ export default function Evidence() {
       <Section title="The trade-off">
         <p>
           The pipeline catches 6 more planted errors and raises more flags on
-          notes with nothing wrong — roughly 2.5 per clean note against the
-          baseline's 1.8. Decomposing into many atomic claims creates many
+          notes with nothing wrong — roughly 2.2 per clean note against the
+          baseline's 1.5. Decomposing into many atomic claims creates many
           independent chances for an over-literal judgment to misfire, where a
           single holistic read is more conservative and misses the subtler
           errors instead. A human reviews every flag either way.
@@ -67,6 +68,11 @@ export default function Evidence() {
         <p>
           Every flag records the node that produced it, so the committed run can
           be re-scored with any node withheld — no re-run, no extra API spend.
+          These figures are auto-scored rather than human-graded: withholding a
+          node changes which flags exist, so each configuration needs
+          re-scoring, which a person cannot do blind. Given the proxy matched
+          the human on the headline comparison above, the deltas are worth
+          taking seriously.
         </p>
         <Table
           columns={["Configuration", "Recall", "False positives", "Delta"]}

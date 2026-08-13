@@ -161,7 +161,13 @@ relative to what a clinician would actually judge as "caught this
 error." Both scripts read/write the same file formats, so either can be
 used depending on whether a human grading session is available.
 
-### Current auto-scored results (proxy, not blind-graded - see above)
+### Results: blind human-graded
+
+**These are the headline numbers, and they come from the blind human
+grading workflow described above** - not from the automated proxy. A human
+graded each case seeing only "System A" and "System B", randomised per
+case, without knowing which was the pipeline, and `blind_key.json` was not
+opened until `compute_metrics.py` ran.
 
 From the eval run committed in `eval/raw_outputs.json` (60 cases, at
 `temperature=0.0`, run against the omission-aware baseline prompt
@@ -182,16 +188,29 @@ batch on `case_05_misattribution` and `case_60_clean_control_conjunctivitis`
 - recorded with their raw error in `raw_outputs.json` rather than
 silently dropped or counted as "no error found") and 1 more
 (`case_06_clean_control`) was excluded for a genuine fairness mismatch.
-The numbers below are over the remaining 57 cases (51 with a planted
-error, 6 clean controls) - see `eval/auto_scorecard.json` for the
-per-case detail.
+One further case (`case_02_fabrication`) was skipped during the grading
+session and deliberately left ungraded rather than filled in afterwards:
+by the time it was noticed, `compute_metrics.py` had already unblinded the
+aggregate, so grading it then would no longer have been blind. The numbers
+below are therefore over 56 cases (50 with a planted error, 6 clean
+controls) - see `eval/scorecard_blind.csv` for the per-case detail.
 
 | | Recall | Severity-weighted recall | False positives (6 controls) |
 |---|---|---|---|
-| Pipeline | 45/51 (88%) | 92% | 15 |
-| Baseline | 39/51 (76%) | 83% | 11 |
+| Pipeline | 47/50 (94%) | 93% | 13 |
+| Baseline | 41/50 (82%) | 87% | 9 |
 
-Read honestly, not just as "pipeline wins": at 57 scored cases (roughly
+**The automated proxy predicted this almost exactly.** `auto_score.py` put
+the same run at 45/51 (88%) for the pipeline and 39/51 (76%) for the
+baseline - a 6-case, 12-point gap, against the 6-case, 12-point gap the
+human grader found. The proxy was slightly harsh on both systems in
+absolute terms and near-identical on the difference between them. That is
+the useful finding about the proxy: it is not a substitute for human
+grading on an absolute number, and it was a trustworthy instrument for
+iterating on the *comparison*, which is what it was used for during
+development.
+
+Read honestly, not just as "pipeline wins": at 56 scored cases (roughly
 3x the original 18-case run), a 6-case recall gap is a materially more
 trustworthy signal than the earlier run's 2-case gap was, and it
 persists even after closing the baseline-prompt fairness gap described
@@ -199,15 +218,15 @@ above - so this reads as real evidence for the core claim this project
 is testing, decomposition-then-verify catches more planted errors than
 one open-ended prompt, not just an artifact of a small sample or an
 unfair baseline. But the pipeline's false-positive count on clean notes
-(15 across 6 controls, roughly 2.5/note) is still meaningfully higher
-than the baseline's (11, roughly 1.8/note), for the same understood
+(13 across 6 controls, roughly 2.2/note) is still meaningfully higher
+than the baseline's (9, roughly 1.5/note), for the same understood
 reason as before: decomposing a note into many atomic claims/facts
 creates many independent opportunities for an over-literal per-item
 judgment to misfire (see the residual paraphrase-recognition gap
 above), where the baseline's single holistic read tends to be more
 conservative and simply misses subtler errors instead of flagging
 borderline-fine things. That's a genuine precision/recall trade-off,
-not a bug to hide - a system that misses roughly one in four real
+not a bug to hide - a system that misses nearly one in five real
 errors is not obviously better than one that catches more real errors
 at the cost of more false alarms for human review to dismiss. Which
 trade-off is preferable depends on deployment context (a human is
@@ -215,15 +234,19 @@ reviewing every flag either way - see Node 7), and is exactly the kind
 of judgment call worth surfacing to a grader rather than burying behind
 a single "our system wins" headline number.
 
-Two things worth doing before treating either number as final: (1) rerun
-on a day with a full, unused Gemini quota (or spread the run across
-multiple days) so the fairness-critical comparison is actually measuring
-Gemini-vs-Gemini rather than Featherless-vs-Featherless most of the
-time - the workflow-design claim should hold on a stronger model too,
-but that's not yet directly confirmed at 60-case scale; and (2) the
-blind human grading pass described above, which is still the project's
-stated methodology and has not yet been run at the 60-case scale (see
-"Current status" in the README).
+One thing still worth doing: rerun on a day with a full, unused Gemini
+quota (or spread the run across multiple days) so the fairness-critical
+comparison is actually measuring Gemini-vs-Gemini rather than
+Featherless-vs-Featherless most of the time. The workflow-design claim
+should hold on a stronger core-reasoning model too, but that is not yet
+directly confirmed at 60-case scale, and it is the single largest
+remaining caveat on these numbers.
+
+Note also that the node ablation reported below is still auto-scored:
+withholding a node changes which flags exist, so it needs re-scoring per
+configuration, which a human cannot do blind. Its deltas are labelled as
+proxy figures throughout, and the agreement between proxy and human on
+the headline comparison is the reason to take those deltas seriously.
 
 ## The transcript is a model output too (node 3b)
 

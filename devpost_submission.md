@@ -87,13 +87,19 @@ automated scoring proxy for fast iteration.
 
 ## Results
 
-Across 57 scored cases (auto-scored proxy, not yet blind-graded — see
-"What's next"):
+Across 56 cases, **graded blind by a human** — every case shown as
+"System A" and "System B", randomised per case, with the key sealed until
+scoring ran:
 
 | | Recall | Severity-weighted recall | False positives (6 controls) |
 |---|---|---|---|
-| Pipeline | 45/51 (88%) | 92% | 15 |
-| Baseline (single prompt) | 39/51 (76%) | 83% | 11 |
+| Pipeline | 47/50 (94%) | 93% | 13 |
+| Baseline (single prompt) | 41/50 (82%) | 87% | 9 |
+
+The automated proxy used during development predicted this almost exactly
+— 88% vs 76%, the same 12-point gap — which says the cheap scorer was a
+trustworthy instrument for the comparison it was used for, and harsher
+than a human on both systems in absolute terms.
 
 The pipeline catches meaningfully more planted errors than a single
 open-ended prompt, even after fixing the baseline prompt to be

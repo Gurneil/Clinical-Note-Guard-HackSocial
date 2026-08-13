@@ -16,7 +16,10 @@
     --secondary-foreground: 0 0% 9%;
 
     --muted: 0 0% 96%;
-    --muted-foreground: 184 5% 55%;
+    /* 44% lightness, not 55%: at 55% this lands at 3.2:1 on white, which
+       fails WCAG AA (4.5:1) for body text — and almost every paragraph,
+       table cell and caption on the site uses this token. */
+    --muted-foreground: 184 6% 44%;
 
     --accent: 239 84% 67%;
     --accent-foreground: 0 0% 100%;
