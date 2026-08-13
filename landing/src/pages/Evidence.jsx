@@ -87,6 +87,37 @@ export default function Evidence() {
         <Source>eval/ablation_results.json</Source>
       </Section>
 
+      <Section title="We tested the claim on a stronger model. It didn't hold.">
+        <p>
+          The result above used a 7B model for the reasoning both systems
+          depend on. A second full run pinned a 70B model instead — roughly
+          ten times the parameters. Both auto-scored by the same matcher, over
+          the 44 planted-error cases that completed in both runs:
+        </p>
+        <Table
+          columns={["Core-reasoning model", "Pipeline", "Baseline", "Gap"]}
+          rows={[
+            ["Qwen2.5-7B", "39/44 (89%)", "33/44 (75%)", "+14 pts"],
+            ["Llama-3.3-70B", "39/44 (89%)", "40/44 (91%)", "−2 pts"],
+          ]}
+          caption="The pipeline scored identically on both. The baseline went from 33 to 40 once it had a competent model behind it — and two of the five cases it gained are omissions, the failure mode the pipeline has a dedicated node for."
+        />
+        <p>
+          The honest reading is that decomposition compensates for a weak
+          reasoner rather than adding capability on top of a strong one. It
+          narrows the claim above rather than erasing it — that result is real
+          on the model it used, and a weak reasoner is the situation any
+          project on a free tier is actually in — but it stops being a general
+          claim that workflow structure beats a single good prompt.
+        </p>
+        <p>
+          This run is auto-scored rather than human-graded, covers 44 of 60
+          cases (ten failed to rate limits, not difficulty), and is a single
+          run per model.
+        </p>
+        <Source>eval/runs/README.md</Source>
+      </Section>
+
       <Section title="What it was tested on">
         <p>
           {benchmark.totalCases} adversarial cases: each pairs a transcript with

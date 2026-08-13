@@ -60,7 +60,10 @@ Both of those are published on the site rather than buried.
 
 ## Try it
 
+**https://clinicalnoteguard.netlify.app**
+
 - **The site** — the hero embeds a working review console over the real
-  committed evaluation: all 60 cases, real verdicts, real flags.
+  committed evaluation: all 60 cases, real verdicts, real flags. Nothing in
+  it is simulated in the browser.
 - **The CLI** — `python demo.py` runs the whole pipeline end to end on a
   benchmark case, including the interactive human review.

@@ -52,6 +52,29 @@ CORE_REASONING_CHAIN = [
     {"provider": "featherless", "model": "Qwen/Qwen2.5-7B-Instruct"},
 ]
 
+# Robustness runs: pin the fairness-critical tier without editing this file,
+# so "does the workflow claim hold on a different core-reasoning model?" is a
+# reproducible switch rather than a diff someone has to remember to revert.
+#
+#     CORE_CHAIN="groq:llama-3.3-70b-versatile" python run_eval.py
+#
+# Comma-separate for a failover chain. Deliberately affects ONLY this chain -
+# the mechanical tiers stay put, so the only variable between two runs is the
+# model doing the reasoning that both the pipeline and the baseline depend on.
+# A single-entry chain is the honest choice for a robustness run: if that
+# model is unavailable the case errors out and is reported as an error,
+# rather than silently downgrading and quietly mixing two models into one
+# result - which is exactly the caveat these runs exist to remove.
+_CORE_OVERRIDE = os.environ.get("CORE_CHAIN", "").strip()
+if _CORE_OVERRIDE:
+    CORE_REASONING_CHAIN = [
+        {"provider": entry.split(":", 1)[0].strip(),
+         "model": entry.split(":", 1)[1].strip()}
+        for entry in _CORE_OVERRIDE.split(",") if ":" in entry
+    ]
+    print(f"[config] CORE_REASONING_CHAIN overridden -> "
+          f"{[c['provider'] + '/' + c['model'] for c in CORE_REASONING_CHAIN]}")
+
 # Mechanical nodes - no fairness constraint, and deliberately Gemini-free so
 # the whole (tight) Gemini free-tier budget stays available to the
 # comparison above.

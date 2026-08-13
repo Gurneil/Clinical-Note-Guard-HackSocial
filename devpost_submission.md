@@ -108,6 +108,40 @@ baseline. The trade-off: more false positives on clean notes, since
 decomposing into many atomic claims creates more independent chances
 for an over-literal judgment to misfire.
 
+### Then we tested that claim on a stronger model, and it didn't hold
+
+The result above used a 7B model for the reasoning both systems depend
+on. We re-ran everything with a 70B model pinned in its place — about
+ten times the parameters — and scored both runs with the same matcher
+over the 44 planted-error cases that completed in both:
+
+| Core-reasoning model | Pipeline | Baseline | Gap |
+|---|---|---|---|
+| Qwen2.5-7B | 39/44 (89%) | 33/44 (75%) | **+14 pts** |
+| Llama-3.3-70B | 39/44 (89%) | 40/44 (91%) | **−2 pts** |
+
+The pipeline scored identically on both. The baseline went from 33 to 40
+once it had a competent model behind it — and two of the five cases it
+gained are omissions, the failure mode our pipeline has a whole
+dedicated node for.
+
+The honest reading: **decomposition compensates for a weak reasoner
+rather than adding capability on top of a strong one.** Structure
+substituted for model quality here; it did not compound with it. And the
+pipeline pays ~5.5× the tokens to arrive at the same place.
+
+That narrows our claim rather than erasing it. The blind-graded result is
+real on the model that run used, and "worth a great deal when your
+reasoner is weak" is the situation any team on a free tier is actually
+in. What it stops being is a general claim that workflow structure beats
+a single good prompt. We'd rather report that than have a judge discover
+it — and the experiment was in our own README as an open question before
+we ran it.
+
+(Caveats: auto-scored rather than blind human-graded, 44 of 60 cases —
+ten lost to rate limits, not difficulty — and one run per model. Detail
+in `eval/runs/README.md`.)
+
 ## Challenges we ran into
 
 - **Free-tier rate limits mid-eval.** Gemini's 20-request/day cap meant
@@ -146,21 +180,30 @@ for an over-literal judgment to misfire.
 
 ## What we learned
 
-Decomposition-then-verify beats a single "find the errors" prompt, but
-it isn't free — precision drops as recall rises, and a documentation QA
-tool needs both measured, not just the flattering one. Fairness in an
-eval (same provider per case, same prompt information, an honest
-baseline) matters as much as the pipeline design itself.
+Decomposition-then-verify beats a single "find the errors" prompt when
+the underlying reasoner is weak — and stops beating it when the reasoner
+is strong. That was not the answer we expected, and finding it required
+running the experiment against our own claim rather than around it.
+
+The other lesson is that fairness in an eval — same provider per case,
+same information in both prompts, an honest baseline — matters as much as
+the pipeline design. Two separate times, the first version of a number we
+were proud of turned out to be measuring an unfair comparison rather than
+a real advantage.
 
 ## What's next
 
-- The blind human-graded scorecard is the project's own stated
-  methodology; the numbers above are the automated proxy, labeled as
-  such everywhere they're cited. Filling in the blind scorecard is the
-  one remaining step before treating any number here as final.
-- Rerunning the full 60-case comparison on a fresh Gemini quota, since
-  this run's core-reasoning comparison landed mostly on the failover
-  model rather than Gemini.
+- **Finish the stronger-model check properly.** It's auto-scored over 44
+  of 60 cases, with ten lost to rate limits. Re-running those and
+  blind-grading the result would put that finding on the same footing as
+  the headline number.
+- **Tune node 5's notion of "clinically relevant"**, which currently
+  flags genuinely important omissions and borderline ones at the same
+  weight — the main driver of the false-positive rate.
+- **Test whether node 4 earns its place on a model other than this one.**
+  It contributed zero marginal recall here; if that holds across models,
+  it's defence-in-depth rather than coverage, and should be justified as
+  such or dropped.
 ```
 
 ---
@@ -175,16 +218,16 @@ python, gemini-api, groq, featherless-ai, llama, qwen, whisper, faster-whisper, 
 
 ## "Try it out" links
 
-**[YOU]** — the repo isn't pushed to GitHub yet (no git remote configured
-locally). Push it, then add:
+Live site — the guard runs in the browser on all 60 benchmark cases:
 ```
-https://github.com/<your-username>/clinical-note-guard
+https://clinicalnoteguard.netlify.app
 ```
-Also consider a second link to the project site if you host it: build with
-`cd landing && npm run build` and deploy `landing/dist/` (it uses a hash
-router, so plain static hosting like GitHub Pages works without rewrites).
-It walks through the pipeline and replays the committed eval run
-claim-by-claim in the browser.
+
+Repository (**[YOU]** — push before submitting; the link is already wired
+into the site's "View on GitHub" button):
+```
+https://github.com/Gurneil/clinical-note-guard
+```
 
 ---
 
@@ -192,13 +235,17 @@ claim-by-claim in the browser.
 
 **[YOU]** — upload images (3:2 ratio, JPG/PNG/GIF, ≤5MB each, up to 15):
 - `docs/workflow_flowchart.png` — the required workflow diagram, already made for this purpose
-- A screenshot of the project site (`landing/`) — the hero with the guard console,
+- A screenshot of the project site — the hero with the guard console,
   and/or the nine-node flow timeline on the "How the guard works" page
 - A screenshot of the results table / scorecard, or `demo.py` running in a terminal
 
-**Video demo link** — optional per your own README: the track requires a
-video *or* a document, and `docs/SAMPLES.md` (pipeline vs. baseline on 4
-real cases) already satisfies that. Skip the video unless you want one.
+**Video demo** — **[YOU]**. The track requirements say video *or* document,
+and `docs/SAMPLES.md` satisfies that. But in 2025 the organisers made a
+video mandatory partway through the hackathon (Discord, Aug 16 2025:
+"each team will be required to provide a video... detailing the function of
+and the inspiration behind your project, and how it appeals to each of our
+rubric categories"). Assume one is expected. Script in
+`bounty2/demo-video-script.md`.
 
 ---
 

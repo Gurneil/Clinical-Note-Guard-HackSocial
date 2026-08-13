@@ -38,7 +38,7 @@ clinical-note-guard/
 │   └── scripts/
 │       ├── build_cases.py  # bakes the committed eval run into the console's data
 │       └── sync-docs.mjs   # copies docs/ into public/docs for the downloads page
-│   # (the earlier static site is kept at _archive/frontend/ - see "Project site" below)
+│   # (replaced the earlier static site; that lives on in git history only)
 ├── data/
 │   ├── audio/
 │   │   └── case_01_synthetic.wav  # case_01 spoken by two Windows TTS voices, so
@@ -283,8 +283,9 @@ table for the pipeline vs. the baseline - see `docs/ARCHITECTURE.md`,
       included because it explains the workflow to a reader who won't run the
       code, it runs the committed eval output claim-by-claim in the browser,
       and it doubles as the backdrop for a demo video. It replaces the earlier
-      static site, which is kept at `_archive/frontend/` and is no longer
-      maintained - delete that folder once you're happy with the new one.
+      static site (plain HTML in `frontend/`), which was removed once this one
+      proved itself - recover it from git with
+      `git checkout 5921049 -- _archive/` if it's ever wanted.
 - [x] **Blind human grading pass.** Done: 57 of 58 rows graded by hand from
       `scorecard_blind.csv`, seeing only "System A" / "System B" randomised
       per case, with `blind_key.json` unopened until `compute_metrics.py`
@@ -293,13 +294,19 @@ table for the pipeline vs. the baseline - see `docs/ARCHITECTURE.md`,
       and left ungraded on purpose - by the time it was noticed the
       aggregate had been unblinded, so filling it in would no longer have
       been blind. See `docs/ARCHITECTURE.md`, "Results: blind human-graded".
-- [ ] **Rerun on a full, fresh Gemini quota.** This eval run's core-reasoning
-      comparison landed on `featherless/Qwen2.5-7B-Instruct` for 53 of 60
-      cases because the daily 20-request Gemini cap was exhausted early in
-      an earlier same-day run - see `docs/ARCHITECTURE.md`, "Results: blind
-      human-graded". The workflow-design claim should hold on a stronger
-      core-reasoning model too, but that isn't yet directly confirmed at the
-      full 60-case scale. This is now the largest remaining caveat.
+- [x] **Stronger-model check.** Done, and it went against the design. A full
+      run with `llama-3.3-70b-versatile` pinned as the fairness-critical tier
+      (`CORE_CHAIN="groq:llama-3.3-70b-versatile" python eval/run_eval.py`)
+      puts the pipeline and the baseline level: over the 44 planted-error
+      cases that completed in both runs, pipeline 39/44 either way, baseline
+      33/44 on 7B and 40/44 on 70B. Decomposition compensates for a weak
+      reasoner rather than adding capability on top of a strong one. Reported
+      in `docs/ARCHITECTURE.md` ("The stronger-model check") and in full in
+      `eval/runs/README.md`.
+- [ ] **Finish that check properly.** It is auto-scored, over 44 of 60 cases
+      (ten lost to Groq rate limits). Re-run those ten once the daily token
+      budget resets and blind-grade the result, and the finding sits on the
+      same footing as the headline number instead of one rung below it.
 - [ ] Samples/demo VIDEO, if the written `docs/SAMPLES.md` document isn't
       sufficient for the submission (the track requirements say
       video **or** document; a document is provided).

@@ -1,109 +1,202 @@
 # Bounty 2 — feedback form
 
-Paste these into a Google Form (one section per heading). Keep the section
-titles: the bounty is graded partly on presentation, and the sections show a
-reviewer was walked through the product deliberately rather than handed a link.
+Everything between the lines below is meant to be typed or pasted straight
+into Google Forms, in order. Guidance for you (not for the form) is at the
+bottom.
 
-Set the form to **collect responses without sign-in**, and set sharing on
-every file you submit to **"Anyone with the link can view"** — staff warned on
-Aug 10 that unshared files score zero.
-
-The questions are written to produce *criticism you can act on*. "Looks great"
-is worthless for the second half of this bounty, which is your plan for
-addressing what people said, so several questions ask for the bad news
-directly.
+Set the form to **collect responses without sign-in**, and share every file
+you submit as **"Anyone with the link can view"** — staff warned on Aug 10
+that unshared files score zero.
 
 ---
 
-## Section 1 — About you
+## PASTE 1 — Form title
 
-1. **Your name** (short answer)
-   *So we can credit your review in the submission.*
+```
+Clinical Note Hallucination Guard — reviewer feedback
+```
 
-2. **Which describes you best?** (multiple choice)
-   - Student
-   - Work in healthcare
-   - Work in software
-   - None of these
+## PASTE 2 — Form description
 
-3. **Before today, did you know that AI tools already draft clinical notes
-   from doctor–patient conversations?** (multiple choice)
-   - Yes
-   - No
-   - I'd heard something about it
+```
+Thanks for testing this. It's a tool that checks AI-drafted medical notes for things the doctor and patient never actually said, before a clinician signs them.
 
----
+Open it here: https://clinicalnoteguard.netlify.app
 
-## Section 2 — First impressions
+Please keep it open in another tab while you answer — most questions ask you to try something specific. It takes about 10 minutes. No account, no download, nothing to install.
 
-> Spend one minute on the home page. Don't click anything yet.
+Be blunt in the last section. Polite feedback is useless to me; the point is to find what's broken or confusing while there's still time to fix it.
 
-4. **In your own words, what does this product do?** (paragraph)
-
-5. **Who do you think it's built for?** (paragraph)
-
-6. **How clear was that from the page?** (linear scale 1–5, "Had to guess" →
-   "Immediately obvious")
+Everything in the tool is synthetic — invented conversations about fictional patients. There is no real patient data anywhere in it.
+```
 
 ---
 
-## Section 3 — Using the guard
+## SECTION 1 — About you
 
-> On the home page, press **Run the demo**. It opens the review console full
-> screen on `case_01`.
+**Section title:** `About you`
 
-7. **The card says "13 of 14 claims" and "3 flagged". What do you think those
-   numbers mean?** (paragraph)
+**Q1** · Short answer · *required*
+```
+Your name
+```
+Description:
+```
+So I can credit your review in the submission.
+```
 
-8. **Open the Flags view and read one flag. Could you tell what the system
-   thought was wrong, and why it thought so? What was missing?** (paragraph)
+**Q2** · Multiple choice · *required*
+```
+Which describes you best?
+```
+Options:
+```
+Student
+Work in healthcare
+Work in software
+None of these
+```
 
-9. **Each flag has Confirm and Dismiss. Was it clear what those do — and what
-   happens after you press one?** (paragraph)
-
-10. **Was there anything you expected to be able to do and couldn't?**
-    (paragraph)
-
----
-
-## Section 4 — Trust
-
-11. **The site says its own numbers are "auto-scored, not blind human-graded"
-    and that a fallback model produced most of the run. Did you notice that?
-    Did it make you trust the project more, or less?** (paragraph)
-    *This is the project's central bet — that showing the weaknesses builds
-    more credibility than hiding them. Worth knowing if that lands.*
-
-12. **Would you want a tool like this checking a note before a doctor signed
-    it? Why, or why not?** (paragraph)
-
----
-
-## Section 5 — The blunt bit
-
-13. **What is the single worst thing about this project?** (paragraph)
-    *Please be blunt. Vague praise is not useful to us — this section is what
-    the improvement plan gets built from.*
-
-14. **If we could only change one thing, what should it be?** (paragraph)
-
-15. **Anything else?** (paragraph, optional)
+**Q3** · Multiple choice
+```
+Before today, did you know that AI tools already draft clinical notes from doctor–patient conversations?
+```
+Options:
+```
+Yes
+No
+I'd heard something about it
+```
 
 ---
 
-## Who to ask
+## SECTION 2 — First impressions
 
-Three is the minimum; four or five is better, and a **mix matters more than
-the number**. Try to get at least one of each:
+**Section title:** `First impressions`
 
-- Someone with **no technical background** — they test whether the pitch is
-  legible to a normal person, which is what question 4 is really measuring.
-- Someone **technical** — they'll push on the methodology and the numbers.
-- Someone **close to healthcare** if you can find one: a nursing or med
-  student, a pharmacy tech, a family member who works in a clinic. One
-  sentence from someone who has actually read a clinical note is worth more
-  than five from people who haven't.
+**Section description:**
+```
+Spend one minute on the home page. Don't click anything yet.
+```
 
-The hackathon Discord has 1,380 participants and a general channel — a
-swap ("I'll review yours if you review mine") is a fast way to get a
-technical reviewer who'll actually write a paragraph.
+**Q4** · Paragraph · *required*
+```
+In your own words, what does this product do?
+```
+
+**Q5** · Paragraph · *required*
+```
+Who do you think it's built for?
+```
+
+**Q6** · Linear scale 1–5
+```
+How clear was that from the page?
+```
+Labels: `1 = Had to guess` · `5 = Immediately obvious`
+
+---
+
+## SECTION 3 — Using the guard
+
+**Section title:** `Using the guard`
+
+**Section description:**
+```
+On the home page, press "Run the demo". It opens the review console full screen on a case called case_01.
+```
+
+**Q7** · Paragraph
+```
+The card says "13 of 14 claims" and "3 flagged". What do you think those numbers mean?
+```
+
+**Q8** · Paragraph · *required*
+```
+Open the Flags view and read one flag. Could you tell what the system thought was wrong, and why it thought so? What was missing?
+```
+
+**Q9** · Paragraph
+```
+Each flag has Confirm and Dismiss. Was it clear what those do — and what happens after you press one?
+```
+
+**Q10** · Paragraph
+```
+Was there anything you expected to be able to do and couldn't?
+```
+
+---
+
+## SECTION 4 — Trust
+
+**Section title:** `Trust`
+
+**Q11** · Paragraph · *required*
+```
+The site openly says a fallback model produced most of its results, and shows its own false-positive count. Did you notice that? Did it make you trust the project more, or less?
+```
+
+**Q12** · Paragraph
+```
+Would you want a tool like this checking a note before a doctor signed it? Why, or why not?
+```
+
+---
+
+## SECTION 5 — The blunt bit
+
+**Section title:** `The blunt bit`
+
+**Section description:**
+```
+This section is what the improvement plan gets built from, so please don't be nice.
+```
+
+**Q13** · Paragraph · *required*
+```
+What is the single worst thing about this project?
+```
+
+**Q14** · Paragraph · *required*
+```
+If I could only change one thing, what should it be?
+```
+
+**Q15** · Paragraph
+```
+Anything else?
+```
+
+---
+---
+
+# Notes for you (do not paste)
+
+## How many, and who
+
+**Aim for 5.** The bounty requires 3+, so three is a pass and five reads as
+effort without costing much more.
+
+**The mix matters more than the count.** Try to get one of each:
+
+- **Someone non-technical.** Q4 asks what the product does in their own
+  words. If a normal person can't answer that after a minute on the home
+  page, that is the most valuable thing you will learn this week, and no
+  amount of technical praise substitutes for it.
+- **Someone technical.** They will push on the methodology and the numbers,
+  which is where the project is strongest and where you want a quotable
+  reaction.
+- **Someone near healthcare** — a nursing or med student, a pharmacy tech, a
+  relative who works in a clinic. One sentence from someone who has actually
+  read a clinical note outweighs five from people who haven't.
+
+Family and friends count. The hackathon Discord's general channel is the
+fastest route to a technical reviewer; offering to review theirs in exchange
+usually gets you a proper paragraph back.
+
+## After the responses land
+
+The second half of the bounty is a plan addressing the grievances. Send the
+responses over and we'll turn them into that document — and implement the
+cheap fixes before submitting, which is far stronger than promising them.

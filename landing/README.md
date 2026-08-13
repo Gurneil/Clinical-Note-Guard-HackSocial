@@ -156,7 +156,7 @@ console can be read in full without expanding (`min-h-screen` on the root in
 | `src/components/Navbar.jsx` | Logo link, hover dropdowns, hover shadows |
 | `src/components/PageKit.jsx` | Shared page furniture — shell, tables, stats, callouts |
 | `src/components/NodeTimeline.jsx` | The film with the nine nodes as a scrubber |
-| `src/components/Founder.jsx` | Founder story and photo — **placeholder copy** |
+| `src/components/Founder.jsx` | Founder story and photo |
 | `src/pages/` | The five content pages |
 
 Colors are only ever referenced through semantic tokens, never as raw
@@ -168,19 +168,13 @@ mode only.
 - **The background video** (`VIDEO_SRC` in `src/components/Hero.jsx`) is a
   generic stock clip. The project's own pipeline film is already vendored at
   `public/pipeline-flow.mp4` (from the original static site) and used on the
-  pipeline page and in the hero's play button — point `VIDEO_SRC` at
-  `/pipeline-flow.mp4` if you want it as the backdrop too.
-- **The pipeline diagram** (`src/components/PipelineFlow.jsx`) draws the
-  mechanism rather than listing it: the note→transcript and transcript→note
-  paths run as two columns and converge on the human checkpoint, colour-coded
-  by method (LLM / deterministic / human). Connectors are only drawn from
-  `md` up, where the two columns exist.
+  pipeline page — point `VIDEO_SRC` at `/pipeline-flow.mp4` if you want it as
+  the backdrop too. The hero's play button goes to the pipeline page rather
+  than opening the film, which explains nothing on its own.
 - There is no `Guard` nav link — the guard runs on the home page itself.
 - **`Dr. Reyes`** is a placeholder name in the greeting and the `DR` avatar.
-- **The founder section is placeholder copy.** The anecdote in
-  `src/components/Founder.jsx` was written to fit the page, not from life —
-  replace it with something that actually happened before this is published.
-  The photo is real: `public/founder.jpg`, resized and re-encoded from
+  The avatar menu says so out loud.
+- **The founder photo** is `public/founder.jpg`, resized and re-encoded from
   `assets-src/moonlight-river.png` (2076 kB → 173 kB). Keep full-size
   originals in `assets-src/`, not `public/` — everything in `public/` ships
   in the build. If the file is ever missing the frame falls back to a

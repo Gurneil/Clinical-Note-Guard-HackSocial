@@ -294,13 +294,19 @@ table for the pipeline vs. the baseline - see `docs/ARCHITECTURE.md`,
       and left ungraded on purpose - by the time it was noticed the
       aggregate had been unblinded, so filling it in would no longer have
       been blind. See `docs/ARCHITECTURE.md`, "Results: blind human-graded".
-- [ ] **Rerun on a full, fresh Gemini quota.** This eval run's core-reasoning
-      comparison landed on `featherless/Qwen2.5-7B-Instruct` for 53 of 60
-      cases because the daily 20-request Gemini cap was exhausted early in
-      an earlier same-day run - see `docs/ARCHITECTURE.md`, "Results: blind
-      human-graded". The workflow-design claim should hold on a stronger
-      core-reasoning model too, but that isn't yet directly confirmed at the
-      full 60-case scale. This is now the largest remaining caveat.
+- [x] **Stronger-model check.** Done, and it went against the design. A full
+      run with `llama-3.3-70b-versatile` pinned as the fairness-critical tier
+      (`CORE_CHAIN="groq:llama-3.3-70b-versatile" python eval/run_eval.py`)
+      puts the pipeline and the baseline level: over the 44 planted-error
+      cases that completed in both runs, pipeline 39/44 either way, baseline
+      33/44 on 7B and 40/44 on 70B. Decomposition compensates for a weak
+      reasoner rather than adding capability on top of a strong one. Reported
+      in `docs/ARCHITECTURE.md` ("The stronger-model check") and in full in
+      `eval/runs/README.md`.
+- [ ] **Finish that check properly.** It is auto-scored, over 44 of 60 cases
+      (ten lost to Groq rate limits). Re-run those ten once the daily token
+      budget resets and blind-grade the result, and the finding sits on the
+      same footing as the headline number instead of one rung below it.
 - [ ] Samples/demo VIDEO, if the written `docs/SAMPLES.md` document isn't
       sufficient for the submission (the track requirements say
       video **or** document; a document is provided).

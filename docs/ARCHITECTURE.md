@@ -234,13 +234,58 @@ reviewing every flag either way - see Node 7), and is exactly the kind
 of judgment call worth surfacing to a grader rather than burying behind
 a single "our system wins" headline number.
 
-One thing still worth doing: rerun on a day with a full, unused Gemini
-quota (or spread the run across multiple days) so the fairness-critical
-comparison is actually measuring Gemini-vs-Gemini rather than
-Featherless-vs-Featherless most of the time. The workflow-design claim
-should hold on a stronger core-reasoning model too, but that is not yet
-directly confirmed at 60-case scale, and it is the single largest
-remaining caveat on these numbers.
+### The stronger-model check, and it went against us
+
+The paragraph that used to sit here said the workflow-design claim "should
+hold on a stronger core-reasoning model too, but that is not yet directly
+confirmed". It has now been confirmed, and it does not hold.
+
+A second full run was made with `llama-3.3-70b-versatile` pinned as the
+fairness-critical tier - roughly 10x the parameters of the Qwen2.5-7B that
+produced 53 of the 60 cases above. Both runs auto-scored by the same
+matcher, restricted to the **44 planted-error cases that completed in
+both**, so nothing turns on which cases happened to fail:
+
+| Core-reasoning model | Pipeline | Baseline | Gap |
+|---|---|---|---|
+| Qwen2.5-7B | 39/44 (89%) | 33/44 (75%) | **+14 pts** |
+| Llama-3.3-70B | 39/44 (89%) | 40/44 (91%) | **-2 pts** |
+
+The pipeline scored *identically* on both models. The entire movement is on
+the baseline's side: 33 to 40, once it had a competent model behind it. Five
+cases flipped, and two of them are omissions - the failure mode node 5 exists
+specifically to catch. A single open-ended prompt on a 70B model found them
+without a dedicated omission node.
+
+**The honest reading: decomposition compensates for a weak reasoner rather
+than adding capability on top of a strong one.** On this benchmark, structure
+substituted for model quality; it did not compound with it. And the pipeline
+pays ~5.5x the tokens and ~1.7x the latency to arrive at the same place.
+
+This narrows the headline claim rather than erasing it. The blind-graded
+result above is real on the model that run used, and "decomposition is worth
+a great deal when your reasoner is weak" is the situation any project on a
+free tier is actually in. What it stops being is a general claim about
+workflow design beating single prompts.
+
+It also does not make the guard useless: recall on planted errors is one
+axis. The pipeline still emits per-claim verdicts with quoted evidence and a
+category, which is what makes a flag reviewable at all; node 4 is
+deterministic; node 3b is the only thing in either system that questions the
+transcript. None of that is captured by the number above.
+
+Caveats on this comparison, since it is doing real work: it is auto-scored
+rather than blind human-graded; it covers 44 of 60 cases (ten failed in the
+70B run - nine to Groq rate limits, one to malformed JSON, so the exclusions
+are infrastructure artefacts rather than difficulty-related); false positives
+rose for both systems on 70B; and it is one run per model with no repeated
+sampling. Full detail, and what would settle it, in `eval/runs/README.md`.
+
+Reproduce with:
+
+```
+CORE_CHAIN="groq:llama-3.3-70b-versatile" python eval/run_eval.py
+```
 
 Note also that the node ablation reported below is still auto-scored:
 withholding a node changes which flags exist, so it needs re-scoring per

@@ -4,14 +4,14 @@
     "path": "README.md",
     "title": "README",
     "blurb": "Setup, how to run the pipeline and the eval, and the current status of the project.",
-    "bytes": 17992
+    "bytes": 18445
   },
   {
     "file": "ARCHITECTURE.md",
     "path": "docs/ARCHITECTURE.md",
     "title": "Architecture & reasoning",
     "blurb": "Every node, why it exists, the evaluation methodology, the measured results and the known limitations.",
-    "bytes": 43213
+    "bytes": 45446
   },
   {
     "file": "PROMPTS.md",

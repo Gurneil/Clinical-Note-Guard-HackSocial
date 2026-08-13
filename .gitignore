@@ -8,3 +8,10 @@ venv/
 
 # Skill copies pulled in by tooling - not project code
 .claude/skills/
+
+# Personal, machine-local Claude Code permissions - by convention not shared,
+# and this one embeds a personal email in every remembered command.
+.claude/settings.local.json
+
+# One-off deploy bundle produced from landing/dist
+landing/*.zip
