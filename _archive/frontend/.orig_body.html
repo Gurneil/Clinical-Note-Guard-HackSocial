@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clinical Note Guard — a QA layer for AI-drafted clinical notes</title>
+<meta name="description" content="Clinical Note Guard checks an AI-drafted clinical note claim by claim against the encounter transcript, and flags what the transcript never said. A human signs. Nothing changes automatically.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<!-- ══════════ NAV ══════════ -->
+<header class="nav" id="nav" data-over="dark">
+  <div class="nav-in">
+    <a class="brand" href="#top">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="1" y="1" width="30" height="30" rx="9" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5"/>
+        <path d="M9 16.4l4.4 4.3L23 11.2" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>
+        <span class="brand-name"><em>Note</em>&thinsp;Guard</span>
+        <span class="brand-sub">Clinical documentation QA</span>
+      </span>
+    </a>
+
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="navlinks"><span></span></button>
+
+    <nav class="nav-links" id="navlinks">
+      <div class="drop" data-drop>
+        <button class="navbtn" aria-expanded="false" data-drop-toggle>How it works <i class="chev"></i></button>
+        <div class="drop-panel">
+          <a class="drop-item" href="#demo" data-run-demo>
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8"/><path d="M8.2 6.8l5 3.2-5 3.2z"/></svg>
+            <span><b>Watch a check run</b><small>One note, claim by claim</small></span>
+          </a>
+          <a class="drop-item" href="#pipeline">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="10" r="2.2"/><circle cx="16" cy="5" r="2.2"/><circle cx="16" cy="15" r="2.2"/><path d="M6 9l8-3M6 11l8 3"/></svg>
+            <span><b>The eight nodes</b><small>What each step exists for</small></span>
+          </a>
+          <a class="drop-item" href="#source">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5v11"/><path d="M6.5 6v4M13.5 6v4M3.5 8v1M16.5 8v1"/><path d="M6 16.5h8"/></svg>
+            <span><b>When the transcript lies</b><small>What happens on real audio</small></span>
+          </a>
+          <a class="drop-item" href="#taxonomy">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h6.5L17 10.5 10.5 17 3 9.5z"/><circle cx="6.6" cy="6.6" r="1.1"/></svg>
+            <span><b>Error taxonomy</b><small>Six categories, from the literature</small></span>
+          </a>
+        </div>
+      </div>
+      <div class="drop" data-drop>
+        <button class="navbtn" aria-expanded="false" data-drop-toggle>Evidence <i class="chev"></i></button>
+        <div class="drop-panel">
+          <a class="drop-item" href="#evidence">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h14"/><path d="M6 17V9M10 17V4M14 17v-5"/></svg>
+            <span><b>Measured results</b><small>60 synthetic cases, against the baseline</small></span>
+          </a>
+          <a class="drop-item" href="#cost">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><path d="M10 5.5V10l3 2"/></svg>
+            <span><b>Cost and latency</b><small>The part that isn't free</small></span>
+          </a>
+          <a class="drop-item" href="#limits">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.6l7.4 13H2.6z"/><path d="M10 8v3.4M10 13.6v.1"/></svg>
+            <span><b>What it doesn't do</b><small>Known limitations, stated plainly</small></span>
+          </a>
+        </div>
+      </div>
+      <div class="drop" data-drop>
+        <button class="navbtn" aria-expanded="false" data-drop-toggle>Docs <i class="chev"></i></button>
+        <div class="drop-panel">
+          <a class="drop-item" href="../docs/ARCHITECTURE.md">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 2.5h7L16 7v10.5H4.5z"/><path d="M11 2.5V7h5M7 11h6M7 14h4"/></svg>
+            <span><b>ARCHITECTURE.md</b><small>Every design decision, with reasons</small></span>
+          </a>
+          <a class="drop-item" href="../docs/PROMPTS.md">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5h13M3.5 10h9M3.5 14.5h11"/><path d="M15.5 12.6l2.2 2.2-3 .8z"/></svg>
+            <span><b>PROMPTS.md</b><small>Every prompt, and what each rule prevents</small></span>
+          </a>
+          <a class="drop-item" href="../docs/SAMPLES.md">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="15" height="11" rx="2"/><path d="M2.5 9h15M8 9v6.5"/></svg>
+            <span><b>SAMPLES.md</b><small>Real outputs, pipeline vs. baseline</small></span>
+          </a>
+          <a class="drop-item" href="../docs/SAMPLES_AUDIO.md">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5v-1M6.5 13V7M10 16V4M13.5 13V7M17 10.5v-1"/></svg>
+            <span><b>SAMPLES_AUDIO.md</b><small>The run where the transcript itself was fiction</small></span>
+          </a>
+          <a class="drop-item" href="../docs/workflow_flowchart.png">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="15" height="13" rx="2"/><circle cx="7" cy="8" r="1.4"/><path d="M3.5 14l4-3.5 3.5 3 2.5-2 3 2.5"/></svg>
+            <span><b>Workflow diagram</b><small>The submitted flowchart</small></span>
+          </a>
+          <a class="drop-item" href="../README.md">
+            <svg class="di-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5c2.6-1 4.6-1 7 .4v11c-2.4-1.4-4.4-1.4-7-.4z"/><path d="M17 4.5c-2.6-1-4.6-1-7 .4v11c2.4-1.4 4.4-1.4 7-.4z"/></svg>
+            <span><b>README</b><small>Setup, and how to run the eval</small></span>
+          </a>
+        </div>
+      </div>
+      <a class="navbtn" href="guard.html">Open the guard</a>
+      <a class="navbtn" href="#about">About</a>
+      <a class="cta-solid" href="#demo" data-run-demo>Run a check</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ══════════ HERO ══════════ -->
+<main id="top">
+<section class="hero" id="hero" data-typed="false">
+  <div class="driftfield" id="driftfield" aria-hidden="true"></div>
+  <p class="hero-eyebrow">Ambient scribe output · checked before signing</p>
+  <h1><span id="typed" aria-label="Verify like a clinician."></span><span class="caret" aria-hidden="true"></span></h1>
+  <p class="hero-sub">Clinical Note Guard is a QA layer for AI-drafted clinical notes. It reads the transcript, not the vibe.</p>
+  <div class="hero-actions">
+    <a class="btn-lg btn-primary" href="#demo" data-run-demo>Watch it catch a wrong dose</a>
+    <a class="btn-lg btn-quiet" href="#pipeline">See the pipeline</a>
+  </div>
+  <p class="hero-note">Synthetic data only. No diagnosis, no treatment advice, no automatic edits.</p>
+</section>
+
+<!-- chart mock, half-swallowed by the layer below -->
+<div class="mock-stage">
+  <div class="mock">
+    <div class="mock-bar">
+      <span class="mock-title">Notes awaiting review</span>
+      <span class="mock-pill" id="mockCount">6</span>
+      <span class="mock-searchwrap">
+        <svg class="mock-searchicon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="M13.2 13.2L17 17"/></svg>
+        <input class="mock-search" id="mockSearch" type="search" autocomplete="off"
+               placeholder="Search encounters…" aria-label="Search encounters"
+               aria-describedby="mockSearchHelp">
+        <button class="mock-clear" id="mockClear" type="button" aria-label="Clear search" hidden>✕</button>
+      </span>
+      <span class="sr" id="mockSearchHelp">Filters the notes below by condition, medication, or status.</span>
+      <span class="sr" id="mockLive" role="status" aria-live="polite"></span>
+    </div>
+    <div class="mock-grid" id="mockGrid">
+      <div class="mock-card">
+        <h4>Hypertension follow-up</h4>
+        <p class="mock-snip">lisinopril · BP 128/82 · recheck in 3 months</p>
+        <div class="mock-meta"><span><i class="dotf" style="background:#F0A63C"></i>1 flag</span><span>6 claims</span><span class="mock-when">2m ago</span></div>
+      </div>
+      <div class="mock-card">
+        <h4>Abdominal pain, ED</h4>
+        <p class="mock-snip">onset 2 days · denies fever · imaging pending</p>
+        <div class="mock-meta"><span><i class="dotf" style="background:#E4705C"></i>2 flags</span><span>9 claims</span><span class="mock-when">14m ago</span></div>
+      </div>
+      <div class="mock-card">
+        <h4>Post-op knee check</h4>
+        <p class="mock-snip">range improving · sutures out · PT weekly</p>
+        <div class="mock-meta"><span><i class="dotf" style="background:#6FCF97"></i>clear</span><span>7 claims</span><span class="mock-when">1h ago</span></div>
+      </div>
+      <div class="mock-card">
+        <h4>Paediatric rash</h4>
+        <p class="mock-snip">no fever · started Tuesday · antihistamine</p>
+        <div class="mock-meta"><span><i class="dotf" style="background:#6FCF97"></i>clear</span><span>5 claims</span><span class="mock-when">3h ago</span></div>
+      </div>
+      <div class="mock-card">
+        <h4>Sulfa allergy intake</h4>
+        <p class="mock-snip">sulfa — prior hives · penicillin tolerated</p>
+        <div class="mock-meta"><span><i class="dotf" style="background:#E4705C"></i>omission</span><span>8 claims</span><span class="mock-when">yesterday</span></div>
+      </div>
+      <div class="mock-card">
+        <h4>Diabetes recheck</h4>
+        <p class="mock-snip">metformin 500 mg · A1c 7.1 · foot exam done</p>
+        <div class="mock-meta"><span><i class="dotf" style="background:#F0A63C"></i>1 flag</span><span>11 claims</span><span class="mock-when">yesterday</span></div>
+      </div>
+      <p class="mock-empty" id="mockEmpty" hidden>No encounters match <b id="mockEmptyQ"></b>. <button type="button" id="mockEmptyClear">Show all six</button></p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ LIGHT LAYER ══════════ -->
+<div class="wave-wrap light" aria-hidden="true">
+  <svg viewBox="0 0 1440 150" preserveAspectRatio="none">
+    <path d="M0,96 C210,150 400,30 640,52 C880,74 1080,132 1440,66 L1440,150 L0,150 Z"></path>
+  </svg>
+</div>
+<div class="layer-light">
+  <!-- intro -->
+  <section class="sec sec-first wrap" id="why">
+   <div class="why-grid">
+    <div class="why-art" aria-hidden="true">
+      <!-- the note, with one line that the transcript never supports -->
+      <svg class="art art-note" viewBox="0 0 190 230" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 14 C60 9, 120 11, 168 15 C171 70, 172 150, 169 214 C120 218, 62 217, 20 213 C16 150, 15 72, 18 14 Z" opacity=".55"/>
+        <path d="M34 44 H140 M34 60 H150 M34 76 H118"/>
+        <path d="M34 108 H146 M34 124 H128" opacity=".8"/>
+        <path d="M34 156 H150 M34 172 H112 M34 188 H134" opacity=".55"/>
+        <!-- the flagged line -->
+        <g class="art-flag" stroke="var(--vermilion)">
+          <path d="M34 140 H152" stroke-width="2.4"/>
+          <circle cx="24" cy="140" r="5.4"/>
+          <path d="M162 133 l7 7 M169 133 l-7 7" stroke-width="1.6"/>
+        </g>
+      </svg>
+
+      <!-- two doses, hung like a mobile: the same drug, not the same number -->
+      <svg class="art art-dose" viewBox="0 0 150 150" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+        <path d="M40 2 V34 M104 2 V52" opacity=".4"/>
+        <g>
+          <rect x="18" y="34" width="46" height="24" rx="12" opacity=".85"/>
+          <path d="M41 34 V58" opacity=".5"/>
+        </g>
+        <g>
+          <rect x="76" y="52" width="60" height="30" rx="15" opacity=".85"/>
+          <path d="M106 52 V82" opacity=".5"/>
+        </g>
+        <path d="M52 104 h44 M52 116 h44" opacity=".45"/>
+        <path d="M60 98 l30 24" stroke="var(--vermilion)" stroke-width="1.8"/>
+      </svg>
+
+      <span class="art-x art-x1">✕</span>
+      <span class="art-x art-x2">✕</span>
+      <span class="art-x art-x3">✕</span>
+    </div>
+
+    <div class="sec-head">
+      <p class="eyebrow">The problem</p>
+      <h2 class="h2">Built to catch <span class="cycler" id="cycler">wrong doses</span></h2>
+      <p class="lead">
+        An AI scribe writes a note that reads perfectly. One number is wrong, one denial is flipped,
+        one allergy never made it in. A single-prompt "check this note" review skims past exactly
+        those, because nothing forces it to check every claim. This pipeline does force it: it
+        decomposes the note into atomic claims, verifies each one against the transcript
+        independently, then hands a person a short list of what to look at.
+      </p>
+    </div>
+   </div>
+  </section>
+
+  <!-- ══════════ DEMO ══════════ -->
+  <section class="sec wrap" id="demo">
+    <div class="sec-head">
+      <p class="eyebrow">Watch one run</p>
+      <h2 class="h2">One note. Six claims.<br>One of them isn't in the transcript.</h2>
+      <p class="lead">A real case from the benchmark — synthetic patient, planted error. Run the check and watch each claim get verified on its own.</p>
+    </div>
+
+    <div class="demo">
+      <div class="demo-bar">
+        <span class="demo-case"><b>case_01_numeric_medication_error</b> · Primary care, hypertension follow-up</span>
+        <span class="demo-actions">
+          <a class="btn-sm ghost" href="guard.html">Try all 60 cases &rarr;</a>
+          <button class="btn-sm ghost" id="btnBaseline" aria-pressed="false">Compare with single prompt</button>
+          <button class="btn-sm ghost" id="btnReset">Reset</button>
+          <button class="btn-sm" id="btnRun">Run the check</button>
+        </span>
+      </div>
+
+      <div class="demo-cols">
+        <div class="demo-col">
+          <p class="col-label"><span class="dotf" style="background:var(--clinic)"></span> Encounter transcript · source of truth</p>
+          <div class="doc" id="transcript">
+            <p><span class="spk">Doctor:</span> Hi Mr. Alvarez, good to see you. How have you been feeling since we adjusted your blood pressure medication?</p>
+            <p><span class="spk">Patient:</span> <mark class="ev" data-ev="c1">Pretty good, actually. No headaches or dizziness like before.</mark></p>
+            <p><span class="spk">Doctor:</span> That's great. Are you still taking <mark class="ev" data-ev="c3">the lisinopril 10 milligrams once a day</mark>?</p>
+            <p><span class="spk">Patient:</span> Yes, every morning with breakfast.</p>
+            <p><span class="spk">Doctor:</span> Any side effects, cough, swelling in your legs?</p>
+            <p><span class="spk">Patient:</span> <mark class="ev" data-ev="c2">No, nothing like that.</mark></p>
+            <p><span class="spk">Doctor:</span> Let's check your blood pressure today… okay, <mark class="ev" data-ev="c4">it's reading 128 over 82</mark>. That's a nice improvement from last visit.</p>
+            <p><span class="spk">Patient:</span> That's good to hear.</p>
+            <p><span class="spk">Doctor:</span> I want you to keep taking the lisinopril at the same dose and <mark class="ev" data-ev="c6">come back in three months for a recheck</mark>.</p>
+            <p><span class="spk">Patient:</span> Sounds good, thank you.</p>
+          </div>
+        </div>
+
+        <div class="demo-col">
+          <p class="col-label"><span class="dotf" style="background:var(--iris)"></span> AI-drafted note · under test</p>
+          <div class="doc" id="note">
+            <div class="note-line" data-claim="c1"><span class="note-key">S</span>Patient reports feeling well since blood pressure medication adjustment.</div>
+            <div class="note-line" data-claim="c2"><span class="note-key">S</span>Denies headaches, dizziness, cough, or leg swelling.</div>
+            <div class="note-line" data-claim="c3"><span class="note-key">S</span>Taking lisinopril 20mg once daily each morning with breakfast.</div>
+            <div class="note-line" data-claim="c4"><span class="note-key">O</span>Blood pressure 128/82, improved from previous visit.</div>
+            <div class="note-line" data-claim="c5"><span class="note-key">A</span>Hypertension, well-controlled on current regimen.</div>
+            <div class="note-line" data-claim="c6"><span class="note-key">P</span>Continue lisinopril at current dose. Return to clinic in 3 months.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-out">
+        <div class="pipe-steps" id="pipeSteps" aria-live="polite"></div>
+        <div id="demoResult"><p class="empty">Nothing checked yet. Press <b>Run the check</b> to decompose the note and verify each claim against the transcript.</p></div>
+        <div id="baselineBox" hidden>
+          <div class="baseline-box">
+            <b>Single-prompt baseline, same note:</b> it catches this one too — one call, one holistic read, correct answer.
+            The gap shows up elsewhere. On <span class="mono">case_16</span>, a note missing a documented sulfa allergy with a prior
+            hives reaction, the baseline reported zero issues: a whole-note free-form review has no mechanism that would
+            surface something the note never says. That's what the dedicated omission node exists to close.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ PIPELINE ══════════ -->
+  <section class="sec wrap" id="pipeline">
+    <div class="sec-head">
+      <p class="eyebrow">The pipeline</p>
+      <h2 class="h2">Nine nodes, in order</h2>
+      <p class="lead">Six seconds, start to finish: a note comes apart into separate claims, each one gets scanned on its own, and the one that doesn't match the transcript lights up. Scrub the timeline to read what each node does.</p>
+    </div>
+
+    <div class="flowfilm">
+      <div class="film-stage">
+        <!-- TO RE-SHOOT (needs ~6-8 credits; 768p and up only, 512p is the sole sub-4-credit option):
+             model minimax_hailuo, variant minimax-2.3, 768p, 6s, ~6 credits. Prompt:
+             "Over-the-shoulder macro shot of a clinical note open on a tablet in a dim exam room,
+              teal interface glow on a dark charcoal desk. A soft horizontal scanning line travels
+              slowly down the document. One line of the note lights up red with a small marker beside
+              it while the rest stay calm cream-white. A clinician's hand enters frame and pauses over
+              the flagged line without touching it. Shallow depth of field, body text blurred and
+              illegible, no readable words, no logos. Calm clinical documentary cinematography."
+             Then: save over frontend/media/pipeline-flow.mp4 — nothing else needs to change,
+             the timeline paces itself off the file's own duration. -->
+        <video id="flowVideo" src="media/pipeline-flow.mp4" muted loop playsinline autoplay preload="metadata" aria-label="Abstract film of a note separating into claims, each scanned in turn, with one flagged"></video>
+        <div class="film-vignette"></div>
+        <span class="film-stamp">The flow, end to end</span>
+        <div class="film-now">
+          <button class="film-play" id="filmPlay" aria-label="Pause the film">❚❚</button>
+          <span>
+            <b id="filmTitle">Transcript in</b>
+            <span id="filmDesc">The encounter recording is the ground truth everything downstream is checked against.</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="film-track" id="filmTrack" role="group" aria-label="Pipeline nodes — select one to jump to it"></div>
+
+      <div class="film-foot">
+        <span><b style="color:var(--ink)">Three of the nine never call a model.</b> Nodes 4 and 3b are plain Python; node 7 is a person.</span>
+        <span class="mono" style="margin-left:auto">generated with higgsfield · minimax 2.3</span>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ══════════ THE TRANSCRIPT PROBLEM ══════════ -->
+  <section class="sec wrap" id="source">
+    <div class="sec-head">
+      <p class="eyebrow">The assumption underneath everything</p>
+      <h2 class="h2">The transcript is<br>a model output too</h2>
+      <p class="lead">
+        Every node above checks the note against the transcript. That was fine while the transcript
+        was typed by hand. The moment it comes out of a speech recogniser, this system is grounding
+        itself in the one thing it never verified.
+      </p>
+    </div>
+
+    <div class="src-grid">
+      <div class="src-panel">
+        <p class="src-label">What the recogniser heard</p>
+        <p class="src-quote">
+          “Hi, this is Alpera. I'm here for the studio… I think I've got a big one… Are you still
+          taking a little bit of a 10-year-old? … It's leading 178.83. It's a nice and beautiful
+          from last week.”
+        </p>
+        <p class="src-note">
+          The same encounter as the demo above, through a bad speakerphone. Whisper didn't fail
+          loudly — it returned fluent, grammatical English describing a conversation that never
+          happened.
+        </p>
+      </div>
+      <div class="src-panel">
+        <p class="src-label">What the pipeline said about it</p>
+        <p class="src-verdict"><b>8 claims checked. All 8 supported.</b></p>
+        <p class="src-note">
+          And it was right to. Every claim genuinely is entailed by the transcript it was given.
+          The note faithfully represents a fiction. When the transcript is the thing that's wrong,
+          a perfect score is exactly what a correct implementation produces —
+          a hallucinated encounter, certified accurate, ready to sign.
+        </p>
+        <p class="src-fix">
+          Node 3b withdrew all 8, each with the seconds of audio to re-listen to.
+        </p>
+      </div>
+    </div>
+
+    <p class="src-calib-lead">The threshold that catches it was measured, not guessed. One recording, degraded in steps:</p>
+    <div class="calib">
+      <div class="calib-row"><span>clean</span><span class="mono">0.835 – 0.901</span><span class="calib-ok">dose + BP intact</span></div>
+      <div class="calib-row"><span>mild</span><span class="mono">0.801 – 0.869</span><span class="calib-ok">dose + BP intact</span></div>
+      <div class="calib-row" data-bad="true"><span>heavy</span><span class="mono">0.362 – 0.369</span><span class="calib-bad">both lost — invented speech</span></div>
+      <div class="calib-row" data-bad="true"><span>severe</span><span class="mono">0.313 – 0.671</span><span class="calib-bad">both lost</span></div>
+    </div>
+    <p class="src-note" style="max-width:640px">
+      Everything that kept the clinical facts scored at least 0.801. Everything that destroyed them
+      scored at most 0.369. The cutoff sits at 0.55, in the gap — and the script that measured it
+      ships with the number it produced.
+    </p>
+  </section>
+
+  <!-- ══════════ EVIDENCE ══════════ -->
+  <section class="sec wrap" id="evidence">
+    <div class="sec-head">
+      <p class="eyebrow">Measured, on 60 synthetic cases</p>
+      <h2 class="h2">Against the obvious approach</h2>
+      <p class="lead">The baseline is the naive version of this product: one prompt, transcript plus note, "point out any errors." Both systems ran on the same 51 planted errors and the same 6 clean controls.</p>
+    </div>
+
+    <div class="metric-tabs" role="group" aria-label="Choose a metric">
+      <button class="btn-sm ghost" data-metric="recall" aria-pressed="true">Errors caught</button>
+      <button class="btn-sm ghost" data-metric="severity" aria-pressed="false">Highest-risk errors caught</button>
+      <button class="btn-sm ghost" data-metric="fp" aria-pressed="false">False positives</button>
+    </div>
+
+    <div class="bars" id="bars">
+      <div class="barrow">
+        <span>Pipeline</span>
+        <div class="bartrack"><div class="barfill pipe" id="barPipe"></div></div>
+        <span class="barval" id="valPipe"></span>
+      </div>
+      <div class="barrow">
+        <span>Baseline</span>
+        <div class="bartrack"><div class="barfill base" id="barBase"></div></div>
+        <span class="barval" id="valBase"></span>
+      </div>
+    </div>
+    <p class="metric-note" id="metricNote"></p>
+
+    <div id="cost">
+      <div class="costgrid">
+        <div class="cost"><b>5.3</b><span>LLM calls per note, against the baseline's 1. Decomposition is not free.</span></div>
+        <div class="cost"><b>5.5&times;</b><span>the baseline's tokens (~3,280 vs ~600). Measured from provider response metadata, never estimated.</span></div>
+        <div class="cost"><b>1.7&times;</b><span>the baseline's latency (~12.8s vs ~7.5s per note). Whether that trade is worth it depends on your note volume — this project doesn't answer that for you.</span></div>
+      </div>
+    </div>
+
+    <div class="ablation">
+      <h3>Does each node earn its place?</h3>
+      <p class="ablation-lead">
+        Every flag records which node raised it, so the same run can be re-scored with any node
+        withheld — no re-run, no extra API spend. This is the pipeline marking its own homework
+        in public.
+      </p>
+      <div class="abl-rows">
+        <div class="abl-row">
+          <span class="abl-node">Node 3 · entailment</span>
+          <span class="abl-bar"><i style="width:100%"></i></span>
+          <span class="abl-delta">+45.1 pts</span>
+          <span class="abl-note">23 errors nothing else caught. Also 11 of the 15 false positives — the literalism cuts both ways.</span>
+        </div>
+        <div class="abl-row">
+          <span class="abl-node">Node 5 · omission</span>
+          <span class="abl-bar"><i style="width:8.6%"></i></span>
+          <span class="abl-delta">+3.9 pts</span>
+          <span class="abl-note">2 errors nothing else caught, for 4 false positives. One of them wasn't even an omission — it was a medication attributed to the wrong person.</span>
+        </div>
+        <div class="abl-row" data-zero="true">
+          <span class="abl-node">Node 4 · numeric regex</span>
+          <span class="abl-bar"><i style="width:0"></i></span>
+          <span class="abl-delta">+0.0 pts</span>
+          <span class="abl-note">Caught nothing the entailment node hadn't already caught. It stays because it costs no model call and raised zero false positives — but on this benchmark it is not adding coverage, and saying otherwise would be a nicer story than the data supports.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ TAXONOMY ══════════ -->
+  <section class="sec wrap" id="taxonomy">
+    <div class="sec-head">
+      <p class="eyebrow">What counts as an error</p>
+      <h2 class="h2">Six categories</h2>
+      <p class="lead">Adapted from documented failure modes in the clinical-documentation-quality literature, plus two subtypes called out separately because a tiny text change carries outsized clinical risk. Select one to read the definition.</p>
+    </div>
+
+    <div class="taxgrid" id="taxgrid">
+      <button class="tax" aria-expanded="false">
+        <span class="tax-top"><i class="sevdot" style="background:var(--vermilion)"></i><h3>Numeric / medication</h3></span>
+        <span class="tax-hint">Critical · checked exactly</span>
+        <span class="tax-def">A dose, vital, lab value, frequency, or drug name is wrong relative to the transcript. Checked deterministically wherever possible, not by model judgment.</span>
+        <span class="tax-ex">Transcript: “lisinopril 10 milligrams”<br>Note: “lisinopril 20mg”</span>
+      </button>
+      <button class="tax" aria-expanded="false">
+        <span class="tax-top"><i class="sevdot" style="background:var(--vermilion)"></i><h3>Negation</h3></span>
+        <span class="tax-hint">Critical</span>
+        <span class="tax-def">A denial flipped into an affirmation, or the reverse. The smallest possible textual change, with one of the largest possible clinical consequences.</span>
+        <span class="tax-ex">Transcript: “I don't have any chest pain”<br>Note: “Patient reports chest pain”</span>
+      </button>
+      <button class="tax" aria-expanded="false">
+        <span class="tax-top"><i class="sevdot" style="background:var(--amber)"></i><h3>Fabrication</h3></span>
+        <span class="tax-hint">High</span>
+        <span class="tax-def">A finding, symptom, or detail in the note that appears nowhere in the transcript, in any form.</span>
+        <span class="tax-ex">Note: “patient reports nausea”<br>Transcript: nausea never mentioned</span>
+      </button>
+      <button class="tax" aria-expanded="false">
+        <span class="tax-top"><i class="sevdot" style="background:var(--amber)"></i><h3>Distortion</h3></span>
+        <span class="tax-hint">Medium</span>
+        <span class="tax-def">A real detail from the transcript, altered — the right symptom with the wrong severity, duration, or qualifier.</span>
+        <span class="tax-ex">Transcript: “started 2 days ago”<br>Note: “started 2 weeks ago”</span>
+      </button>
+      <button class="tax" aria-expanded="false">
+        <span class="tax-top"><i class="sevdot" style="background:var(--amber)"></i><h3>Misattribution</h3></span>
+        <span class="tax-hint">Medium</span>
+        <span class="tax-def">A real detail attached to the wrong subject or source — family history recorded as the patient's own, a finding moved to the wrong body system.</span>
+        <span class="tax-ex">Transcript: “my father has diabetes”<br>Note: “patient has a history of diabetes”</span>
+      </button>
+      <button class="tax" aria-expanded="false">
+        <span class="tax-top"><i class="sevdot" style="background:var(--clinic-2)"></i><h3>Omission</h3></span>
+        <span class="tax-hint">Medium · different detector</span>
+        <span class="tax-def">Something clinically relevant that was said and never made it into the note. Reported separately, because it needs a detector that reads the transcript first — node 5.</span>
+        <span class="tax-ex">Transcript: known penicillin allergy<br>Note: no allergies section at all</span>
+      </button>
+    </div>
+  </section>
+</div><!-- /layer-light -->
+
+<!-- ══════════ DARK: LIMITS + FOOTER ══════════ -->
+<div class="wave-wrap dark" aria-hidden="true">
+  <svg viewBox="0 0 1440 130" preserveAspectRatio="none">
+    <path d="M0,70 C300,20 520,120 780,88 C1030,58 1220,10 1440,58 L1440,130 L0,130 Z"></path>
+  </svg>
+</div>
+<div class="layer-dark">
+  <section class="sec sec-first wrap" id="limits">
+    <div class="sec-head">
+      <p class="eyebrow">Stated plainly</p>
+      <h2 class="h2">What this doesn't do</h2>
+      <p class="lead" style="color:rgba(232,230,223,.7)">A QA tool that oversells itself is a patient-safety problem. So here is the other side of the table.</p>
+    </div>
+    <div class="limits">
+      <div class="limit"><h3>No clinical judgment</h3><p>It doesn't diagnose, doesn't recommend treatment, and doesn't decide whether a note is correct. It decides whether the note matches the transcript, and hands that to a person.</p></div>
+      <div class="limit"><h3>Decomposition costs precision</h3><p>Seven atomic claims mean seven chances for a false alarm instead of one. On a clean note the pipeline raised 7 flags where the baseline raised 2. That is a real trade, not a rounding error.</p></div>
+      <div class="limit"><h3>The exact checker is narrow</h3><p>Node 4 recognises mg/mcg doses and blood-pressure pairs. Units outside that set fall back to the LLM entailment check, with the ambiguity that implies.</p></div>
+      <div class="limit"><h3>The scoring here is a proxy</h3><p>Reported numbers come from the automated scorer. A blinded human grading pass on the same committed outputs is the next step, and the blind scorecard is in the repo so anyone can run it.</p></div>
+      <div class="limit"><h3>Synthetic data only</h3><p>Sixty invented transcripts about fictional patients, written for this project. No real patient data is used, needed, or stored anywhere.</p></div>
+      <div class="limit"><h3>Sample size is small</h3><p>Sixty cases is enough to compare two systems on the same benchmark. It isn't enough to publish a clinical claim, and this project doesn't make one.</p></div>
+    </div>
+  </section>
+
+  <footer class="foot wrap">
+    <div class="foot-in">
+      <div>
+        <span class="brand-name" style="font-size:27px"><em>Note</em>&thinsp;Guard</span>
+        <div class="foot-links">
+          <a href="#demo" data-run-demo>Run a check</a>
+          <a href="#pipeline">The pipeline</a>
+          <a href="../docs/ARCHITECTURE.md">Architecture</a>
+          <a href="../docs/SAMPLES.md">Sample outputs</a>
+          <a href="../README.md">Read me first</a>
+        </div>
+      </div>
+      <div>
+        <p class="quote">“Every clinical body involved agrees on one thing: a human reads it before it's signed.”</p>
+        <p class="quote-by">— the assumption this whole pipeline is built around</p>
+      </div>
+    </div>
+    <div class="foot-fine">
+      <span>MIT licensed · synthetic data only · not a medical device</span>
+      <span>Built for ReverieHacks 2026 · ML prompt engineering</span>
+    </div>
+  </footer>
+</div>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+{
+  "_comment": "Error taxonomy for the Clinical Note Hallucination Guard. Categories are adapted from documented failure modes in the ambient-scribe / clinical-documentation-quality literature (fabrication, distortion, omission, misattribution), plus two clinically-motivated subtypes (numeric/medication error, negation error) that are called out separately because they carry outsized clinical risk relative to how small the text change is. DELIBERATELY NOT A CATEGORY HERE: 'transcript_uncertainty', the flag node 3b raises on --audio runs. Every category below describes something WRONG WITH THE NOTE, judged against a transcript taken as given. transcript_uncertainty describes something wrong with the TRANSCRIPT - it says the source itself is too unreliable to judge the note against, which is a different kind of statement and is not resolvable by reading the note more carefully. Node 6 classifies into this list and must never emit it; node 3b emits it and never consults this list. See docs/ARCHITECTURE.md, 'The transcript is a model output too'.",
+  "categories": [
+    {
+      "id": "fabrication",
+      "name": "Fabrication",
+      "definition": "A finding, symptom, or detail stated in the note that does not appear anywhere in the source transcript, in any form.",
+      "severity": "high",
+      "example": "Note says 'patient reports nausea' but nausea was never mentioned in the conversation."
+    },
+    {
+      "id": "distortion",
+      "name": "Distortion",
+      "definition": "A detail that IS present in the transcript but has been altered in the note — e.g. the right symptom with the wrong severity, duration, or qualifier.",
+      "severity": "medium",
+      "example": "Patient said pain started '2 days ago'; note says 'started 2 weeks ago'."
+    },
+    {
+      "id": "numeric_medication_error",
+      "name": "Numeric / Medication Error",
+      "definition": "A specific number (dose, vital sign, lab value, frequency) or a medication name is wrong in the note relative to the transcript. Checked deterministically wherever possible, not just by LLM judgment, because these are exact-checkable and carry the highest clinical risk of any category.",
+      "severity": "critical",
+      "example": "Patient said 'lisinopril 10mg'; note says 'lisinopril 20mg'."
+    },
+    {
+      "id": "negation_error",
+      "name": "Negation Error",
+      "definition": "A denial is flipped into an affirmation, or vice versa. Small textual change, potentially large clinical consequence.",
+      "severity": "critical",
+      "example": "Patient said 'I don't have any chest pain'; note says 'patient reports chest pain'."
+    },
+    {
+      "id": "misattribution",
+      "name": "Misattribution",
+      "definition": "A real detail from the transcript is attached to the wrong source or subject — e.g. family history recorded as the patient's own history, or a detail about one symptom attached to a different body system.",
+      "severity": "medium",
+      "example": "Patient said 'my father has diabetes'; note says 'patient has a history of diabetes'."
+    },
+    {
+      "id": "omission",
+      "name": "Omission",
+      "definition": "A clinically relevant detail was stated in the transcript but is entirely missing from the note. Tracked as a secondary metric — the guard's primary job is catching invented/altered content (errors of commission), but omission recall is reported separately since it is a different failure mode with a different detection approach.",
+      "severity": "medium",
+      "example": "Patient mentioned a known penicillin allergy; note does not mention allergies at all."
+    }
+  ]
+}

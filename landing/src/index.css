@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 210 14% 17%;
+
+    --primary: 210 14% 17%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
+
+    --muted: 0 0% 96%;
+    --muted-foreground: 184 5% 55%;
+
+    --accent: 239 84% 67%;
+    --accent-foreground: 0 0% 100%;
+
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 239 84% 67%;
+
+    --radius: 0.5rem;
+
+    --font-display: 'Instrument Serif', serif;
+    --font-body: 'Inter', sans-serif;
+
+    --shadow-dashboard: 0 25px 80px -12px rgba(0, 0, 0, 0.08),
+      0 0 0 1px rgba(0, 0, 0, 0.06);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+}
+
+@layer components {
+  /*
+   * The console's type scale is built for the card in the hero. Full screen
+   * it would be a lot of empty box around 11px text, so scale the whole
+   * thing up rather than maintaining a second set of sizes for every label,
+   * icon and padding.
+   *
+   * `zoom` (unlike `transform: scale`) reflows, so the layout stays correct
+   * and `h-full` still resolves against the parent. Left at 1 on small
+   * screens, where the console needs every pixel it can get.
+   */
+  .guard-zoom {
+    zoom: 1;
+  }
+
+  @media (min-width: 640px) {
+    .guard-zoom {
+      zoom: 1.25;
+    }
+  }
+
+  @media (min-width: 1600px) {
+    .guard-zoom {
+      zoom: 1.45;
+    }
+  }
+}

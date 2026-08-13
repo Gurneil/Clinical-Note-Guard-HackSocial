@@ -30,15 +30,17 @@ clinical-note-guard/
 ├── .env.example            # API key variable names (copy to .env, fill in, never commit)
 ├── smoke_test.py            # verifies every provider + the failover router, no eval cost
 ├── demo.py                  # interactive walkthrough of a single benchmark case
-├── landing/                # project site - Vite + React (see landing/README.md)
-│   ├── src/                # hero, the runnable guard console, and five content pages
-│   ├── public/
-│   │   ├── pipeline-flow.mp4  # 6s pipeline film (generated with Higgsfield / MiniMax 2.3)
-│   │   └── docs/           # the documents below, served as downloads
-│   └── scripts/
-│       ├── build_cases.py  # bakes the committed eval run into the console's data
-│       └── sync-docs.mjs   # copies docs/ into public/docs for the downloads page
-│   # (the earlier static site is kept at _archive/frontend/ - see "Project site" below)
+├── frontend/               # project site - static, no build step, open index.html
+│   ├── index.html          # home: the problem, and the three ways into the project
+│   ├── guard.html          # the guard itself: a runnable claim-by-claim check of
+│   │                        # case_01, the pipeline film, and the audio problem
+│   ├── evidence.html       # measured results, node ablation, cost, taxonomy, limits
+│   ├── about.html          # what the project is, and who built it
+│   ├── assets/
+│   │   ├── site.css        # every page shares one stylesheet
+│   │   └── site.js         # ...and one script; each block guards for its own markup
+│   └── media/
+│       └── pipeline-flow.mp4  # 6s pipeline film (generated with Higgsfield / MiniMax 2.3)
 ├── data/
 │   ├── audio/
 │   │   └── case_01_synthetic.wav  # case_01 spoken by two Windows TTS voices, so
@@ -278,13 +280,10 @@ table for the pipeline vs. the baseline - see `docs/ARCHITECTURE.md`,
       (`eval/asr_confidence_check.py`) and a worked example in
       `docs/SAMPLES_AUDIO.md`
 - [x] LICENSE (MIT)
-- [x] Project site (`landing/`) - Vite + React; `cd landing && npm install &&
-      npm run dev`. Not a track requirement for ML Prompt Engineering;
-      included because it explains the workflow to a reader who won't run the
-      code, it runs the committed eval output claim-by-claim in the browser,
-      and it doubles as the backdrop for a demo video. It replaces the earlier
-      static site, which is kept at `_archive/frontend/` and is no longer
-      maintained - delete that folder once you're happy with the new one.
+- [x] Project site (`frontend/index.html`) - static, no build step. Not a
+      track requirement for ML Prompt Engineering; included because it
+      explains the workflow to a reader who won't run the code, and it
+      doubles as the backdrop for a demo video.
 - [ ] **Blind human grading pass.** The numbers currently in `docs/` come
       from `eval/auto_score.py`, an automated proxy explicitly labeled as
       such everywhere it's cited - not the blind human-graded workflow

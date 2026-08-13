@@ -174,9 +174,11 @@ locally). Push it, then add:
 ```
 https://github.com/<your-username>/clinical-note-guard
 ```
-Also consider a second link to `frontend/index.html` if you host it
-(e.g. GitHub Pages) — README calls it "the backdrop for a demo video"
-and it walks through the pipeline with a runnable claim-by-claim demo.
+Also consider a second link to the project site if you host it: build with
+`cd landing && npm run build` and deploy `landing/dist/` (it uses a hash
+router, so plain static hosting like GitHub Pages works without rewrites).
+It walks through the pipeline and replays the committed eval run
+claim-by-claim in the browser.
 
 ---
 
@@ -184,7 +186,8 @@ and it walks through the pipeline with a runnable claim-by-claim demo.
 
 **[YOU]** — upload images (3:2 ratio, JPG/PNG/GIF, ≤5MB each, up to 15):
 - `docs/workflow_flowchart.png` — the required workflow diagram, already made for this purpose
-- A screenshot of `frontend/index.html` open in a browser
+- A screenshot of the project site (`landing/`) — the hero with the guard console,
+  and/or the nine-node flow timeline on the "How the guard works" page
 - A screenshot of the results table / scorecard, or `demo.py` running in a terminal
 
 **Video demo link** — optional per your own README: the track requires a

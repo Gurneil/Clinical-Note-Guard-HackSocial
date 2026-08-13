@@ -1,0 +1,51 @@
+[
+  {
+    "file": "README.md",
+    "path": "README.md",
+    "title": "README",
+    "blurb": "Setup, how to run the pipeline and the eval, and the current status of the project.",
+    "bytes": 17757
+  },
+  {
+    "file": "ARCHITECTURE.md",
+    "path": "docs/ARCHITECTURE.md",
+    "title": "Architecture & reasoning",
+    "blurb": "Every node, why it exists, the evaluation methodology, the measured results and the known limitations.",
+    "bytes": 41852
+  },
+  {
+    "file": "PROMPTS.md",
+    "path": "docs/PROMPTS.md",
+    "title": "Prompts",
+    "blurb": "Every prompt verbatim, what each constraint prevents, and the iterations behind them.",
+    "bytes": 13904
+  },
+  {
+    "file": "SAMPLES.md",
+    "path": "docs/SAMPLES.md",
+    "title": "Samples",
+    "blurb": "Pipeline vs. baseline on four real cases, generated from the committed eval output.",
+    "bytes": 17148
+  },
+  {
+    "file": "SAMPLES_AUDIO.md",
+    "path": "docs/SAMPLES_AUDIO.md",
+    "title": "Samples — audio",
+    "blurb": "A worked example of the audio path, including node 3b downgrading a verdict.",
+    "bytes": 5597
+  },
+  {
+    "file": "taxonomy.json",
+    "path": "taxonomy.json",
+    "title": "Error taxonomy",
+    "blurb": "The error categories, grounded in the ambient-scribe literature, that classification is constrained to.",
+    "bytes": 3645
+  },
+  {
+    "file": "workflow_flowchart.png",
+    "path": "docs/workflow_flowchart.png",
+    "title": "Workflow flowchart",
+    "blurb": "The pipeline as a diagram — the required submission asset.",
+    "bytes": 582922
+  }
+]
