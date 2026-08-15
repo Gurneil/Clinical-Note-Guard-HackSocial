@@ -1,141 +1,242 @@
 # Demo video — script
 
-Target **4 minutes**. The 2025 organisers asked for a video covering what the
-project does, the inspiration, and how it maps to each rubric category
-(Innovation, Problem Solving, Sustainability/Scalability, User Experience &
-Design). This script hits all four without ever announcing "and now, user
-experience" — the mapping should be visible to a judge with the rubric open,
-not narrated.
+Target **about 4½ minutes**.
 
-Record at **1920×1080**. Two sources: your browser on
-`https://clinicalnoteguard.netlify.app`, and a terminal in
-`D:\clinical-note-guard`. Do a dry run of the terminal section first — the
-live pipeline takes ~13 seconds per note and you don't want to discover a
-rate limit on camera.
+**How to read this:** lines in `[ ]` are what you do on screen. Everything else
+is what you say. Each line is one breath — pause at the line break. Don't try
+to say two lines as one sentence; the short lines are what stops it sounding
+read.
 
-Watch the 2026 opening-ceremony recording for this year's rubric before
-recording; the categories above are from 2025 and may have shifted.
+Say it in your own words if a line feels wrong in your mouth. The meaning
+matters, the wording doesn't.
+
+Record at **1920×1080**, in six separate clips — one per section. Stitch them
+after.
 
 ---
 
-## 0:00–0:30 — The problem, on screen
+## Intro · Who you are — 20 seconds
 
-**Screen:** the live site's home page, scrolled to the top.
+`[ Live site, home page, top. Or your webcam if you'd rather — either is fine,
+   and you only need it for these 20 seconds. ]`
 
-> AI scribes now draft clinical notes from doctor–patient conversations, and
-> they're deployed in real clinics today. They also make things up: a wrong
-> dose, a symptom nobody mentioned, a "denies" flipped to a "reports".
->
-> Everyone agrees a human has to review these before signing. The problem is
-> that reviewing a page of fluent prose and hoping to spot the one wrong
-> sentence is slow and unreliable — because the wrong sentence reads exactly
-> like the right ones.
+Hi — I'm Gurneil.
 
----
+This is Clinical Note Hallucination Guard.
 
-## 0:30–1:20 — What it does, shown not told
+I'm submitting to the ML Prompt Engineering track.
 
-**Screen:** press **Run the demo**. Let the console open on `case_01`.
+`[ beat ]`
 
-> This is the guard running on a real benchmark case. It took the drafted
-> note apart into fourteen individually checkable claims and verified each
-> one against the transcript.
->
-> Thirteen check out. One doesn't.
+It's a tool that checks AI-written medical notes for things that were never
+actually said.
 
-**Screen:** click **Flags**, then read one flag aloud.
-
-> The note says the patient is on lisinopril 20mg. The transcript says ten.
-> The flag carries the evidence — the actual words from the conversation —
-> and a category, so a reviewer can settle it in seconds instead of
-> re-reading the whole note.
->
-> And it never fixes anything. Every flag goes to a person: confirm, or
-> dismiss. That's node 7, and it's required, not optional.
-
-**Screen:** click **Confirm** on one flag so the counter moves.
+Let me show you why that matters.
 
 ---
 
-## 1:20–2:00 — The workflow (the track's actual subject)
+## 1 · The problem — 30 seconds
 
-**Screen:** navigate to **About → AI flowchart**. Let the timeline play, then
-click node 5.
+`[ Live site, home page, top ]`
 
-> Nine nodes. Two of them never call a model at all — the numeric check is a
-> regex, because a dose either matches the transcript or it doesn't, and node
-> 3b is plain Python.
->
-> Node 5 is the one I'd point at. Nodes 2 and 3 walk the *note* against the
-> transcript, which structurally cannot notice something the note left out.
-> So node 5 runs the same pass in reverse: facts out of the transcript,
-> checked against the note.
+AI scribes listen to a doctor's appointment and write up the medical note.
+
+They're being used in real clinics right now.
+
+They also make things up.
+
+A wrong dose. A symptom nobody mentioned. A "no" that turns into a "yes".
+
+`[ pause a beat ]`
+
+Everyone agrees a human has to check these notes before signing them.
+
+But that means reading a full page of text, and hoping you spot the one wrong
+sentence.
+
+And the wrong sentence reads exactly like the right ones.
 
 ---
 
-## 2:00–2:40 — It actually runs
+## 2 · What it does — 50 seconds
 
-**Screen:** terminal, full screen.
+`[ Press "Run the demo". Wait for the console to open. ]`
+
+This is my tool, running on a real test case.
+
+It took the note apart into fourteen separate claims.
+
+Then it checked every one of them against what the doctor and patient actually
+said.
+
+Thirteen are fine. One isn't.
+
+`[ Click "Flags". Point at the first one. ]`
+
+Here it is.
+
+The note says the patient takes twenty milligrams of lisinopril.
+
+The transcript says ten.
+
+And it shows you the proof — the actual words from the conversation.
+
+So instead of re-reading the whole note, you're checking one line.
+
+`[ Click "Confirm" so the counter moves. ]`
+
+It never changes the note itself.
+
+Every flag goes to a person. Confirm, or dismiss.
+
+That step is required. It's not optional.
+
+---
+
+## 3 · How it works — 40 seconds
+
+`[ About → AI flowchart. Let the timeline run a few seconds, then click node 5. ]`
+
+There are nine steps.
+
+Two of them never use AI at all.
+
+The dose check is just plain code — a number either matches or it doesn't. You
+don't need a model for that.
+
+`[ node 5 highlighted ]`
+
+The one I'd point at is this one.
+
+The earlier steps read the note and check it against the conversation.
+
+That can't catch something the note left out completely.
+
+So this step runs it backwards. It takes the facts from the conversation, and
+checks whether each one made it into the note.
+
+---
+
+## 4 · It actually runs — 40 seconds
+
+`[ Terminal, full screen, big font ]`
+
+**Run these two lines BEFORE you start recording, then clear the screen** — so
+the take opens on a clean prompt and the only thing on camera is the command
+that matters:
+
+```powershell
+cd D:\clinical-note-guard
+Set-Alias python D:\Python312\python.exe
+cls
+```
+
+`[ Now start recording, and type: ]`
 
 ```
 python demo.py 3 --no-review
 ```
 
-> This is the live pipeline, not a replay — drafting a note, decomposing it,
-> checking each claim, and stopping at the human checkpoint.
+This is the real thing running. Not a recording.
 
-Let it run. Don't talk over the whole thing; let a few seconds of real output
-breathe. Cut the dead time in the edit if it drags.
+It writes a note, breaks it down, checks every claim, and stops for a human.
 
----
-
-## 2:40–3:30 — The evidence, including the part that went against us
-
-**Screen:** the site's **Evidence** page. Scroll to the results table.
-
-> Sixty synthetic cases, each with one planted error, plus clean controls to
-> measure false alarms. Graded blind by a human who couldn't tell which
-> system was which: the pipeline caught 47 of 50, the single-prompt baseline
-> 41.
-
-**Screen:** scroll to the stronger-model section.
-
-> Then I tested that claim on a model ten times the size — and it stopped
-> holding. The pipeline scored exactly the same. The baseline caught up.
->
-> The honest reading is that decomposition compensates for a weak reasoner
-> rather than adding capability on top of a strong one. That narrows what I
-> can claim. I'm showing it because it's the result, and because a QA tool
-> that hides its own bad measurement has no business asking anyone to trust
-> it.
-
-*This is the most important thirty seconds in the video. Don't rush it and
-don't apologise for it.*
+`[ Let it run. Say nothing for a few seconds. Trim the slow bit later. ]`
 
 ---
 
-## 3:30–4:00 — Cost, and close
+## 5 · The evidence — 50 seconds
 
-**Screen:** **Evidence → Cost & caveats**.
+**This is the most important part of the video. Slow down here.**
 
-> All of it measured, not estimated: 5.5× the tokens and 1.7× the latency of
-> a single prompt, on free-tier APIs, zero spend.
->
-> Every transcript and every recording in this project is synthetic —
-> invented conversations about fictional patients. No real patient data
-> anywhere, and it never diagnoses anything. It's a documentation check that
-> keeps a human in the loop, and tells you honestly how well it works.
+`[ Evidence page, results table ]`
 
-**Screen:** end on the home page or the flowchart.
+Sixty test cases. Each one has a single error hidden in it.
+
+Plus clean cases with nothing wrong, to see how often it cries wolf.
+
+I graded them blind — while I was scoring, I couldn't tell which system was
+which.
+
+My pipeline caught forty-seven out of fifty. A single prompt caught forty-one.
+
+`[ Scroll to the stronger-model section. Pause before speaking. ]`
+
+Then I tested that on a model ten times bigger.
+
+And it stopped being true.
+
+My pipeline scored exactly the same. The simple prompt caught up.
+
+`[ beat ]`
+
+So here's what I think that actually means.
+
+Breaking the note down helps a lot when the model is weak.
+
+It doesn't add much on top of a model that's already strong.
+
+That's a smaller claim than the one I started with.
+
+I'm showing you it because it's the result.
+
+A tool built to catch other people's mistakes shouldn't hide its own.
 
 ---
 
-## Checklist before uploading
+## 6 · Cost, and close — 30 seconds
+
+`[ Evidence → Cost & caveats ]`
+
+All of this is measured, not guessed.
+
+It costs about five and a half times the tokens of a single prompt, and takes
+roughly twice as long.
+
+All on free API tiers. I spent nothing.
+
+`[ Home page or the flowchart ]`
+
+Every conversation in this project is made up. Fictional patients, written for
+the test.
+
+There's no real patient data anywhere in it, and it never diagnoses anyone.
+
+It's a documentation check that keeps a human in charge — and tells you
+honestly how well it works.
+
+---
+
+## Delivery notes
+
+- **Read it once out loud before recording.** Any line you stumble on, change
+  it. It's your video.
+- **Slower than feels natural.** Everyone rushes their first take.
+- **Don't apologise anywhere**, especially in section 5. "It stopped being
+  true" is a finding, not a confession. Say it like one.
+- If you fluff a line, pause for two seconds and say it again — the silence
+  makes it easy to cut.
+
+## Before you record
+
+- [ ] Redeploy the site so it matches what you're showing
+- [ ] Record 10 seconds, play it back, check the audio
+- [ ] Focus Assist on (Win+N) so no notifications pop up
+- [ ] Browser full screen, bookmarks bar hidden
+- [ ] Terminal font 16pt or bigger
+- [ ] **`python` is not on your PATH.** The `python.exe` Windows finds is a
+      Microsoft Store placeholder that just prints an error. Use the alias
+      above, or the full path `D:\Python312\python.exe`
+- [ ] **Dry-run the demo once**, from `D:\clinical-note-guard`:
+      `D:\Python312\python.exe demo.py 3 --no-review`. It makes live API calls
+      and the free tiers run out. If it errors on rate limits, skip section 4
+      rather than recording a failure — everything else in the video works
+      without it
+
+## After
 
 - [ ] Under 6 minutes
-- [ ] Says the track name ("ML Prompt Engineering") somewhere, or shows it
-- [ ] Audio is audible — test 10 seconds and play it back before the full take
-- [ ] The stronger-model finding is in it
-- [ ] Uploaded unlisted-or-public on YouTube/Drive, and the link **actually
-      opens in a private browser window** (staff have had submissions score
-      zero for unshared links)
+- [ ] Track name said in the intro: ML Prompt Engineering
+- [ ] Export 1080p (Clipchamp is built into Windows and is enough)
+- [ ] Upload unlisted to YouTube
+- [ ] **Open the link in a private window** to confirm it plays
