@@ -56,8 +56,9 @@ negation errors.
 
 ## How we built it
 
-Seven-node pipeline, each node doing one job instead of asking a single
-prompt to do everything at once:
+Nine nodes, each doing one job instead of asking a single prompt to do
+everything at once. Node 0 is the transcript itself and node 3b only runs
+in audio mode (both described below); these seven run on every note:
 
 1. **Draft** the note from the transcript (simulates the ambient scribe)
 2. **Extract** atomic claims from the note
@@ -162,6 +163,18 @@ in `eval/runs/README.md`.)
 - **Malformed JSON from smaller models mid-batch**, and a single failing
   case discarding an entire eval run — both hardened against directly in
   `run_eval.py` after hitting them for real.
+- **A provider withdrew two models mid-project.** Groq retired both models
+  we were using, hours after a 60-case run that had been using them
+  successfully. Our failover chain was built for providers going *down*,
+  not for models being *removed* — a retired model returns 404, which we'd
+  classified as a caller bug worth surfacing rather than an availability
+  problem worth routing around, so calls died with a working fallback
+  sitting unused in the same chain. Fixed narrowly: 404s that name the
+  model now fail over; a 404 from a bad URL still surfaces. The
+  replacement model's free tier caps at 8,000 tokens/minute against the
+  ~580,000 a 60-case run needs, which makes a complete second evaluation
+  run arithmetically impossible on a free tier. That ceiling is stated in
+  `eval/runs/README.md` rather than left implied.
 - **The transcript isn't ground truth in audio mode.** A verdict is only
   as good as the audio it was checked against, so node 3b calibrates a
   confidence threshold (via a dedicated degradation experiment) instead
@@ -245,7 +258,7 @@ video mandatory partway through the hackathon (Discord, Aug 16 2025:
 "each team will be required to provide a video... detailing the function of
 and the inspiration behind your project, and how it appeals to each of our
 rubric categories"). Assume one is expected. Script in
-`bounty2/demo-video-script.md`.
+`submission/demo-video-script.md`.
 
 ---
 

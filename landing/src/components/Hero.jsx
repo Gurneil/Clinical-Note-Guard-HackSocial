@@ -8,7 +8,10 @@ import GlassBadge from "@/components/GlassBadge";
 import GuardStage from "@/components/GuardStage";
 import Typewriter from "@/components/Typewriter";
 
-const VIDEO_SRC = `${import.meta.env.BASE_URL}pipeline-flow.mp4`;
+// Kept as the original stock clip: the demo video was filmed against this
+// backdrop, and the deployed site needs to match what the footage shows.
+const VIDEO_SRC =
+  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260319_015952_e1deeb12-8fb7-4071-a42a-60779fc64ab6.mp4";
 
 const HEADLINE = [
   { text: "AI Notes, " },
@@ -27,13 +30,8 @@ export default function Hero() {
 
   return (
     <section className="relative flex-1 w-full overflow-hidden">
-      {/* The project's own pipeline film, run at low opacity as a moving
-          texture rather than a backdrop. At full strength it is a dark clip
-          under dark text — unreadable. Faint, it gives the hero some life
-          without costing contrast, and it is our asset rather than a stock
-          clip streamed from someone else's CDN. */}
       <video
-        className="absolute inset-0 z-0 h-full w-full object-cover opacity-[0.16]"
+        className="absolute inset-0 z-0 h-full w-full object-cover"
         src={VIDEO_SRC}
         autoPlay
         muted
