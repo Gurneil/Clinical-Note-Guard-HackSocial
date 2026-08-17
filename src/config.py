@@ -46,9 +46,21 @@ with open(_TAXONOMY_PATH, encoding="utf-8") as f:
 
 # Fairness-critical. Both the entailment node and the baseline draw from this
 # one chain via llm_router.call_core_reasoning(), so they can never diverge.
+# NOTE ON THE GROQ ENTRIES BELOW: this project originally used
+# llama-3.3-70b-versatile here and llama-3.1-8b-instant on the mechanical
+# tiers. Groq withdrew both mid-project - they began returning 404
+# model_not_found within hours of a 60-case eval run that had been using them
+# successfully - and replaced them with the openai/gpt-oss family. The model
+# IDs below are the live ones as of that switch.
+#
+# The eval results committed under eval/ were produced by the OLD models.
+# They are not re-runnable on demand, which is a real limitation of building
+# on free tiers rather than a bookkeeping detail; every run records the
+# provider/model it actually used per case for exactly this reason. See
+# eval/runs/README.md.
 CORE_REASONING_CHAIN = [
     {"provider": "gemini", "model": "gemini-3.6-flash"},
-    {"provider": "groq", "model": "llama-3.3-70b-versatile"},
+    {"provider": "groq", "model": "openai/gpt-oss-120b"},
     {"provider": "featherless", "model": "Qwen/Qwen2.5-7B-Instruct"},
 ]
 
@@ -56,7 +68,7 @@ CORE_REASONING_CHAIN = [
 # so "does the workflow claim hold on a different core-reasoning model?" is a
 # reproducible switch rather than a diff someone has to remember to revert.
 #
-#     CORE_CHAIN="groq:llama-3.3-70b-versatile" python run_eval.py
+#     CORE_CHAIN="groq:openai/gpt-oss-120b" python run_eval.py
 #
 # Comma-separate for a failover chain. Deliberately affects ONLY this chain -
 # the mechanical tiers stay put, so the only variable between two runs is the
@@ -79,11 +91,11 @@ if _CORE_OVERRIDE:
 # the whole (tight) Gemini free-tier budget stays available to the
 # comparison above.
 EXTRACT_CHAIN = [
-    {"provider": "groq", "model": "llama-3.1-8b-instant"},
+    {"provider": "groq", "model": "openai/gpt-oss-20b"},
     {"provider": "featherless", "model": "Qwen/Qwen2.5-7B-Instruct"},
 ]
 CLASSIFY_CHAIN = [
-    {"provider": "groq", "model": "llama-3.1-8b-instant"},
+    {"provider": "groq", "model": "openai/gpt-oss-20b"},
     {"provider": "featherless", "model": "Qwen/Qwen2.5-7B-Instruct"},
 ]
 
@@ -93,7 +105,7 @@ CLASSIFY_CHAIN = [
 # approach" - not the guard's primary job. No fairness constraint (the
 # baseline has no equivalent decomposition either way), so mechanical tier.
 OMISSION_CHAIN = [
-    {"provider": "groq", "model": "llama-3.1-8b-instant"},
+    {"provider": "groq", "model": "openai/gpt-oss-20b"},
     {"provider": "featherless", "model": "Qwen/Qwen2.5-7B-Instruct"},
 ]
 
@@ -103,6 +115,6 @@ OMISSION_CHAIN = [
 MODEL_DRAFT = "gemini-3.6-flash"
 DRAFT_CHAIN = [
     {"provider": "gemini", "model": MODEL_DRAFT},
-    {"provider": "groq", "model": "llama-3.3-70b-versatile"},
+    {"provider": "groq", "model": "openai/gpt-oss-120b"},
     {"provider": "featherless", "model": "Qwen/Qwen2.5-7B-Instruct"},
 ]
