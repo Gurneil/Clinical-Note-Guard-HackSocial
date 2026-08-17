@@ -9,6 +9,7 @@ scorecard, the A/B key, and the automated scorecard. The run at `eval/`
 | --- | --- | --- | --- |
 | `core-gemini-qwen-mixed/` | `gemini-3.6-flash` ×3, `llama-3.3-70b` ×2, `Qwen2.5-7B` ×53 | 57 | blind, by hand (56 rows) + auto |
 | `core-llama-3.3-70b/` | `llama-3.3-70b-versatile` on all 50 | 50 | auto only |
+| `core-gpt-oss-120b-partial/` | `openai/gpt-oss-120b` on all 10 | 10 — **not usable** | none |
 
 Reproduce the second one with:
 
@@ -127,3 +128,34 @@ reproducible evaluation.** Every number in this project is reproducible only
 in the sense that the run is committed and the provider/model is recorded per
 case. It is not re-runnable on demand, and that limitation belongs next to
 the results rather than in a footnote.
+
+### The third attempt, and why it stopped
+
+Once Groq's replacement models appeared (`openai/gpt-oss-120b`,
+`openai/gpt-oss-20b`), the check was attempted again — a complete 60-case run
+on `gpt-oss-120b`, which would have beaten the frozen 44 and tested the
+finding on a third model family rather than a second Llama.
+
+**10 of 60 cases completed.** The rest died on a tokens-per-minute cap, and
+the arithmetic says the run is not achievable on a free tier at all:
+
+| | |
+| --- | --- |
+| Observed core-reasoning call | ~4,800 tokens |
+| Per case (entailment + baseline, fairness-linked) | ~9,600 tokens |
+| Full 60-case run | **~580,000 tokens** |
+| Free-tier limit, `gpt-oss-120b` | **8,000 tokens/minute** |
+
+That is roughly 0.8 cases per minute at best, and if the daily cap resembles
+the 100,000/day seen on the Llama tier, about ten cases a day — five or six
+days of babysitted runs for one robustness check. The partial run is kept in
+`core-gpt-oss-120b-partial/` as evidence of the attempt; at 10 cases it is
+far too small to compare against anything and no conclusion is drawn from it.
+
+**So the robustness finding stands on the 44-case Llama-70B comparison, and
+that is where it stops.** Three model families were reachable in principle
+and none of them could be made to yield a complete second run inside a free
+tier: Gemini caps at 20 requests/day, the Llama models were withdrawn
+mid-project, and gpt-oss caps at 8,000 tokens/minute. That constraint is the
+honest ceiling on this project's evaluation, and pretending otherwise by
+quietly reporting a 10-case result would be worse than stating it.

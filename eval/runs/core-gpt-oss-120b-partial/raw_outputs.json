@@ -1,0 +1,2165 @@
+[
+  {
+    "case_id": "case_01_numeric_medication_error",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "numeric_medication_error",
+          "claim_text": "Taking lisinopril 20mg once daily",
+          "correct_value": "lisinopril 10mg once daily",
+          "transcript_evidence": "Patient confirmed 'lisinopril 10 milligrams once a day'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4172, Requested 4593. Please try again in 5.7375s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_02_fabrication",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "fabrication",
+          "claim_text": "accompanied by fever and mild nausea",
+          "correct_value": "not mentioned; patient explicitly denied fever and denied nausea/vomiting",
+          "transcript_evidence": "Patient said 'No fever that I've noticed' and, on nausea/vomiting, 'No, none of that.'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4043, Requested 4850. Please try again in 6.6975s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_03_negation_error",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "negation_error",
+          "claim_text": "Reports numbness and tingling radiating into the legs",
+          "correct_value": "Denies numbness or tingling",
+          "transcript_evidence": "Patient said 'No, I don't have any numbness or tingling.'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 3714, Requested 4650. Please try again in 2.73s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_04_distortion",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "distortion",
+          "claim_text": "recurring episodes of hypoglycemia ... occurring several times",
+          "correct_value": "a single episode, occurred once",
+          "transcript_evidence": "Patient said 'just that one time' when asked if it happened more than once"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 3224, Requested 4803. Please try again in 202.5ms. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_05_misattribution",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "misattribution",
+          "claim_text": "Patient has a personal history of type 2 diabetes, diagnosed a few years after a myocardial infarction",
+          "correct_value": "this is the patient's FATHER's history, not the patient's own; patient explicitly denied any personal history",
+          "transcript_evidence": "Patient said 'No, I've never been diagnosed with anything like that' when asked about personal history"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6369, Requested 4571. Please try again in 22.05s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_06_clean_control",
+    "ground_truth": {
+      "has_error": false,
+      "injected_errors": []
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5733, Requested 4887. Please try again in 19.65s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_07_numeric_medication_error_pediatric_dose",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "numeric_medication_error",
+          "claim_text": "Amoxicillin 500mg three times daily",
+          "correct_value": "amoxicillin 250mg three times daily",
+          "transcript_evidence": "Doctor said 'that's going to be 250 milligrams, three times a day'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5151, Requested 4651. Please try again in 13.515s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_08_numeric_medication_error_beta_blocker",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "numeric_medication_error",
+          "claim_text": "Continue metoprolol 50mg twice daily",
+          "correct_value": "metoprolol 25mg twice daily",
+          "transcript_evidence": "Patient confirmed 'taking the metoprolol 25 milligrams twice a day'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4677, Requested 4776. Please try again in 10.8975s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_09_fabrication_allergy_visit",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "fabrication",
+          "claim_text": "Patient reports a known penicillin allergy",
+          "correct_value": "not mentioned; patient explicitly denied any drug allergy",
+          "transcript_evidence": "Patient said 'No, I've never had a reaction to any medication that I know of.'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4217, Requested 4739. Please try again in 7.17s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_10_fabrication_knee_exam",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "fabrication",
+          "claim_text": "Notable right knee swelling on exam",
+          "correct_value": "not mentioned; patient explicitly denied noticing any swelling",
+          "transcript_evidence": "Patient said 'No swelling that I've seen'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 3747, Requested 4798. Please try again in 4.0875s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_11_negation_error_shortness_of_breath",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "negation_error",
+          "claim_text": "Reports shortness of breath with exertion, including with stair climbing",
+          "correct_value": "Denies shortness of breath",
+          "transcript_evidence": "Patient said 'No, I don't get short of breath. I've actually been walking more and it's been fine.'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 3748, Requested 4534. Please try again in 2.114999999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_12_negation_error_blood_in_stool",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "negation_error",
+          "claim_text": "Reports blood in stool",
+          "correct_value": "Denies blood in stool",
+          "transcript_evidence": "Patient said 'No, definitely no blood, I would have noticed that.'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 3405, Requested 4765. Please try again in 1.275s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_13_distortion_fever_duration",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "distortion",
+          "claim_text": "5 days of fever",
+          "correct_value": "fever since the prior night, about 1 day",
+          "transcript_evidence": "Parent said the fever started 'just since last night, so about a day now'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6811, Requested 1965. Please try again in 5.82s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_14_misattribution_smoking_history",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "misattribution",
+          "claim_text": "Patient has a smoking history, approximately one pack per day for years",
+          "correct_value": "this is the patient's HUSBAND's smoking history (secondhand exposure), not the patient's own; patient explicitly denied ever smoking",
+          "transcript_evidence": "Patient said 'No, never smoked a day in my life' and identified the pack-a-day smoker as 'my husband'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6549, Requested 2084. Please try again in 4.7475s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_15_omission_otc_medication",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "omission",
+          "claim_text": "regular OTC ibuprofen use (3-4 days/week) for headaches, and the counseling to switch to acetaminophen given the interaction risk with lisinopril",
+          "correct_value": "the note should document the ibuprofen use, the interaction discussion, and the plan to switch to acetaminophen",
+          "transcript_evidence": "Patient reported taking ibuprofen '3 to 4 days a week' and the doctor said it 'can interact with your blood pressure medication' and recommended switching to acetaminophen"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5742, Requested 4765. Please try again in 18.8025s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_16_omission_drug_allergy",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "omission",
+          "claim_text": "known sulfa drug allergy (hives on prior exposure)",
+          "correct_value": "the note should document the sulfa allergy in the allergy section, since it is safety-critical for future prescribing",
+          "transcript_evidence": "Patient said 'I'm allergic to sulfa drugs. I broke out in hives the last time I took one'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5436, Requested 4739. Please try again in 16.3125s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_17_clean_control_dermatology",
+    "ground_truth": {
+      "has_error": false,
+      "injected_errors": []
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4883, Requested 4821. Please try again in 12.78s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_18_clean_control_annual_physical",
+    "ground_truth": {
+      "has_error": false,
+      "injected_errors": []
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4244, Requested 4578. Please try again in 6.165s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_19_numeric_medication_error_warfarin_inr",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "numeric_medication_error",
+          "claim_text": "warfarin 10mg daily each evening",
+          "correct_value": "warfarin 5mg daily each evening",
+          "transcript_evidence": "Patient stated 'Five milligrams, every day at dinner time'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient on warfarin 10mg daily each evening for anticoagulation",
+        "Denies bleeding",
+        "Denies hematuria",
+        "Denies melena",
+        "Reports one minor bruise on the arm from mechanical trauma",
+        "INR 2.4",
+        "Anticoagulation therapeutic and stable",
+        "Continue current warfarin dose without change",
+        "Repeat INR in 4 weeks",
+        "Counseled on maintaining consistent dietary vitamin K intake"
+      ],
+      "transcript_facts_checked": [
+        "Checking INR today",
+        "Patient taking warfarin",
+        "Warfarin dose is 5 milligrams daily",
+        "No bleeding, bruising, blood in urine or stool",
+        "INR result is 2.4",
+        "No changes to dose",
+        "Next INR check in four weeks",
+        "No need to avoid leafy greens, but stay consistent"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Patient on warfarin 10mg daily each evening for anticoagulation",
+          "status": "contradicted",
+          "evidence": "Five milligrams, every day at dinner time.",
+          "category": "numeric_medication_error",
+          "explanation": "The dose of warfarin is incorrect in the note.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [
+        {
+          "category": "numeric_medication_error",
+          "flagged_value": "10mg",
+          "reason": "This number/dose appears in the note but was not found anywhere in the transcript.",
+          "source": "deterministic_check"
+        }
+      ],
+      "omission_flags": [
+        {
+          "claim": "Checking INR today",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Warfarin dose is 5 milligrams daily",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No need to avoid leafy greens, but stay consistent",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Patient on warfarin 10mg daily each evening for anticoagulation",
+          "status": "contradicted",
+          "evidence": "Five milligrams, every day at dinner time.",
+          "category": "numeric_medication_error",
+          "explanation": "The dose of warfarin is incorrect in the note.",
+          "source": "llm_pipeline"
+        },
+        {
+          "category": "numeric_medication_error",
+          "flagged_value": "10mg",
+          "reason": "This number/dose appears in the note but was not found anywhere in the transcript.",
+          "source": "deterministic_check"
+        },
+        {
+          "claim": "Checking INR today",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Warfarin dose is 5 milligrams daily",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No need to avoid leafy greens, but stay consistent",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "groq",
+      "core_reasoning_model": "openai/gpt-oss-120b"
+    },
+    "baseline_result": [
+      {
+        "issue": "Patient on warfarin 10mg daily each evening for anticoagulation",
+        "explanation": "The transcript states the patient is taking 5\u202fmg of warfarin daily at dinner, not 10\u202fmg. The note incorrectly documents a doubled dose.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "groq",
+    "core_reasoning_model": "openai/gpt-oss-120b",
+    "baseline_provider": "groq",
+    "baseline_model": "openai/gpt-oss-120b",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_20_numeric_medication_error_insulin_units",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "numeric_medication_error",
+          "claim_text": "insulin glargine 12 units nightly",
+          "correct_value": "insulin glargine 22 units nightly",
+          "transcript_evidence": "Patient stated 'Twenty-two units, at about 10 pm'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4687, Requested 4799. Please try again in 11.145s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_21_numeric_medication_error_bp_reading",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "numeric_medication_error",
+          "claim_text": "Blood pressure 164/90",
+          "correct_value": "Blood pressure 146/90",
+          "transcript_evidence": "Doctor stated 'Blood pressure today is 146 over 90'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4158, Requested 4805. Please try again in 7.2225s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_22_numeric_medication_error_frequency",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "numeric_medication_error",
+          "claim_text": "sertraline 50mg twice daily",
+          "correct_value": "sertraline 50mg once daily in the morning",
+          "transcript_evidence": "Patient stated 'Fifty milligrams, once a day in the morning'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 3593, Requested 4805. Please try again in 2.985s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_23_numeric_medication_error_pediatric_weight_dose",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "numeric_medication_error",
+          "claim_text": "Weight 42 kg",
+          "correct_value": "Weight 24 kg",
+          "transcript_evidence": "Doctor stated 'let's get her weight - okay, 24 kilograms'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Mother reports marked improvement in asthma control.",
+        "Rescue inhaler used twice in the past month.",
+        "No nocturnal cough.",
+        "No nocturnal dyspnea.",
+        "Patient is on low-dose inhaled corticosteroid.",
+        "Patient uses 2 puffs of inhaled corticosteroid twice daily.",
+        "Patient's weight is 42 kg.",
+        "Lungs are clear to auscultation bilaterally.",
+        "Plan: continue inhaled corticosteroid at current dose.",
+        "Plan: use albuterol as rescue only.",
+        "Plan: follow up in 3 months."
+      ],
+      "transcript_facts_checked": [
+        "Maya's breathing has improved since last visit.",
+        "Maya used the rescue inhaler twice in the last month.",
+        "Maya's weight is 24 kilograms.",
+        "Maya has grown a bit.",
+        "Maya is on low-dose inhaled steroid, two puffs twice a day.",
+        "No nighttime coughing or waking up short of breath.",
+        "Plan: keep everything the same and see her again in three months.",
+        "Plan: keep albuterol for rescue only."
+      ],
+      "llm_flags": [
+        {
+          "claim": "Patient's weight is 42 kg.",
+          "status": "contradicted",
+          "evidence": "24 kilograms",
+          "category": "numeric_medication_error",
+          "explanation": "The weight stated in the claim (42 kg) is different from the evidence found (24 kg).",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Lungs are clear to auscultation bilaterally.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim mentions lungs being clear bilaterally, but this information is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "Maya's weight is 24 kilograms.",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Maya has grown a bit.",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Patient's weight is 42 kg.",
+          "status": "contradicted",
+          "evidence": "24 kilograms",
+          "category": "numeric_medication_error",
+          "explanation": "The weight stated in the claim (42 kg) is different from the evidence found (24 kg).",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Lungs are clear to auscultation bilaterally.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim mentions lungs being clear bilaterally, but this information is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Maya's weight is 24 kilograms.",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Maya has grown a bit.",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "groq",
+      "core_reasoning_model": "openai/gpt-oss-120b"
+    },
+    "baseline_result": [
+      {
+        "issue": "Weight recorded as 42 kg",
+        "explanation": "The transcript states the child's weight is 24 kilograms, but the note documents 42 kg, which is a fabricated and incorrect detail.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Lungs clear to auscultation bilaterally",
+        "explanation": "The transcript does not mention any lung auscultation findings; the note adds an objective finding that is not supported by the conversation.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "groq",
+    "core_reasoning_model": "openai/gpt-oss-120b",
+    "baseline_provider": "groq",
+    "baseline_model": "openai/gpt-oss-120b",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_24_numeric_medication_error_drug_name",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "numeric_medication_error",
+          "claim_text": "liothyronine 75 mcg daily",
+          "correct_value": "levothyroxine 75 mcg daily",
+          "transcript_evidence": "Doctor stated 'The levothyroxine dose is doing its job' and 'You're on 75 micrograms every morning'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4604, Requested 4551. Please try again in 8.6625s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_25_numeric_medication_error_lab_value",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "numeric_medication_error",
+          "claim_text": "LDL 69",
+          "correct_value": "LDL 96",
+          "transcript_evidence": "Doctor stated 'Your LDL came down to 96, from 142 six months ago'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 3989, Requested 4778. Please try again in 5.7525s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_26_fabrication_chest_pain_radiation",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "fabrication",
+          "claim_text": "radiation to the left arm and jaw",
+          "correct_value": "no radiation - pain stayed central",
+          "transcript_evidence": "Patient stated 'No, it just stays in the middle' when asked about radiation"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 3892, Requested 4794. Please try again in 5.145s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_27_fabrication_travel_history",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "fabrication",
+          "claim_text": "Reports recent travel to Central America three weeks ago",
+          "correct_value": "no recent travel at all",
+          "transcript_evidence": "Patient stated 'No, I haven't been anywhere. I haven't left the state in about two years'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient with 4 days of fever up to 102F",
+        "Patient with 2 days of diarrhea",
+        "Sick contact at work",
+        "Reports recent travel to Central America three weeks ago",
+        "Denies animal exposures",
+        "Denies tick bites",
+        "Febrile on presentation",
+        "Fever of unclear source with GI involvement",
+        "Plan: Blood cultures",
+        "Plan: Stool studies"
+      ],
+      "transcript_facts_checked": [
+        "fever for four days",
+        "fever up to 102",
+        "diarrhea started two days ago",
+        "coworker was out with something last week",
+        "not traveled anywhere in two years",
+        "no animal exposures",
+        "no tick bites",
+        "will send blood cultures",
+        "will send stool study",
+        "will start there"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Reports recent travel to Central America three weeks ago",
+          "status": "contradicted",
+          "evidence": "No, I haven't been anywhere. I haven't left the state in about two years.",
+          "category": "fabrication",
+          "explanation": "The note reports travel to Central America, but the transcript explicitly denies any travel, indicating the note fabricated this detail.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "coworker was out with something last week",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "not traveled anywhere in two years",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "will start there",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Reports recent travel to Central America three weeks ago",
+          "status": "contradicted",
+          "evidence": "No, I haven't been anywhere. I haven't left the state in about two years.",
+          "category": "fabrication",
+          "explanation": "The note reports travel to Central America, but the transcript explicitly denies any travel, indicating the note fabricated this detail.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "coworker was out with something last week",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "not traveled anywhere in two years",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "will start there",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "groq",
+      "core_reasoning_model": "openai/gpt-oss-120b"
+    },
+    "baseline_result": [
+      {
+        "issue": "Reports recent travel to Central America three weeks ago",
+        "explanation": "The transcript states the patient has not left the state in about two years and reports no recent travel; the note fabricates a travel history.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Febrile on presentation",
+        "explanation": "The transcript does not mention the patient's temperature at the visit; the note adds a finding not supported by the dialogue.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Denial of cough and sore throat not documented",
+        "explanation": "The patient was asked about cough and sore throat and did not report them, indicating negative findings; the note omits these relevant negative symptoms.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "groq",
+    "core_reasoning_model": "openai/gpt-oss-120b",
+    "baseline_provider": "groq",
+    "baseline_model": "openai/gpt-oss-120b",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_28_fabrication_physical_exam_finding",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "fabrication",
+          "claim_text": "Mild papilledema noted on fundoscopic exam",
+          "correct_value": "no fundoscopic finding was described; exam was stated to be completely normal",
+          "transcript_evidence": "Doctor stated 'That's all normal. Your neurologic exam is completely unremarkable'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 7907, Requested 1606. Please try again in 11.3475s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_29_fabrication_medication_added",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "fabrication",
+          "claim_text": "Add prednisone 5mg daily for bridging",
+          "correct_value": "no new medication was added; the doctor explicitly said no changes",
+          "transcript_evidence": "Doctor stated 'Let's keep methotrexate at the current dose' and 'No changes'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 7685, Requested 1611. Please try again in 9.72s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_30_fabrication_symptom_never_discussed",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "fabrication",
+          "claim_text": "Also endorses lower back pain and unintentional weight loss",
+          "correct_value": "neither back pain nor weight loss was mentioned anywhere in the encounter",
+          "transcript_evidence": "No mention of back pain or weight loss appears in the transcript at all"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 7240, Requested 2182. Please try again in 10.665s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_31_fabrication_counseling_not_given",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "fabrication",
+          "claim_text": "Patient counseled at length on signs of preeclampsia... Tdap vaccine administered today",
+          "correct_value": "no preeclampsia counseling and no vaccine administration occurred in this encounter",
+          "transcript_evidence": "The doctor said only 'We'll see you again in two weeks. Call if anything changes'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6542, Requested 1686. Please try again in 1.71s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_32_fabrication_imaging_result",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "fabrication",
+          "claim_text": "MRI demonstrates a partial-thickness supraspinatus tear",
+          "correct_value": "no MRI was performed; it was explicitly deferred for six weeks",
+          "transcript_evidence": "Doctor stated 'Not yet... if you're not better in six weeks we'll get an MRI then'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6129, Requested 1950. Please try again in 592.5ms. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_33_negation_error_penicillin_allergy",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "negation_error",
+          "claim_text": "No known drug allergies",
+          "correct_value": "documented penicillin allergy with rash",
+          "transcript_evidence": "Patient stated 'Yes, penicillin. I got a bad rash from it as a kid'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5654, Requested 4761. Please try again in 18.1125s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_34_negation_error_suicidal_ideation",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "negation_error",
+          "claim_text": "Denies suicidal ideation",
+          "correct_value": "endorses passive suicidal ideation this past week, without a plan",
+          "transcript_evidence": "Patient stated 'Yes. Not a plan, but the thought has been there this past week'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient reports persistent low mood",
+        "Patient reports hopelessness",
+        "Patient denies suicidal ideation",
+        "Patient has no access to firearms",
+        "Patient has no access to other means",
+        "Patient lives with sister",
+        "Sister is a support",
+        "Patient is alert",
+        "Patient is cooperative",
+        "Patient is tearful at times",
+        "Safety plan established",
+        "Close outpatient follow-up arranged"
+      ],
+      "transcript_facts_checked": [
+        "You mentioned things have been very heavy lately",
+        "I've been having a hard time seeing a way forward",
+        "have you had thoughts of ending your life",
+        "Yes. Not a plan, but the thought has been there this past week",
+        "Do you have access to firearms or anything you'd use",
+        "No, nothing like that",
+        "Is there someone at home with you",
+        "My sister lives with me",
+        "I'd like to arrange close follow-up and set up a safety plan with you today",
+        "I'd be okay with that"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Patient denies suicidal ideation",
+          "status": "contradicted",
+          "evidence": "Yes. Not a plan, but the thought has been there this past week.",
+          "category": "negation_error",
+          "explanation": "The note incorrectly denies suicidal ideation while the transcript indicates the patient has had such thoughts.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Sister is a support",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The note states the sister is a support, but the transcript contains no mention of this relationship.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient is alert",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The note claims the patient is alert, yet the transcript does not provide any information about alertness.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient is cooperative",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The note reports the patient is cooperative, but the transcript does not mention this.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient is tearful at times",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The note indicates the patient is tearful at times, but the transcript contains no such detail.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Close outpatient follow-up arranged",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The note says close outpatient follow-up was arranged, but the transcript does not mention any follow-up arrangement.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "You mentioned things have been very heavy lately",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "have you had thoughts of ending your life",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Yes. Not a plan, but the thought has been there this past week",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Is there someone at home with you",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "I'd be okay with that",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Patient denies suicidal ideation",
+          "status": "contradicted",
+          "evidence": "Yes. Not a plan, but the thought has been there this past week.",
+          "category": "negation_error",
+          "explanation": "The note incorrectly denies suicidal ideation while the transcript indicates the patient has had such thoughts.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Sister is a support",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The note states the sister is a support, but the transcript contains no mention of this relationship.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient is alert",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The note claims the patient is alert, yet the transcript does not provide any information about alertness.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient is cooperative",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The note reports the patient is cooperative, but the transcript does not mention this.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient is tearful at times",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The note indicates the patient is tearful at times, but the transcript contains no such detail.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Close outpatient follow-up arranged",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The note says close outpatient follow-up was arranged, but the transcript does not mention any follow-up arrangement.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "You mentioned things have been very heavy lately",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "have you had thoughts of ending your life",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Yes. Not a plan, but the thought has been there this past week",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Is there someone at home with you",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "I'd be okay with that",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "groq",
+      "core_reasoning_model": "openai/gpt-oss-120b"
+    },
+    "baseline_result": [
+      {
+        "issue": "Denies suicidal ideation",
+        "explanation": "The transcript shows the patient explicitly affirmed having suicidal thoughts ('Yes. Not a plan, but the thought has been there this past week'), so stating a denial is inaccurate.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Omission of recent suicidal thoughts and lack of plan",
+        "explanation": "The note fails to record that the patient reported suicidal ideation over the past week without a specific plan, a clinically important detail for risk assessment and safety planning.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "groq",
+    "core_reasoning_model": "openai/gpt-oss-120b",
+    "baseline_provider": "groq",
+    "baseline_model": "openai/gpt-oss-120b",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_35_negation_error_loss_of_consciousness",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "negation_error",
+          "claim_text": "Denies loss of consciousness",
+          "correct_value": "witnessed loss of consciousness for 10-15 seconds",
+          "transcript_evidence": "Patient stated 'Yes, my wife says I was out for maybe ten or fifteen seconds'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6169, Requested 2115. Please try again in 2.13s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_36_negation_error_smoking_status",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "negation_error",
+          "claim_text": "Patient is a former smoker and has successfully quit",
+          "correct_value": "patient is a current smoker, approximately half a pack per day",
+          "transcript_evidence": "Patient stated 'I am, yeah. I'm down to about half a pack, but I haven't quit'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5842, Requested 4738. Please try again in 19.35s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_37_negation_error_chest_pain_denial",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "negation_error",
+          "claim_text": "Reports intermittent chest pain",
+          "correct_value": "explicitly denies chest pain",
+          "transcript_evidence": "Patient stated 'No, no chest pain at all'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5332, Requested 4779. Please try again in 15.8325s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_38_negation_error_pregnancy_status",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "negation_error",
+          "claim_text": "Possible early pregnancy cannot be excluded",
+          "correct_value": "pregnancy explicitly excluded - negative home test last week",
+          "transcript_evidence": "Patient stated 'No, definitely not. I took a test last week and it was negative'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient presents to discuss contraception change.",
+        "Possible early pregnancy cannot be excluded.",
+        "Patient denies history of thromboembolism.",
+        "Patient denies history of migraine with aura.",
+        "Patient denies history of hypertension.",
+        "Patient is a non-smoker.",
+        "Vital signs are within normal limits.",
+        "Plan: Initiate low-dose combined oral contraceptive."
+      ],
+      "transcript_facts_checked": [
+        "patient wants to switch birth control",
+        "patient is not pregnant",
+        "patient took a pregnancy test last week which was negative",
+        "patient has no history of blood clots",
+        "patient has no history of migraines with aura",
+        "patient has no history of high blood pressure",
+        "patient does not smoke",
+        "doctor recommends a low-dose combined oral contraceptive"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Possible early pregnancy cannot be excluded.",
+          "status": "contradicted",
+          "evidence": "No, definitely not. I took a test last week and it was negative.",
+          "category": "negation_error",
+          "explanation": "The claim states 'Possible early pregnancy cannot be excluded,' which is contradicted by the evidence 'No, definitely not. I took a test last week and it was negative.'",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Vital signs are within normal limits.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim 'Vital signs are within normal limits' was not mentioned in the evidence provided.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "patient is not pregnant",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "patient took a pregnancy test last week which was negative",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "patient has no history of blood clots",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Possible early pregnancy cannot be excluded.",
+          "status": "contradicted",
+          "evidence": "No, definitely not. I took a test last week and it was negative.",
+          "category": "negation_error",
+          "explanation": "The claim states 'Possible early pregnancy cannot be excluded,' which is contradicted by the evidence 'No, definitely not. I took a test last week and it was negative.'",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Vital signs are within normal limits.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim 'Vital signs are within normal limits' was not mentioned in the evidence provided.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "patient is not pregnant",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "patient took a pregnancy test last week which was negative",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "patient has no history of blood clots",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "groq",
+      "core_reasoning_model": "openai/gpt-oss-120b"
+    },
+    "baseline_result": [
+      {
+        "issue": "Possible early pregnancy cannot be excluded",
+        "explanation": "The transcript records that the patient took a pregnancy test last week which was negative and she is certain she is not pregnant; the note incorrectly suggests pregnancy cannot be ruled out.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Negative pregnancy test result not documented",
+        "explanation": "The transcript explicitly states the patient had a negative pregnancy test last week, which is clinically relevant information that the note fails to include.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "groq",
+    "core_reasoning_model": "openai/gpt-oss-120b",
+    "baseline_provider": "groq",
+    "baseline_model": "openai/gpt-oss-120b",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_39_negation_error_falls_history",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "negation_error",
+          "claim_text": "Patient denies falls in the past year",
+          "correct_value": "two falls in the past year, one with hip bruising",
+          "transcript_evidence": "Patient stated 'Two. One in the bathroom in the spring, and one in the garden a couple months ago'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5395, Requested 4534. Please try again in 14.4675s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_40_distortion_pain_severity",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "distortion",
+          "claim_text": "severe right lower quadrant abdominal pain, 9/10 at present",
+          "correct_value": "3/10 at present, 5/10 yesterday",
+          "transcript_evidence": "Patient stated 'Right now it's about a three. It was maybe a five yesterday'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5313, Requested 4746. Please try again in 15.4425s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_41_distortion_symptom_duration",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "distortion",
+          "claim_text": "rash present for approximately five weeks",
+          "correct_value": "five days",
+          "transcript_evidence": "Patient stated 'About five days now'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4834, Requested 4771. Please try again in 12.0375s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_42_distortion_frequency_of_symptom",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "distortion",
+          "claim_text": "multiple breakthrough seizures weekly since last visit",
+          "correct_value": "one seizure, approximately six weeks ago",
+          "transcript_evidence": "Patient stated 'Just one, about six weeks ago'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4355, Requested 4560. Please try again in 6.8625s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_43_distortion_functional_status",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "distortion",
+          "claim_text": "independent ambulation indoors and outdoors without assistance",
+          "correct_value": "independent indoors with a cane, but requires physical assistance outdoors",
+          "transcript_evidence": "Patient stated 'Outside I still need my daughter's arm. The uneven ground is hard'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient reports independent ambulation indoors and outdoors without assistance",
+        "Able to grasp a cup with the right hand",
+        "Fine motor tasks such as buttoning remain difficult",
+        "Right-sided weakness, improved from prior assessment",
+        "Plan: Continue occupational therapy with focus on fine motor tasks"
+      ],
+      "transcript_facts_checked": [
+        "Patient can get around the house with the cane",
+        "Patient still needs daughter's arm outside",
+        "Uneven ground is hard for patient outside",
+        "Patient can hold a cup with right hand",
+        "Buttons are still impossible with right hand",
+        "Occupational therapy will continue for fine motor skills",
+        "Exact recovery time is unknown",
+        "Patient is moving in the right direction"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Patient reports independent ambulation indoors and outdoors without assistance",
+          "status": "contradicted",
+          "evidence": "Outside I still need my daughter's arm.",
+          "category": "negation_error",
+          "explanation": "The claim states the patient can ambulate independently, but the evidence contradicts this by stating the patient still needs assistance.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Right-sided weakness, improved from prior assessment",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim about right-sided weakness improving is not mentioned in the evidence provided.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "Patient can get around the house with the cane",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient still needs daughter's arm outside",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Uneven ground is hard for patient outside",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Buttons are still impossible with right hand",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Exact recovery time is unknown",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Patient reports independent ambulation indoors and outdoors without assistance",
+          "status": "contradicted",
+          "evidence": "Outside I still need my daughter's arm.",
+          "category": "negation_error",
+          "explanation": "The claim states the patient can ambulate independently, but the evidence contradicts this by stating the patient still needs assistance.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Right-sided weakness, improved from prior assessment",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "The claim about right-sided weakness improving is not mentioned in the evidence provided.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient can get around the house with the cane",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient still needs daughter's arm outside",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Uneven ground is hard for patient outside",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Buttons are still impossible with right hand",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Exact recovery time is unknown",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "groq",
+      "core_reasoning_model": "openai/gpt-oss-120b"
+    },
+    "baseline_result": [
+      {
+        "issue": "Patient reports independent ambulation indoors and outdoors without assistance.",
+        "explanation": "The transcript states the patient uses a cane indoors and needs her daughter's arm for support outdoors, not independent ambulation.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Omission of cane use indoors and need for daughter's arm assistance outdoors.",
+        "explanation": "The transcript notes these assistive devices, which are clinically relevant details missing from the note.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Right-sided weakness, improved from prior assessment.",
+        "explanation": "The transcript does not mention any weakness or prior assessment; this detail is fabricated.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Post-stroke hemiparesis, improving.",
+        "explanation": "The diagnosis and its improvement are not referenced in the transcript, making this an unsupported statement.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "groq",
+    "core_reasoning_model": "openai/gpt-oss-120b",
+    "baseline_provider": "groq",
+    "baseline_model": "openai/gpt-oss-120b",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_44_distortion_adherence",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "distortion",
+          "claim_text": "Patient reports full adherence to antihypertensive therapy, taking it daily as prescribed",
+          "correct_value": "misses doses 2-3 days per week",
+          "transcript_evidence": "Patient stated 'Honestly, I miss it probably two or three days a week. I forget in the mornings'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4674, Requested 4745. Please try again in 10.6425s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_45_distortion_onset_timing",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "distortion",
+          "claim_text": "symptom onset clearly established at 7:00 am",
+          "correct_value": "last known well was 10 pm the prior night; 7 am was discovery, not onset",
+          "transcript_evidence": "Family stated 'He was completely fine when he went to bed at 10 last night' and confirmed last known normal was 10 pm"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4569, Requested 4765. Please try again in 10.005s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_46_misattribution_family_cancer_history",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "misattribution",
+          "claim_text": "Patient reports a personal history of breast cancer diagnosed at age 52",
+          "correct_value": "the patient's MOTHER had breast cancer at 52; the patient has never had cancer",
+          "transcript_evidence": "Patient stated 'My mother had breast cancer at 52' and later 'No, never' when asked about personal cancer history"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4483, Requested 4727. Please try again in 9.075s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_47_misattribution_wrong_side",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "misattribution",
+          "claim_text": "blurred vision in the right eye",
+          "correct_value": "the LEFT eye is affected",
+          "transcript_evidence": "Patient stated 'The left one. Everything's blurry in the left eye'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4113, Requested 4552. Please try again in 4.9875s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_48_misattribution_partner_symptom",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "misattribution",
+          "claim_text": "Patient reports significant daytime fatigue and exhaustion",
+          "correct_value": "the patient denies daytime tiredness; it is his WIFE who is exhausted from being woken",
+          "transcript_evidence": "Patient stated 'Not especially. My wife is exhausted, though - she's the one waking up'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient reports significant daytime fatigue and exhaustion",
+        "Patient reports loud snoring with witnessed gasping episodes",
+        "Patient denies morning headaches",
+        "BMI 31",
+        "Mallampati class III"
+      ],
+      "transcript_facts_checked": [
+        "I sleep through the night fine",
+        "I snore terribly",
+        "She says I gasp sometimes",
+        "Not especially",
+        "My wife is exhausted",
+        "she's the one waking up",
+        "No",
+        "I'd like to get you a sleep study"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Patient reports significant daytime fatigue and exhaustion",
+          "status": "contradicted",
+          "evidence": "Not especially. My wife is exhausted, though - she's the one waking up.",
+          "category": "negation_error",
+          "explanation": "Note affirms patient reports fatigue, but transcript indicates patient denies fatigue.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "BMI 31",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "BMI 31 is present in transcript but omitted from note.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Mallampati class III",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "Mallampati class III is present in transcript but omitted from note.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "I sleep through the night fine",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Not especially",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "My wife is exhausted",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "she's the one waking up",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Patient reports significant daytime fatigue and exhaustion",
+          "status": "contradicted",
+          "evidence": "Not especially. My wife is exhausted, though - she's the one waking up.",
+          "category": "negation_error",
+          "explanation": "Note affirms patient reports fatigue, but transcript indicates patient denies fatigue.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "BMI 31",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "BMI 31 is present in transcript but omitted from note.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Mallampati class III",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "omission",
+          "explanation": "Mallampati class III is present in transcript but omitted from note.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "I sleep through the night fine",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Not especially",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "My wife is exhausted",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "she's the one waking up",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "No",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "groq",
+      "core_reasoning_model": "openai/gpt-oss-120b"
+    },
+    "baseline_result": [
+      {
+        "issue": "Patient reports significant daytime fatigue and exhaustion.",
+        "explanation": "The transcript shows the patient says he is 'not especially' tired and that his wife is the one who is exhausted. The note fabricates patient-reported fatigue.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "BMI 31. Mallampati class III.",
+        "explanation": "These objective measurements are not mentioned anywhere in the transcript; they are unsupported additions.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Omission of the patient's statement that he sleeps through the night fine and does not feel especially tired.",
+        "explanation": "The transcript includes the patient reporting uninterrupted sleep and lack of daytime fatigue, which are clinically relevant details that the note fails to document.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "groq",
+    "core_reasoning_model": "openai/gpt-oss-120b",
+    "baseline_provider": "groq",
+    "baseline_model": "openai/gpt-oss-120b",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_49_misattribution_symptom_to_wrong_system",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "misattribution",
+          "claim_text": "Reports difficulty swallowing, mostly at night",
+          "correct_value": "the nocturnal symptom is a COUGH; the patient explicitly denied difficulty swallowing",
+          "transcript_evidence": "Patient stated 'No trouble swallowing' and separately 'The cough is still there, mostly at night'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6382, Requested 4531. Please try again in 21.8475s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_50_misattribution_medication_to_wrong_person",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "misattribution",
+          "claim_text": "and methylphenidate daily",
+          "correct_value": "methylphenidate belongs to the patient's SISTER, not the patient",
+          "transcript_evidence": "Parent stated 'His older sister takes the ADHD medication, not him' and confirmed 'Correct, not Ethan's'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5964, Requested 4730. Please try again in 20.205s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_51_omission_anticoagulant_medication",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "omission",
+          "claim_text": "apixaban twice daily is entirely absent from the medication list and from the plan",
+          "correct_value": "patient takes apixaban twice daily and it needs to be held pre-operatively",
+          "transcript_evidence": "Patient stated 'and apixaban twice a day'; doctor stated 'We'll need to coordinate holding that before the operation'"
+        }
+      ]
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient presents for pre-operative assessment prior to elective hernia repair.",
+        "Patient's home medication includes metformin twice daily.",
+        "Patient's home medication includes lisinopril each morning.",
+        "Patient has no prior anesthetic complications.",
+        "Patient has had two previous surgeries without issue.",
+        "Vital signs are stable.",
+        "Patient is cleared for surgery pending routine labs.",
+        "Note sent to surgical team."
+      ],
+      "transcript_facts_checked": [
+        "Plan: hernia repair scheduled.",
+        "Patient takes metformin twice a day.",
+        "Patient takes lisinopril in the morning.",
+        "Patient takes apixaban twice a day.",
+        "Apixaban is a blood thinner.",
+        "Patient has been taking apixaban since a clot two years ago.",
+        "Plan: hold apixaban before operation.",
+        "Patient has had two surgeries with no anesthesia problems.",
+        "Plan: send note to surgical team."
+      ],
+      "llm_flags": [
+        {
+          "claim": "Vital signs are stable.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "not_mentioned",
+          "explanation": "The vital signs are not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient is cleared for surgery pending routine labs.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "not_mentioned",
+          "explanation": "The patient's clearance for surgery pending routine labs is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Note sent to surgical team.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "not_mentioned",
+          "explanation": "There is no evidence that the note was sent to the surgical team in the transcript.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [
+        {
+          "claim": "Plan: hernia repair scheduled.",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient takes apixaban twice a day.",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Apixaban is a blood thinner.",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient has been taking apixaban since a clot two years ago.",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Plan: hold apixaban before operation.",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "all_flags": [
+        {
+          "claim": "Vital signs are stable.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "not_mentioned",
+          "explanation": "The vital signs are not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Patient is cleared for surgery pending routine labs.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "not_mentioned",
+          "explanation": "The patient's clearance for surgery pending routine labs is not mentioned in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Note sent to surgical team.",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "not_mentioned",
+          "explanation": "There is no evidence that the note was sent to the surgical team in the transcript.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Plan: hernia repair scheduled.",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient takes apixaban twice a day.",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Apixaban is a blood thinner.",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Patient has been taking apixaban since a clot two years ago.",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        },
+        {
+          "claim": "Plan: hold apixaban before operation.",
+          "status": "omitted_from_note",
+          "category": "omission",
+          "explanation": "This fact was stated in the transcript but does not appear anywhere in the note.",
+          "source": "llm_pipeline_omission"
+        }
+      ],
+      "core_reasoning_provider": "groq",
+      "core_reasoning_model": "openai/gpt-oss-120b"
+    },
+    "baseline_result": [
+      {
+        "issue": "Home medications include metformin twice daily and lisinopril each morning",
+        "explanation": "The transcript states the patient also takes apixaban twice daily, which is omitted from the note; this is a clinically relevant omission.",
+        "source": "single_prompt_baseline"
+      },
+      {
+        "issue": "Clear for surgery pending routine labs",
+        "explanation": "The transcript does not mention any clearance decision or pending labs; this statement is not supported by the conversation and appears to be an added detail.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "groq",
+    "core_reasoning_model": "openai/gpt-oss-120b",
+    "baseline_provider": "groq",
+    "baseline_model": "openai/gpt-oss-120b",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_52_omission_abnormal_vital_sign",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "omission",
+          "claim_text": "oxygen saturation of 91% on room air is entirely absent from the note",
+          "correct_value": "SpO2 91% on room air, explicitly called out by the clinician as abnormal and as the reason for same-day imaging",
+          "transcript_evidence": "Doctor stated 'your oxygen saturation is 91 percent on room air, which is lower than I'd expect'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6399, Requested 4726. Please try again in 23.4375s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_53_omission_return_precautions",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "omission",
+          "claim_text": "the specific return precautions given verbally are entirely absent from the note",
+          "correct_value": "explicit return precautions: pain migrating to right lower quadrant, fever, or intractable vomiting",
+          "transcript_evidence": "Doctor stated 'If the pain moves to the lower right, if you develop a fever, or if you start vomiting and can't keep fluids down, come straight back'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6218, Requested 4519. Please try again in 20.5275s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_54_omission_new_symptom_raised_late",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "omission",
+          "claim_text": "one month of bilateral foot numbness and tingling is entirely absent from the note",
+          "correct_value": "new bilateral peripheral neuropathy symptoms for one month, worse at night, plus the planned foot/monofilament exam",
+          "transcript_evidence": "Patient stated 'I've been having numbness and tingling in both feet for the last month or so'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5970, Requested 4710. Please try again in 20.1s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_55_omission_social_determinant",
+    "ground_truth": {
+      "has_error": true,
+      "injected_errors": [
+        {
+          "category": "omission",
+          "claim_text": "the cost barrier causing missed refills is entirely absent from the note",
+          "correct_value": "patient cannot afford the $80 inhaler some months and skips refills; the clinician identified this as the main driver of exacerbations and the reason for the switch",
+          "transcript_evidence": "Patient stated 'It's eighty dollars and some months I can't cover it'; doctor stated 'The cost issue is likely the main thing driving your flare-ups'"
+        }
+      ]
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5740, Requested 4696. Please try again in 18.27s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_56_clean_control_migraine",
+    "ground_truth": {
+      "has_error": false,
+      "injected_errors": []
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient reports 4 headache days last month",
+        "Patient reports reduced headache days from approximately 10",
+        "Sumatriptan provides relief within one hour when taken",
+        "Mild fatigue attributed to propranolol",
+        "Tolerable to the patient",
+        "Denies vision changes",
+        "Denies weakness",
+        "Denies numbness",
+        "Neurologic exam non-focal",
+        "Migraine",
+        "Improved on current preventive therapy",
+        "Continue propranolol",
+        "Continue sumatriptan",
+        "Follow up in 3 months"
+      ],
+      "transcript_facts_checked": [
+        "Patient had four headache days last month.",
+        "Patient had about ten headache days before.",
+        "Sumatriptan usually works within an hour.",
+        "Patient experiences mild fatigue as a side effect of propranolol.",
+        "Patient reports no new symptoms of vision changes, weakness, or numbness.",
+        "Plan to continue current medications unchanged.",
+        "Plan to schedule follow-up in three months."
+      ],
+      "llm_flags": [
+        {
+          "claim": "Neurologic exam non-focal",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The claim is not present in the transcript, indicating a fabricated detail.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Migraine",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The claim is not present in the transcript, indicating a fabricated detail.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [],
+      "all_flags": [
+        {
+          "claim": "Neurologic exam non-focal",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The claim is not present in the transcript, indicating a fabricated detail.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Migraine",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "fabrication",
+          "explanation": "The claim is not present in the transcript, indicating a fabricated detail.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "core_reasoning_provider": "groq",
+      "core_reasoning_model": "openai/gpt-oss-120b"
+    },
+    "baseline_result": [
+      {
+        "issue": "Objective: Neurologic exam non-focal.",
+        "explanation": "The transcript contains no mention of a neurologic examination; adding an objective finding is not supported by the documented conversation.",
+        "source": "single_prompt_baseline"
+      }
+    ],
+    "core_reasoning_provider": "groq",
+    "core_reasoning_model": "openai/gpt-oss-120b",
+    "baseline_provider": "groq",
+    "baseline_model": "openai/gpt-oss-120b",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_57_clean_control_uti",
+    "ground_truth": {
+      "has_error": false,
+      "injected_errors": []
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5973, Requested 2175. Please try again in 1.109999999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_58_clean_control_ankle_sprain",
+    "ground_truth": {
+      "has_error": false,
+      "injected_errors": []
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5498, Requested 4599. Please try again in 15.7275s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  },
+  {
+    "case_id": "case_59_clean_control_med_refill",
+    "ground_truth": {
+      "has_error": false,
+      "injected_errors": []
+    },
+    "pipeline_result": {
+      "claims_checked": [
+        "Patient presents for medication refills",
+        "No problems with antihypertensive therapy",
+        "No problems with lipid-lowering therapy",
+        "Denies chest pain",
+        "Denies dyspnea",
+        "Denies edema",
+        "Blood pressure 124/78",
+        "Diagnosis: Hypertension, stable on current therapy",
+        "Diagnosis: Hyperlipidemia, stable on current therapy",
+        "Plan: Refill antihypertensive medication for 6 months",
+        "Plan: Refill lipid-lowering medication for 6 months",
+        "Plan: Follow up in 6 months or sooner if symptoms develop"
+      ],
+      "transcript_facts_checked": [
+        "blood pressure medication refill requested",
+        "cholesterol medication refill requested",
+        "no problems with medications",
+        "blood pressure 124 over 78",
+        "no chest pain",
+        "no shortness of breath",
+        "no swelling",
+        "refills sent to pharmacy for six months",
+        "follow-up in six months",
+        "seek medical attention if anything changes"
+      ],
+      "llm_flags": [
+        {
+          "claim": "Diagnosis: Hypertension, stable on current therapy",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "not_mentioned",
+          "explanation": "The diagnosis is not mentioned in the evidence found.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Diagnosis: Hyperlipidemia, stable on current therapy",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "not_mentioned",
+          "explanation": "The diagnosis is not mentioned in the evidence found.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "deterministic_flags": [],
+      "omission_flags": [],
+      "all_flags": [
+        {
+          "claim": "Diagnosis: Hypertension, stable on current therapy",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "not_mentioned",
+          "explanation": "The diagnosis is not mentioned in the evidence found.",
+          "source": "llm_pipeline"
+        },
+        {
+          "claim": "Diagnosis: Hyperlipidemia, stable on current therapy",
+          "status": "not_mentioned",
+          "evidence": "",
+          "category": "not_mentioned",
+          "explanation": "The diagnosis is not mentioned in the evidence found.",
+          "source": "llm_pipeline"
+        }
+      ],
+      "core_reasoning_provider": "groq",
+      "core_reasoning_model": "openai/gpt-oss-120b"
+    },
+    "baseline_result": [],
+    "core_reasoning_provider": "groq",
+    "core_reasoning_model": "openai/gpt-oss-120b",
+    "baseline_provider": "groq",
+    "baseline_model": "openai/gpt-oss-120b",
+    "fairness_mismatch": false
+  },
+  {
+    "case_id": "case_60_clean_control_conjunctivitis",
+    "ground_truth": {
+      "has_error": false,
+      "injected_errors": []
+    },
+    "error": "All core-reasoning providers exhausted or unavailable. Last error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kzmb6zm8erxbnfspms99esr3` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5516, Requested 4822. Please try again in 17.535s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  }
+]

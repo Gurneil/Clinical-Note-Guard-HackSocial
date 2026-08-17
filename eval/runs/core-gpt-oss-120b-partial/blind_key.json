@@ -1,0 +1,42 @@
+{
+  "case_19_numeric_medication_error_warfarin_inr": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_23_numeric_medication_error_pediatric_weight_dose": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_27_fabrication_travel_history": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_34_negation_error_suicidal_ideation": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_38_negation_error_pregnancy_status": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_43_distortion_functional_status": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_48_misattribution_partner_symptom": {
+    "A": "pipeline",
+    "B": "baseline"
+  },
+  "case_51_omission_anticoagulant_medication": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_56_clean_control_migraine": {
+    "A": "baseline",
+    "B": "pipeline"
+  },
+  "case_59_clean_control_med_refill": {
+    "A": "baseline",
+    "B": "pipeline"
+  }
+}
