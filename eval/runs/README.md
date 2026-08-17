@@ -91,9 +91,39 @@ here, not complements.
    slightly, so treat the direction as a signal and not the magnitude.
 4. **One run per model.** No repeated sampling, no confidence intervals.
 
-### What would settle it
+### What would settle it — and why it can't be done
 
-Re-run the ten failed cases once Groq's daily token budget resets, to get a
-complete 60-case 70B run, then blind-grade it by hand the way the canonical
-run was graded. That is the only thing that would turn this from a strong
-signal into a finding on the same footing as the headline number.
+Re-running the ten failed cases would give a complete 60-case 70B run, which
+blind human grading could then put on the same footing as the headline
+number. That was attempted (`eval/rerun_failed.py`) and **is no longer
+possible: Groq withdrew both models this project depends on.**
+
+Within hours of the run above, `llama-3.1-8b-instant` (the mechanical tier)
+and then `llama-3.3-70b-versatile` (the tier the whole robustness run is
+built on) both began returning `404 model_not_found`. The 70B run is
+therefore frozen at 44 comparable cases permanently, unless the model
+returns or the run is repeated end-to-end on a different model.
+
+Two things came out of that, both kept:
+
+1. **The failover chain could not absorb it.** A retired model returns 404,
+   which `llm_router` classified as a caller bug worth surfacing rather than
+   an availability problem worth routing around — so cases died with
+   Featherless sitting unused in the same chain. Fixed narrowly: 404s that
+   name the model now fail over; a 404 from a bad URL, or any auth error,
+   still surfaces immediately. Without that fix the live demo
+   (`python demo.py`) would also have been dead, since it shares those
+   chains.
+2. **`eval/rerun_failed.py` refused to produce a false result.** With the
+   core tier pinned to a single model and that model gone, it declined to
+   merge anything rather than silently substituting a different model into
+   an existing run. That check is the reason this section says "cannot"
+   instead of quietly reporting a 60-case number that was really two models
+   stitched together.
+
+The wider lesson, which is worth more than the recovered cases would have
+been: **a free-tier model catalogue is not a stable substrate for a
+reproducible evaluation.** Every number in this project is reproducible only
+in the sense that the run is committed and the provider/model is recorded per
+case. It is not re-runnable on demand, and that limitation belongs next to
+the results rather than in a footnote.

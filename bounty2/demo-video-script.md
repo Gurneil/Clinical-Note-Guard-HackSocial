@@ -139,9 +139,29 @@ python demo.py 3 --no-review
 
 This is the real thing running. Not a recording.
 
-It writes a note, breaks it down, checks every claim, and stops for a human.
+It writes a note from the transcript, breaks it into claims, and checks every
+one of them.
 
 `[ Let it run. Say nothing for a few seconds. Trim the slow bit later. ]`
+
+**Then say whichever of these matches what you actually get:**
+
+**If it raises flags:**
+
+> And there it is. It found something in a note it wrote itself, thirty
+> seconds ago.
+
+**If it raises none — which is common, and fine:**
+
+> This time it found nothing, and it says so.
+>
+> That matters as much as catching things. A checker that flags something on
+> every note is a checker people stop reading.
+
+> ⚠️ Unlike the site, this drafts a **fresh** note every run, so it doesn't
+> always contain an error. Both outcomes are real and both are worth showing.
+> Don't re-roll it ten times hunting for a catch — you have a limited daily
+> quota, and the caught error is already on screen in section 2.
 
 ---
 

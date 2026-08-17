@@ -35,10 +35,22 @@ _core_tier_index = 0  # sticky - only ever moves forward (downgrades)
 def _is_quota_or_unavailable(exc: Exception) -> bool:
     """
     True only for errors worth failing over on (quota exhausted /
-    provider overloaded). False for anything else - a bad API key, a
-    malformed prompt, an auth error should surface immediately and loudly,
-    not get silently swallowed by a switch to a different provider that
-    would just mask a real bug.
+    provider overloaded / model withdrawn). False for anything else - a bad
+    API key, a malformed prompt, an auth error should surface immediately and
+    loudly, not get silently swallowed by a switch to a different provider
+    that would just mask a real bug.
+
+    A RETIRED MODEL counts as unavailable. Groq withdrew
+    `llama-3.1-8b-instant` partway through this project; every call to the
+    mechanical tier started coming back 404 `model_not_found`, and because a
+    404 was treated as a caller bug rather than an availability problem, the
+    whole chain raised instead of falling through to Featherless - which was
+    sitting right there, and which every earlier case in that same run had
+    already been using. A provider dropping a model is precisely the failure
+    a failover chain exists to absorb.
+
+    Kept narrow on purpose: only 404s that name the model. A 404 from a wrong
+    base URL, or any auth error, still surfaces immediately.
     """
     if isinstance(exc, genai_errors.APIError):
         return exc.code in (429, 503)
@@ -46,6 +58,8 @@ def _is_quota_or_unavailable(exc: Exception) -> bool:
     if code in (429, 503, 500, 502, 504):
         return True
     msg = str(exc).lower()
+    if "model_not_found" in msg or ("does not exist" in msg and "model" in msg):
+        return True
     return any(s in msg for s in ("429", "503", "rate limit", "quota", "resource_exhausted", "unavailable"))
 
 
