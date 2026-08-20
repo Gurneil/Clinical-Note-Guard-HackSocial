@@ -54,7 +54,7 @@ Every transcript, note and recording in this project is synthetic — invented c
    10 seconds apart. Judges use them to jump straight to the evidence — worth
    the two minutes.
 
-2. **Add the repo link once you've pushed** — `github.com/Gurneil/clinical-note-guard`
+2. **Add the repo link once you've pushed** — `github.com/Gurneil/Clinical-Note-Guard`
    is still 404. Put it under the "Try it" line as:
-   `Code: https://github.com/Gurneil/clinical-note-guard`
+   `Code: https://github.com/Gurneil/Clinical-Note-Guard`
    A dead link in the description is worse than no link.

@@ -239,7 +239,7 @@ https://clinicalnoteguard.netlify.app
 Repository (**[YOU]** — push before submitting; the link is already wired
 into the site's "View on GitHub" button):
 ```
-https://github.com/Gurneil/clinical-note-guard
+https://github.com/Gurneil/Clinical-Note-Guard
 ```
 
 ---
