@@ -55,8 +55,8 @@ Both of those are published on the site rather than buried.
 - It does not diagnose patients or recommend treatment.
 - Every transcript, note and audio file is synthetic — invented conversations
   about fictional patients. No real patient data is used or needed anywhere.
-- The headline numbers are currently auto-scored; the blind human-graded pass
-  is in progress and the site says so.
+- The headline numbers are blind human-graded (56 rows: 47/50 vs 41/50).
+  The stronger-model robustness check is auto-scored only, and says so.
 
 ## Try it
 

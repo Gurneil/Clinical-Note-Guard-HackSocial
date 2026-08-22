@@ -10,9 +10,9 @@ yourself are marked **[YOU]**.
 
 **Project name** (41 char limit)
 ```
-Clinical Note Hallucination Guard
+Clinical Note Guard
 ```
-(33 characters)
+(19 characters)
 
 **Elevator pitch**
 ```
@@ -219,6 +219,33 @@ a real advantage.
   such or dropped.
 ```
 
+
+---
+
+## Track requirements — where each required file is
+
+The ML & Prompt Engineering track asks for three things. Paste this block at
+the **end of the "About the project"** field so a judge doesn't have to hunt
+for them.
+
+```markdown
+### Required submission files
+
+- **ML workflow flowchart** — uploaded as a project image above, and at
+  https://clinicalnoteguard.netlify.app/docs/workflow_flowchart.png
+  (also `docs/workflow_flowchart.png` in the repo). Shows every node, which
+  are LLM calls vs. plain Python, which model each uses, and where human
+  input is required.
+- **Samples — workflow vs. single-prompt on the same test cases** —
+  https://clinicalnoteguard.netlify.app/docs/SAMPLES.md — pipeline and
+  single-prompt baseline on four identical cases, generated from committed
+  eval output. Audio path: /docs/SAMPLES_AUDIO.md. Video: https://youtu.be/l5-3PPDSHg0
+- **Documentation — the reasoning behind each node** —
+  https://clinicalnoteguard.netlify.app/docs/ARCHITECTURE.md (every node,
+  why it exists, methodology, results, limitations) and /docs/PROMPTS.md
+  (every prompt verbatim and what each constraint prevents).
+```
+
 ---
 
 ## Built with (tags)
@@ -252,13 +279,12 @@ https://github.com/Gurneil/Clinical-Note-Guard
   and/or the nine-node flow timeline on the "How the guard works" page
 - A screenshot of the results table / scorecard, or `demo.py` running in a terminal
 
-**Video demo** — **[YOU]**. The track requirements say video *or* document,
-and `docs/SAMPLES.md` satisfies that. But in 2025 the organisers made a
-video mandatory partway through the hackathon (Discord, Aug 16 2025:
-"each team will be required to provide a video... detailing the function of
-and the inspiration behind your project, and how it appeals to each of our
-rubric categories"). Assume one is expected. Script in
-`submission/demo-video-script.md`.
+**Video demo** — done:
+```
+https://youtu.be/l5-3PPDSHg0
+```
+Paste this into the "Video demo link" field on the Project details page.
+Description and upload settings in `submission/youtube-description.md`.
 
 ---
 
@@ -276,9 +302,13 @@ iteration history.)
 ```
 All data in this project is synthetic (invented transcripts about
 fictional patients) — no real patient data is used or needed anywhere.
-The headline numbers in docs/ARCHITECTURE.md are from an automated
-scoring proxy (eval/auto_score.py), explicitly labeled as such; the
-blind human-graded pass (the project's own stated methodology) is the
-one step still open before treating those numbers as final — see
-"Current status" in README.md.
+
+On methodology: the headline recall numbers are blind human-graded —
+every case shown as "System A" / "System B", randomised per case, key
+sealed until scoring finished. An automated scoring proxy
+(eval/auto_score.py) was used for fast iteration during development and
+is labeled as such wherever it appears; it predicted the human result's
+12-point gap almost exactly. The one result that is auto-scored only is
+the stronger-model robustness check, and that is stated in the write-up
+above and in eval/runs/README.md rather than left implied.
 ```

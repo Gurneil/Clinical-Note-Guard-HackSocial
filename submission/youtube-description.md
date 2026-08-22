@@ -29,6 +29,7 @@ Built for ReverieHacks 2026 · ML Prompt Engineering track
 AI scribes already draft clinical notes from doctor-patient conversations in real clinics. They also fabricate: a wrong dose, a symptom nobody mentioned, a "denies" flipped to a "reports". This decomposes the drafted note into individually checkable claims, verifies each one against the source transcript, and flags anything unsupported for a human — before the note is signed. It never edits a note itself.
 
 Try it: https://clinicalnoteguard.netlify.app
+Code: https://github.com/Gurneil/Clinical-Note-Guard
 
 CHAPTERS
 0:00 What this is
@@ -54,7 +55,13 @@ Every transcript, note and recording in this project is synthetic — invented c
    10 seconds apart. Judges use them to jump straight to the evidence — worth
    the two minutes.
 
-2. **Add the repo link once you've pushed** — `github.com/Gurneil/Clinical-Note-Guard`
-   is still 404. Put it under the "Try it" line as:
-   `Code: https://github.com/Gurneil/Clinical-Note-Guard`
-   A dead link in the description is worse than no link.
+2. ~~Add the repo link once you've pushed.~~ Done — the repo is public and
+   the `Code:` line is already in the description above.
+
+---
+
+## Uploaded
+
+https://youtu.be/l5-3PPDSHg0 — "ClinicalNoteGuard" (Gurneil Bhullar).
+Resolves via YouTube's oEmbed endpoint, so it is not Private. Still open it
+in an incognito window once to confirm it plays for a signed-out viewer.
