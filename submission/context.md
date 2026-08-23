@@ -44,8 +44,9 @@ decision, never a decision.
 
 That single-prompt approach is the baseline this project measures itself
 against, on the identical 60-case benchmark with the identical model. The
-pipeline catches 45 of 51 planted errors against the baseline's 39, and the
-error it finds is the *first flag a reviewer reads* in 35 of those cases.
+pipeline catches 47 of 50 planted errors against the baseline's 41 — graded
+blind by a human — and the error it finds is the *first flag a reviewer
+reads* in 35 of those cases.
 
 It also costs 5.5× the tokens, and raises more false alarms on clean notes.
 Both of those are published on the site rather than buried.

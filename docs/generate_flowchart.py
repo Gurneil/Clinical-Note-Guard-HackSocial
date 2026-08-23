@@ -110,7 +110,7 @@ def main():
 
     # --- Node 2: extract claims ---
     b2, t2 = place(1.6,
-                    "2. EXTRACT CLAIMS\nLLM \u2014 EXTRACT_CHAIN:\nGroq llama-3.1-8b-instant \u2192 Featherless\n"
+                    "2. EXTRACT CLAIMS\nLLM \u2014 EXTRACT_CHAIN:\nGroq gpt-oss-20b \u2192 Featherless\n"
                     "Note \u2192 atomic, checkable claims\n"
                     "QUERY: \u201cbreak this note into atomic, independently-\n"
                     "checkable claims, one fact each; exclude the diagnosis\u201d",
@@ -153,7 +153,7 @@ def main():
     # --- Node 5: omission check ---
     b5, t5 = place(1.85,
                     "5. OMISSION CHECK (batched, mirror of 2+3)\n"
-                    "LLM \u2014 OMISSION_CHAIN:\nGroq llama-3.1-8b-instant \u2192 Featherless\n"
+                    "LLM \u2014 OMISSION_CHAIN:\nGroq gpt-oss-20b \u2192 Featherless\n"
                     "Transcript \u2192 atomic facts \u2192 checked vs. note\n"
                     "Catches OMISSION errors (opposite of node 3)\n"
                     "QUERY: “for EACH transcript fact, is it mentioned in the\n"
@@ -166,7 +166,7 @@ def main():
     # --- Node 6: classify ---
     b6, t6 = place(1.65,
                     "6. CLASSIFY FLAGGED CLAIMS (batched)\n"
-                    "LLM \u2014 CLASSIFY_CHAIN:\nGroq llama-3.1-8b-instant \u2192 Featherless\n"
+                    "LLM \u2014 CLASSIFY_CHAIN:\nGroq gpt-oss-20b \u2192 Featherless\n"
                     "Only node 3's flags - node 5's are already \"omission\"\n"
                     "QUERY: “classify each flagged claim into exactly ONE\n"
                     "category from this list” (list injected from taxonomy.json)",
@@ -277,9 +277,11 @@ def main():
 
     # 6 legend rows at labelspacing 0.7 - clears the legend block rather
     # than landing inside it, which it did when the audio row was added.
-    ax.text(W / 2, legend_top_y - 2.25,
+    ax.text(W / 2, legend_top_y - 2.95,
             "Every provider/model shown is the FIRST tier tried; each chain automatically fails over\n"
-            "(quota/availability errors only) to the next provider listed \u2014 see src/config.py and src/llm_router.py.",
+            "(quota/availability errors only) to the next provider listed \u2014 see src/config.py and src/llm_router.py.\n"
+            "Model IDs are the current ones. The committed eval runs used Groq's llama-3.1-8b-instant and llama-3.3-70b-versatile,\n"
+            "which Groq retired mid-project; every run records the model that actually served each call \u2014 see eval/runs/README.md.",
             ha="center", fontsize=8, color="#718096")
 
     fig.savefig(OUT_PATH, facecolor=BG, bbox_inches="tight")
