@@ -3,5 +3,7 @@ openai>=1.0.0
 python-dotenv>=1.0.0
 
 # Dev-only: not needed to run the pipeline itself, only to regenerate
-# docs/workflow_flowchart.png via docs/generate_flowchart.py.
-matplotlib>=3.8.0
+# docs/workflow_flowchart.png via docs/render_flowchart.py. That script
+# renders docs/workflow_flowchart.html with whichever Chromium-based browser
+# the OS already has; Pillow is only used to trim the render's unused tail.
+pillow>=10.0.0

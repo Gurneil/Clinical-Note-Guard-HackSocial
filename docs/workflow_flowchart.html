@@ -1,0 +1,543 @@
+<!--
+  Source for docs/workflow_flowchart.png (the ML & Prompt Engineering track's
+  required workflow asset). Rendered to PNG by docs/render_flowchart.py.
+
+  Every number on this page comes from a committed artefact in eval/ - it is
+  not illustrative. Sources are named inline so a judge can check any of them.
+-->
+<meta charset="utf-8">
+<title>Clinical Note Hallucination Guard — Workflow</title>
+<style>
+  :root {
+    --human:    #2b6cb0;
+    --human-bg: #ebf3fb;
+    --core:     #c05621;
+    --core-bg:  #fdf1e8;
+    --mech:     #2f855a;
+    --mech-bg:  #eaf5ef;
+    --code:     #4a5568;
+    --code-bg:  #eef0f3;
+    --audio:    #b83280;
+    --audio-bg: #fbedf5;
+    --base:     #805ad5;
+    --base-bg:  #f2edfc;
+
+    --ink:      #1a202c;
+    --ink-2:    #3d4757;
+    --muted:    #6b7684;
+    --faint:    #97a1ad;
+    --line:     #e2e5ea;
+    --page:     #f6f6f4;
+    --card:     #ffffff;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 34px 30px 26px;
+    width: 1250px;
+    background: var(--page);
+    color: var(--ink);
+    font-family: "Segoe UI", -apple-system, Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- header ---------- */
+  h1 {
+    margin: 0 0 5px;
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+  }
+  .sub { margin: 0 0 18px; color: var(--muted); font-size: 12.5px; }
+
+  .legend {
+    display: flex;
+    gap: 26px;
+    align-items: center;
+    flex-wrap: wrap;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 11px 18px;
+    margin-bottom: 20px;
+    font-size: 11.5px;
+    color: var(--ink-2);
+  }
+  .legend span { display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+
+  /* ---------- layout ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 26px;
+    align-items: start;
+  }
+  .col { display: flex; flex-direction: column; }
+
+  /* ---------- cards ---------- */
+  .card {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    border-left: 4px solid var(--accent, var(--line));
+    padding: 15px 17px 15px 19px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  }
+  .card.branch {
+    border: 1px dashed var(--accent);
+    border-left: 1px dashed var(--accent);
+    background: color-mix(in srgb, var(--accent) 4%, #fff);
+    box-shadow: none;
+  }
+
+  .head { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .num {
+    width: 22px; height: 22px; flex: none;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .title { font-size: 14.5px; font-weight: 600; letter-spacing: -0.2px; }
+
+  .tags { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .pill {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.7px; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 20px; white-space: nowrap;
+    background: var(--pill-bg, var(--accent)); color: var(--pill-fg, #fff);
+  }
+
+  .kicker {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.9px; text-transform: uppercase;
+    color: var(--faint); margin-bottom: 7px;
+  }
+  .card p { margin: 0 0 8px; color: var(--ink-2); }
+  .card p:last-child { margin-bottom: 0; }
+  .lbl {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.9px; text-transform: uppercase;
+    color: var(--faint); margin: 11px 0 4px;
+  }
+  .note { font-size: 11px; font-style: italic; color: var(--muted); }
+  .note.warn { color: var(--core); }
+
+  .mono {
+    font-family: "Cascadia Mono", Consolas, "Courier New", monospace;
+    font-size: 11.5px;
+    background: #f4f6f8;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 9px 12px;
+    color: var(--ink);
+  }
+
+  /* the verbatim prompt text - the track rule's "what queries are used" */
+  .query {
+    background: var(--accent-bg, #f4f6f8);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 13px;
+    font-size: 11.5px;
+    font-style: italic;
+    color: var(--ink-2);
+  }
+
+  .flag {
+    border-radius: 6px; padding: 9px 12px; font-size: 11.5px; text-align: center;
+    background: var(--accent-bg); color: var(--accent); font-weight: 600;
+  }
+
+  /* ---------- connectors ---------- */
+  .arrow { align-self: center; width: 2px; background: var(--line); position: relative; }
+  .arrow::after {
+    content: ""; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%);
+    border-left: 5px solid transparent; border-right: 5px solid transparent;
+    border-top: 7px solid #c3c9d2;
+  }
+  .a12 { height: 12px; }
+  .a18 { height: 18px; }
+  .a26 { height: 26px; }
+  .gap10 { height: 10px; }
+  .gap14 { height: 14px; }
+  .gap18 { height: 18px; }
+  .gap24 { height: 24px; }
+
+  .sidelink {
+    display: flex; align-items: center; gap: 0; margin: -1px 0;
+    font-size: 10px; color: var(--muted);
+  }
+
+  /* the arrow label that used to need a white mask patch in matplotlib */
+  .edgelbl {
+    align-self: center; background: var(--page); padding: 0 8px;
+    font-size: 10.5px; font-style: italic; color: var(--muted); margin: -3px 0;
+    position: relative; z-index: 2;
+  }
+
+  /* ---------- decision diamond ---------- */
+  .decision { display: flex; justify-content: center; align-items: center; margin: 4px 0; }
+  .diamond {
+    width: 268px; height: 112px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    background: var(--card);
+    border: 1.5px solid #cfd5dd;
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+    font-size: 11.5px; font-weight: 600; color: var(--ink);
+    padding: 0 14px;
+  }
+  .diamond small { font-weight: 400; color: var(--faint); font-size: 9.5px; letter-spacing: 0.6px; margin-top: 3px; }
+  .yes {
+    align-self: center; font-size: 9px; font-weight: 700; letter-spacing: 0.8px;
+    color: var(--mech); background: var(--mech-bg); border-radius: 10px; padding: 2px 9px;
+    margin: 4px 0;
+  }
+
+  /* ---------- results panel ---------- */
+  .panel {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 15px 17px;
+  }
+  .panel h3 {
+    margin: 0 0 11px;
+    font-size: 9.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .barrow { margin-bottom: 9px; }
+  .barrow .cap { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-2); margin-bottom: 3px; }
+  .barrow .cap b { font-variant-numeric: tabular-nums; }
+  .track { height: 13px; border-radius: 7px; background: #eef0f3; overflow: hidden; }
+  .fill { height: 100%; border-radius: 7px; }
+
+  .win {
+    background: var(--mech-bg); color: #256b49; border-radius: 6px;
+    padding: 8px 12px; font-size: 12.5px; font-weight: 600; text-align: center; margin: 10px 0;
+  }
+  .lose {
+    background: #fdf1e8; color: #9c4419; border-radius: 6px;
+    padding: 8px 12px; font-size: 12px; font-weight: 600; text-align: center; margin: 10px 0;
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  td { padding: 6px 0; border-bottom: 1px solid #f0f2f5; vertical-align: top; color: var(--ink-2); }
+  tr:last-child td { border-bottom: none; }
+  td.k {
+    width: 43%;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+    color: var(--faint); padding-right: 10px;
+  }
+  td.v { text-align: right; font-weight: 500; }
+
+  .callout {
+    background: #f4f6f8; border-radius: 6px; padding: 10px 12px;
+    font-size: 11px; color: var(--ink-2); margin-top: 10px;
+  }
+  .callout .src { display: block; margin-top: 5px; font-size: 10px; color: var(--faint); }
+
+  /* ---------- footer ---------- */
+  .footer {
+    margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--line);
+    font-size: 10.5px; color: var(--faint); line-height: 1.7;
+  }
+  .footer b { color: var(--muted); font-weight: 600; }
+</style>
+
+<h1>Clinical Note Hallucination Guard — ML Workflow</h1>
+<p class="sub">Draft → decompose → independently verify → classify → human checkpoint. A QA layer for AI-drafted clinical notes. It flags; it never corrects.</p>
+
+<div class="legend">
+  <span><i class="dot" style="background:var(--human)"></i> Human in the loop</span>
+  <span><i class="dot" style="background:var(--core)"></i> LLM — core-reasoning tier, fairness-linked to the baseline</span>
+  <span><i class="dot" style="background:var(--mech)"></i> LLM — mechanical tier, no fairness constraint</span>
+  <span><i class="dot" style="background:var(--code)"></i> Plain Python, no model call, zero tokens</span>
+  <span><i class="dot" style="background:var(--audio)"></i> Audio path, <code>--audio</code> runs only</span>
+  <span><i class="dot" style="background:var(--base)"></i> Single-prompt baseline, comparison only</span>
+</div>
+
+<div class="grid">
+
+<!-- ================= LEFT: the pipeline ================= -->
+<div class="col">
+
+  <div class="card" style="--accent:var(--human); --accent-bg:var(--human-bg)">
+    <div class="head">
+      <div class="num">0</div><div class="title">Transcript input</div>
+      <div class="tags"><span class="pill" style="--pill-bg:var(--human-bg); --pill-fg:var(--human)">Human input</span></div>
+    </div>
+    <p>The patient + clinician conversation, as text. This is the only ground truth the whole system is allowed to appeal to.</p>
+    <div class="lbl">Action</div>
+    <p>Fixes what "supported" means for every node below it. Nothing downstream may treat the note as evidence for itself.</p>
+    <p class="note">Human-sourced data. With <code>--audio</code> the transcript is itself a model output — see the branch to the right.</p>
+  </div>
+
+  <div class="arrow a18"></div>
+
+  <div class="card" style="--accent:var(--mech); --accent-bg:var(--mech-bg)">
+    <div class="head">
+      <div class="num">1</div><div class="title">Draft note</div>
+      <div class="tags">
+        <span class="pill" style="--pill-bg:var(--mech-bg); --pill-fg:var(--mech)">LLM call</span>
+        <span class="pill" style="--pill-bg:#eef0f3; --pill-fg:var(--muted)">Demo only</span>
+      </div>
+    </div>
+    <div class="lbl">Model</div>
+    <p><b>DRAFT_CHAIN</b> — gemini-3.6-flash → Groq → Featherless</p>
+    <p>Simulates an ambient scribe producing a SOAP note. Present in the live demo, absent from the eval: there the note under test is a fixture with a planted error, so the benchmark measures the guard, not the drafter.</p>
+    <div class="lbl">Query — verbatim</div>
+    <div class="query">"read this transcript, produce a structured SOAP note; only include information actually discussed"</div>
+  </div>
+
+  <div class="edgelbl">note_under_test</div>
+  <div class="arrow a18"></div>
+
+  <div class="card" style="--accent:var(--mech); --accent-bg:var(--mech-bg)">
+    <div class="head">
+      <div class="num">2</div><div class="title">Extract claims</div>
+      <div class="tags"><span class="pill" style="--pill-bg:var(--mech-bg); --pill-fg:var(--mech)">LLM call</span></div>
+    </div>
+    <div class="lbl">Model</div>
+    <p><b>EXTRACT_CHAIN</b> — Groq gpt-oss-20b → Featherless</p>
+    <p>Note → atomic, independently-checkable claims. Decomposition is the whole mechanism: a claim that is alone in its own context cannot be waved through on the strength of the confident paragraph around it.</p>
+    <div class="lbl">Query — verbatim</div>
+    <div class="query">"break this note into atomic, independently-checkable claims, one fact each; exclude the diagnosis"</div>
+    <p class="note">The diagnosis is excluded on purpose — it is clinical judgement, not a fact the transcript can entail.</p>
+  </div>
+
+  <div class="arrow a18"></div>
+
+  <div class="card" style="--accent:var(--core); --accent-bg:var(--core-bg)">
+    <div class="head">
+      <div class="num">3</div><div class="title">Entailment check</div>
+      <div class="tags">
+        <span class="pill" style="--pill-bg:var(--core-bg); --pill-fg:var(--core)">LLM call</span>
+        <span class="pill" style="--pill-bg:var(--core-bg); --pill-fg:var(--core)">Fairness-linked</span>
+      </div>
+    </div>
+    <div class="lbl">Model</div>
+    <p><b>CORE_REASONING_CHAIN</b> — gemini-3.6-flash → Groq → Featherless. Batched: one call per case, every claim inside it.</p>
+    <p>Each claim vs. the transcript → <b>supported</b> / <b>contradicted</b> / <b>not_mentioned</b>, with the evidence quoted back.</p>
+    <div class="lbl">Query — verbatim</div>
+    <div class="query">"for EACH claim, is it supported / contradicted / not_mentioned by the transcript? quote the evidence. Return EXACTLY N objects, in the same order"</div>
+    <div class="flag" style="margin-top:11px">This node is the pipeline. Ablating it drops recall 88.2% → 43.1%.</div>
+    <p class="note" style="margin-top:8px">The baseline always runs on this same tier, on the same case. That link is what makes the comparison a test of the workflow rather than of the model.</p>
+  </div>
+
+  <div class="arrow a18"></div>
+
+  <div class="card" style="--accent:var(--code); --accent-bg:var(--code-bg)">
+    <div class="head">
+      <div class="num">4</div><div class="title">Deterministic numeric / med check</div>
+      <div class="tags"><span class="pill" style="--pill-bg:var(--code-bg); --pill-fg:var(--code)">Deterministic</span></div>
+    </div>
+    <p>Plain Python regex, reading the note and the transcript directly. Exact-match on doses, units, and vitals.</p>
+    <div class="mono">note_value == transcript_value  →  else FLAG</div>
+    <p class="note" style="margin-top:8px">No model call. Free and instant, so it runs on every case regardless of what node 3 decided.</p>
+    <p class="note warn">Measured contribution to recall: <b>zero</b>. It caught nothing node 3 had not already caught. Reported anyway — see the branch to the right.</p>
+  </div>
+
+  <div class="arrow a18"></div>
+
+  <div class="card" style="--accent:var(--mech); --accent-bg:var(--mech-bg)">
+    <div class="head">
+      <div class="num">5</div><div class="title">Omission check</div>
+      <div class="tags"><span class="pill" style="--pill-bg:var(--mech-bg); --pill-fg:var(--mech)">LLM call</span></div>
+    </div>
+    <div class="lbl">Model</div>
+    <p><b>OMISSION_CHAIN</b> — Groq gpt-oss-20b → Featherless. Batched, and a deliberate mirror of nodes 2 + 3 run in the opposite direction.</p>
+    <p>Transcript → atomic facts → checked against the note. Node 3 asks what the note added; this asks what the note dropped. A dropped drug allergy is invisible to every check above.</p>
+    <div class="lbl">Query — verbatim</div>
+    <div class="query">"for EACH transcript fact, is it mentioned in the note — directly, as a synonym, or inside a summary?"</div>
+  </div>
+
+  <div class="arrow a18"></div>
+
+  <div class="card" style="--accent:var(--mech); --accent-bg:var(--mech-bg)">
+    <div class="head">
+      <div class="num">6</div><div class="title">Classify flagged claims</div>
+      <div class="tags"><span class="pill" style="--pill-bg:var(--mech-bg); --pill-fg:var(--mech)">LLM call</span></div>
+    </div>
+    <div class="lbl">Model</div>
+    <p><b>CLASSIFY_CHAIN</b> — Groq gpt-oss-20b → Featherless. Batched, and only over node 3's flags: node 5's are already known to be omissions.</p>
+    <div class="lbl">Query — verbatim</div>
+    <div class="query">"classify each flagged claim into exactly ONE category from this list" — the list is injected at call time from <code>taxonomy.json</code>, never hardcoded in the prompt</div>
+    <p class="note">A category is what lets a reviewer triage. "Something is wrong somewhere" is not an actionable flag.</p>
+  </div>
+
+  <div class="arrow a18"></div>
+
+  <div class="decision">
+    <div class="diamond">
+      Any flag raised?
+      <small>COMMISSION · NUMERIC · OMISSION · UNVERIFIABLE</small>
+    </div>
+  </div>
+  <div class="yes">EITHER WAY</div>
+  <div class="arrow a12"></div>
+
+  <div class="card" style="--accent:var(--human); --accent-bg:var(--human-bg)">
+    <div class="head">
+      <div class="num">7</div><div class="title">Human review checkpoint</div>
+      <div class="tags">
+        <span class="pill" style="--pill-bg:var(--human-bg); --pill-fg:var(--human)">Human output</span>
+        <span class="pill" style="--pill-bg:var(--human-bg); --pill-fg:var(--human)">Required</span>
+      </div>
+    </div>
+    <p>Every flag — commission, numeric, omission, unverifiable — reaches a clinician with its category and its quoted evidence, and must be <b>actively confirmed</b> before it affects the final note.</p>
+    <div class="flag" style="margin-top:11px">Nothing is auto-corrected. Nothing is auto-removed.<br>There is no path from a model verdict to a signed note.</div>
+    <p class="note" style="margin-top:9px">Review burden, measured over 51 cases: the real planted error is the first flag read in 35 of them, mean rank 1.36. Source: <code>eval/review_burden_results.json</code>.</p>
+  </div>
+
+
+</div>
+
+<!-- ================= RIGHT: branches, baseline, results ================= -->
+<div class="col">
+
+  <div class="card branch" style="--accent:var(--audio); --accent-bg:var(--audio-bg)">
+    <div class="kicker">Branch off node 0 · not a numbered node</div>
+    <div class="head" style="margin-bottom:9px">
+      <div class="title">Audio input path</div>
+      <div class="tags"><span class="pill" style="--pill-bg:var(--audio-bg); --pill-fg:var(--audio)">LLM call · optional</span></div>
+    </div>
+    <p><b>Whisper via Groq</b> → text + per-segment confidence. Only on <code>--audio</code> runs.</p>
+    <p class="note">The transcript stops being ground truth and becomes another model output. Node 3b downstream is what makes that admission mean something.</p>
+  </div>
+
+  <div class="gap14"></div>
+
+  <div class="card branch" style="--accent:var(--mech); --accent-bg:var(--mech-bg)">
+    <div class="kicker">Branch off node 2 · not a numbered node</div>
+    <div class="head" style="margin-bottom:9px">
+      <div class="title">Batching guard</div>
+      <div class="tags"><span class="pill" style="--pill-bg:var(--mech-bg); --pill-fg:var(--mech)">Deterministic</span></div>
+    </div>
+    <p>Nodes 3, 5 and 6 each send <b>one</b> call per case, not one per claim, and the prompt demands exactly N objects in the same order. The returned array is length-checked against the claim list before anything is scored.</p>
+    <p class="note">A per-claim loop would multiply cost by the claim count and let a silent re-ordering misattribute every verdict.</p>
+  </div>
+
+  <div class="gap14"></div>
+
+  <div class="card branch" style="--accent:var(--audio); --accent-bg:var(--audio-bg)">
+    <div class="kicker">Node 3b · branch off node 3 · <code>--audio</code> runs only</div>
+    <div class="head" style="margin-bottom:9px">
+      <div class="title">Transcript confidence</div>
+      <div class="tags"><span class="pill" style="--pill-bg:var(--audio-bg); --pill-fg:var(--audio)">Deterministic</span></div>
+    </div>
+    <p>Plain Python, no model call. Joins each verdict to the audio segment it rested on.</p>
+    <div class="mono">seg_confidence &lt; threshold  →  UNVERIFIABLE + timestamp</div>
+    <p class="note" style="margin-top:8px">A claim checked against audio the recogniser was unsure of is not "supported" — it is unverifiable, and the reviewer gets a timestamp to re-listen to. Threshold calibrated by experiment, not guessed: <code>eval/asr_confidence_check.py</code>.</p>
+  </div>
+
+  <div class="gap14"></div>
+
+  <div class="card branch" style="--accent:var(--code); --accent-bg:var(--code-bg)">
+    <div class="kicker">Branch off node 4 · measured, unflattering</div>
+    <div class="head" style="margin-bottom:9px">
+      <div class="title">Node 4 ablation result</div>
+      <div class="tags"><span class="pill" style="--pill-bg:var(--code-bg); --pill-fg:var(--code)">Deterministic</span></div>
+    </div>
+    <p>Removing node 4 changes recall by <b>0.0 points</b> — 88.2% with it, 88.2% without. Every numeric error it caught, node 3 had already caught.</p>
+    <p class="note">It is kept because it raised <b>zero</b> false positives and costs nothing to run, and it is reported because the ablation measured it. Node 5 removal: 88.2% → 84.3%. Source: <code>eval/ablation_results.json</code>.</p>
+  </div>
+
+  <div class="gap18"></div>
+
+  <div class="card" style="--accent:var(--base); --accent-bg:var(--base-bg)">
+    <div class="kicker">Not a numbered node · the comparison point</div>
+    <div class="head" style="margin-bottom:9px">
+      <div class="title">Single-prompt baseline</div>
+      <div class="tags"><span class="pill" style="--pill-bg:var(--base-bg); --pill-fg:var(--base)">Baseline</span></div>
+    </div>
+    <p>The same transcript and the same note, handed to <b>one</b> call on <b>CORE_REASONING_CHAIN</b> — the same tier as node 3, the same case, always. No decomposition, no forced per-claim coverage, no taxonomy.</p>
+    <div class="lbl">Query — verbatim</div>
+    <div class="query">"review this note against the transcript and identify any documentation errors — both unsupported content AND anything relevant the note leaves out"</div>
+    <p class="note" style="margin-top:9px">Output: a raw issue list, no forced structure, scored against the same ground truth by the same blind grader.</p>
+    <p class="note warn">The "AND anything relevant the note leaves out" clause was added mid-project. The earlier prompt asked only for commission errors while being scored on omission cases node 5 had a dedicated node for — part of the original gap was an unfair prompt, not the design. It was fixed and re-run.</p>
+  </div>
+
+  <div class="gap18"></div>
+
+  <div class="panel">
+    <h3>Measured result — 60-case benchmark</h3>
+    <p style="font-size:11px; color:var(--muted); margin:0 0 12px">10 numeric · 10 fabrication · 10 negation · 8 distortion · 7 misattribution · 7 omission · 8 clean controls</p>
+
+    <div style="display:inline-block; background:var(--ink); color:#fff; font-size:9px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; padding:3px 9px; border-radius:20px; margin-bottom:11px">Blind human-graded · headline</div>
+
+    <div class="barrow">
+      <div class="cap"><span>Baseline: recall on planted errors</span><b>41/50 · 82%</b></div>
+      <div class="track"><div class="fill" style="width:82%; background:var(--base)"></div></div>
+    </div>
+    <div class="barrow">
+      <div class="cap"><span>Pipeline: recall on planted errors</span><b>47/50 · 94%</b></div>
+      <div class="track"><div class="fill" style="width:94%; background:var(--mech)"></div></div>
+    </div>
+
+    <div class="win">↑ 6 more errors caught · 12-point recall gap</div>
+
+    <div class="lbl" style="margin-top:0">Severity-weighted recall</div>
+    <p style="font-size:11.5px; color:var(--ink-2); margin:0 0 10px">baseline <b>87%</b> → pipeline <b>93%</b>. Weighted toward numeric/medication and negation errors, the ones that change what a patient is given.</p>
+
+    <div class="lose">↑ False positives on 6 clean controls: 9 → 13</div>
+    <p style="font-size:11px; color:var(--muted); margin:0">The honest cost. Decomposition buys recall and pays for it in false alarms on clean notes — a real precision/recall trade, stated as one.</p>
+
+    <div class="callout">
+      Graded blind: the grader saw "System A" / "System B", randomised per case, and <code>blind_key.json</code> stayed unopened until <code>compute_metrics.py</code> ran. 57 of 58 rows graded; <code>case_02</code> was skipped mid-session and deliberately left ungraded rather than filled in after the aggregate had been unblinded.
+      <span class="src">ARCHITECTURE.md "Results: blind human-graded" · <code>eval/scorecard_blind.csv</code></span>
+    </div>
+  </div>
+
+  <div class="gap14"></div>
+
+  <div class="panel">
+    <h3>Cost of the workflow, per note</h3>
+    <table>
+      <tr><td class="k">LLM calls</td><td class="v">baseline 1.0 → pipeline <b>5.29</b></td></tr>
+      <tr><td class="k">Tokens</td><td class="v">baseline 597 → pipeline <b>3,280</b></td></tr>
+      <tr><td class="k">Latency</td><td class="v">baseline 7.5s → pipeline <b>12.8s</b></td></tr>
+    </table>
+    <p style="font-size:11px; color:var(--muted); margin:9px 0 0">Roughly 5.5× the tokens for 1.7× the latency — the batching guard is why the two ratios differ. Measured, not estimated: <code>eval/measure_usage.py</code> over 7 cases.</p>
+  </div>
+
+  <div class="gap14"></div>
+
+  <div class="panel">
+    <h3>Locked for reproducibility</h3>
+    <table>
+      <tr><td class="k">Core-reasoning tier</td><td class="v">gemini-3.6-flash → Groq → Featherless</td></tr>
+      <tr><td class="k">Mechanical tier</td><td class="v">Groq gpt-oss-20b → Featherless</td></tr>
+      <tr><td class="k">Fairness constraint</td><td class="v">node 3 and baseline share a tier</td></tr>
+      <tr><td class="k">Benchmark</td><td class="v">60 cases, 8 clean controls</td></tr>
+      <tr><td class="k">Scoring threshold</td><td class="v">0.2</td></tr>
+      <tr><td class="k">Grading</td><td class="v">blind, human, key sealed until scored</td></tr>
+      <tr><td class="k">Taxonomy</td><td class="v">injected from <code>taxonomy.json</code></td></tr>
+    </table>
+    <div class="callout">
+      Every provider/model shown is the <b>first tier tried</b>; each chain fails over to the next provider on quota/availability errors only — never on a bad answer. Every run records the model that actually served each call.
+      <span class="src"><code>src/config.py</code> · <code>src/llm_router.py</code> · <code>eval/runs/README.md</code></span>
+    </div>
+  </div>
+  <div class="gap18"></div>
+
+  <div class="panel">
+    <h3>Methodology note — why the baseline shares a model</h3>
+    <p style="color:var(--ink-2); margin:0 0 8px">Node 3 and the baseline are pinned to the same chain, on the same case, always. Without that link, any measured gap could be the pipeline quietly running on a better model, and the result would be worth nothing.</p>
+    <p class="note warn" style="margin:0 0 6px"><b>The stronger-model check went against the design, and is reported anyway.</b></p>
+    <p style="color:var(--ink-2); margin:0">Pinning <code>llama-3.3-70b-versatile</code> as the fairness-critical tier puts the two level: over the 44 planted-error cases that completed in both runs, pipeline 39/44 either way, baseline 33/44 on the small model and <b>40/44</b> on the large one. Decomposition compensates for a weak reasoner rather than adding capability on top of a strong one.</p>
+    <span class="src" style="display:block; margin-top:7px; font-size:10px; color:var(--faint)">Auto-scored, 44 of 60 cases; ten lost to Groq rate limits. <code>eval/runs/README.md</code>, ARCHITECTURE.md "The stronger-model check".</span>
+  </div>
+
+</div>
+</div>
+
+<div class="footer">
+  <b>Human input:</b> nodes 0, 7 &nbsp;·&nbsp; <b>LLM calls:</b> nodes 1, 2, 3, 5, 6 and the baseline &nbsp;·&nbsp; <b>Plain code, no model:</b> nodes 3b, 4 and both branch guards &nbsp;·&nbsp; <b>Never automated:</b> correcting or removing anything from a note<br>
+  Node 1 runs in the live demo only. In the eval the note under test is a fixture with a planted error, so the benchmark measures the guard rather than the drafter.<br>
+  Model IDs shown are the current ones. The committed eval runs used Groq's llama-3.1-8b-instant and llama-3.3-70b-versatile, which Groq retired mid-project — see <code>eval/runs/README.md</code>.<br>
+  Regenerate: <code>python docs/render_flowchart.py</code> — the PNG is rendered from <code>docs/workflow_flowchart.html</code>, so it cannot drift from the text it is generated out of.
+</div>

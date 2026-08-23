@@ -95,7 +95,8 @@ clinical-note-guard/
     │                              # iterations behind them (submission doc)
     ├── SAMPLES.md                 # pipeline vs. baseline on real cases (submission doc)
     ├── workflow_flowchart.png     # the required workflow diagram (submission asset)
-    ├── generate_flowchart.py      # regenerates workflow_flowchart.png (dev tool, needs matplotlib)
+    ├── workflow_flowchart.html    # source for the diagram above - HTML/CSS, hand-authored
+    ├── render_flowchart.py        # renders that HTML to the PNG via headless Chrome (dev tool)
     │                              # (see also eval/ablation.py - measures each node's marginal
     │                              #  contribution from the committed run, no API calls)
     └── generate_samples_doc.py    # regenerates SAMPLES.md from eval/raw_outputs.json (dev tool)
