@@ -31,6 +31,12 @@ COLOR_AUDIO = "#b83280"      # optional audio path (--audio only)
 BG = "white"
 
 
+# Labels that sit at the midpoint of an arrow need to mask the line behind
+# them, or the arrow is drawn straight through the words. facecolor matches
+# the figure background; zorder puts the label above the arrow.
+LABEL_BG = dict(facecolor="white", edgecolor="none", pad=0.25)
+
+
 def box(ax, xy, w, h, text, color, fontsize=9.5, text_color="white"):
     x, y = xy
     patch = FancyBboxPatch(
@@ -100,7 +106,7 @@ def main():
 
     label_y_1 = (b1[1] - gap / 2)
     ax.text(x_center, label_y_1, "note_under_test", ha="center", fontsize=8.5,
-            style="italic", color="#718096")
+            style="italic", color="#718096", bbox=LABEL_BG, zorder=5)
 
     # --- Node 2: extract claims ---
     b2, t2 = place(1.6,
@@ -155,7 +161,7 @@ def main():
                     COLOR_LLM_MECH, fontsize=8.8)
     arrow(ax, b4, t5)
     ax.text(x_center, b4[1] - gap / 2, "(also reads note + transcript directly)", ha="center",
-            fontsize=7.7, style="italic", color="#718096")
+            fontsize=7.7, style="italic", color="#718096", bbox=LABEL_BG, zorder=5)
 
     # --- Node 6: classify ---
     b6, t6 = place(1.65,
@@ -231,9 +237,9 @@ def main():
     baseline_mid_y = bB1[1] + 2.35 * 0.5
     arrow(ax, (left_x + col_w, node3_fairness_y), (right_x, baseline_mid_y),
           color="#c05621", lw=1.3, style="<|-|>", connectionstyle="arc3,rad=-0.1")
-    ax.text((left_x + col_w + right_x) / 2, node3_fairness_y + 0.55,
-            "fairness-linked:\nsame provider/model,\nalways", ha="center", fontsize=7.3,
-            color="#c05621", style="italic")
+    ax.text((left_x + col_w + right_x) / 2, node3_fairness_y + 0.72,
+            "fairness-linked:\nsame model,\nalways", ha="center", fontsize=7.3,
+            color="#c05621", style="italic", bbox=LABEL_BG, zorder=5)
 
     bB2, tB2 = place_r(0.8, "Raw issue list\n(no forced structure)", COLOR_BASELINE)
     arrow(ax, bB1, tB2)

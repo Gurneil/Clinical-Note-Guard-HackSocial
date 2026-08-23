@@ -4,7 +4,7 @@
     "path": "README.md",
     "title": "README",
     "blurb": "Setup, how to run the pipeline and the eval, and the current status of the project.",
-    "bytes": 18445
+    "bytes": 18162
   },
   {
     "file": "ARCHITECTURE.md",
@@ -46,6 +46,6 @@
     "path": "docs/workflow_flowchart.png",
     "title": "Workflow flowchart",
     "blurb": "The pipeline as a diagram — the required submission asset.",
-    "bytes": 582922
+    "bytes": 581279
   }
 ]

@@ -307,6 +307,6 @@ table for the pipeline vs. the baseline - see `docs/ARCHITECTURE.md`,
       (ten lost to Groq rate limits). Re-run those ten once the daily token
       budget resets and blind-grade the result, and the finding sits on the
       same footing as the headline number instead of one rung below it.
-- [ ] Samples/demo VIDEO, if the written `docs/SAMPLES.md` document isn't
-      sufficient for the submission (the track requirements say
-      video **or** document; a document is provided).
+- [x] Demo video: https://youtu.be/l5-3PPDSHg0 (the track requirements say
+      video **or** document; `docs/SAMPLES.md` provides the document, and the
+      video covers the same ground for a viewer who won't read it).
