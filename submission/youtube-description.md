@@ -62,6 +62,6 @@ Every transcript, note and recording in this project is synthetic — invented c
 
 ## Uploaded
 
-https://youtu.be/l5-3PPDSHg0 — "ClinicalNoteGuard" (Gurneil Bhullar).
+https://youtu.be/am8sZx8ny8U — "ClinicalNoteGuard" (Gurneil Bhullar).
 Resolves via YouTube's oEmbed endpoint, so it is not Private. Still open it
 in an incognito window once to confirm it plays for a signed-out viewer.

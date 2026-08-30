@@ -308,5 +308,5 @@ table for the pipeline vs. the baseline - see `docs/ARCHITECTURE.md`,
       (ten lost to Groq rate limits). Re-run those ten once the daily token
       budget resets and blind-grade the result, and the finding sits on the
       same footing as the headline number instead of one rung below it.
-- [x] Demo video: https://youtu.be/l5-3PPDSHg0 (`docs/SAMPLES.md` covers the
+- [x] Demo video: https://youtu.be/am8sZx8ny8U (`docs/SAMPLES.md` covers the
       same ground as a document, for a reader who won't watch it).
