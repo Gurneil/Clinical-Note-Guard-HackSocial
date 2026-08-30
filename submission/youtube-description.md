@@ -28,7 +28,7 @@ Built for HackSocial 2026 · AI/ML track
 
 AI scribes already draft clinical notes from doctor-patient conversations in real clinics. They also fabricate: a wrong dose, a symptom nobody mentioned, a "denies" flipped to a "reports". This decomposes the drafted note into individually checkable claims, verifies each one against the source transcript, and flags anything unsupported for a human — before the note is signed. It never edits a note itself.
 
-Try it: https://clinicalnoteguard.netlify.app
+Try it: https://hacksocialclinicalguard.netlify.app
 Code: https://github.com/Gurneil/Clinical-Note-Guard
 
 CHAPTERS
