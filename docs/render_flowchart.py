@@ -1,11 +1,11 @@
 """
 Renders docs/workflow_flowchart.html to docs/workflow_flowchart.png - the
-required submission asset for the ML & Prompt Engineering track.
+workflow diagram used in the project documentation and submission.
 
 The diagram is authored as HTML/CSS and rendered by whichever Chromium-based
 browser is already installed, at 2x device scale so the small print (the
-verbatim QUERY lines, which are the evidence for the track's "what queries
-are used with LLMs" rule) stays crisp at 100% zoom. It replaced a matplotlib
+verbatim QUERY lines, which show exactly what is asked of each model)
+stays crisp at 100% zoom. It replaced a matplotlib
 script whose every box coordinate was hand-derived: text there could not
 wrap or reflow, so any edit to a node's wording meant re-tuning the geometry
 of every box below it.

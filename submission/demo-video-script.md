@@ -24,7 +24,7 @@ Hi — I'm Gurneil.
 
 This is Clinical Note Hallucination Guard.
 
-I'm submitting to the ML Prompt Engineering track.
+I'm submitting to the AI/ML track.
 
 `[ beat ]`
 
@@ -256,7 +256,7 @@ honestly how well it works.
 ## After
 
 - [ ] Under 6 minutes
-- [ ] Track name said in the intro: ML Prompt Engineering
+- [ ] Track name said in the intro: AI/ML
 - [ ] Export 1080p (Clipchamp is built into Windows and is enough)
 - [ ] Upload unlisted to YouTube
 - [ ] **Open the link in a private window** to confirm it plays

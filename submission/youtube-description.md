@@ -24,7 +24,7 @@ be shareable.
 ```
 Clinical Note Hallucination Guard — a QA layer that catches AI hallucinations in clinical notes before a clinician signs off.
 
-Built for ReverieHacks 2026 · ML Prompt Engineering track
+Built for HackSocial 2026 · AI/ML track
 
 AI scribes already draft clinical notes from doctor-patient conversations in real clinics. They also fabricate: a wrong dose, a symptom nobody mentioned, a "denies" flipped to a "reports". This decomposes the drafted note into individually checkable claims, verifies each one against the source transcript, and flags anything unsupported for a human — before the note is signed. It never edits a note itself.
 
@@ -33,12 +33,12 @@ Code: https://github.com/Gurneil/Clinical-Note-Guard
 
 CHAPTERS
 0:00 What this is
-0:20 The problem
-0:50 Catching a real error
-1:40 How the pipeline works
-2:20 Running it live
-3:00 The evidence — including the result that went against us
-3:50 Cost, and what this isn't
+0:13 The problem
+0:47 Catching a real error
+1:37 How the pipeline works
+2:17 Running it live
+2:57 The evidence — including the result that went against us
+3:47 Cost, and what this isn't
 
 Graded blind by a human who couldn't tell which system was which, the pipeline caught 47 of 50 planted errors against a single prompt's 41. Then the same claim was tested on a model ten times larger and stopped holding — decomposition compensates for a weak reasoner rather than adding capability on top of a strong one. That result is published rather than buried, because a tool built to catch other people's mistakes shouldn't hide its own.
 

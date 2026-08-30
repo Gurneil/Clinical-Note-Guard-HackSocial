@@ -15,3 +15,6 @@ venv/
 
 # One-off deploy bundle produced from landing/dist
 landing/*.zip
+
+# personal submission checklist - not repo content
+submission/SUBMISSION.md

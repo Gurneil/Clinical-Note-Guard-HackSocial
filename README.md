@@ -280,10 +280,10 @@ table for the pipeline vs. the baseline - see `docs/ARCHITECTURE.md`,
       `docs/SAMPLES_AUDIO.md`
 - [x] LICENSE (MIT)
 - [x] Project site (`landing/`) - Vite + React; `cd landing && npm install &&
-      npm run dev`. Not a track requirement for ML Prompt Engineering;
-      included because it explains the workflow to a reader who won't run the
-      code, it runs the committed eval output claim-by-claim in the browser,
-      and it doubles as the backdrop for a demo video. It replaces the earlier
+      npm run dev`. Included because it explains the workflow to a reader
+      who won't run the code, it runs the committed eval output claim-by-claim
+      in the browser, and it doubles as the backdrop for a demo video.
+      It replaces the earlier
       static site (plain HTML in `frontend/`), which was removed once this one
       proved itself - recover it from git with
       `git checkout 5921049 -- _archive/` if it's ever wanted.
@@ -308,6 +308,5 @@ table for the pipeline vs. the baseline - see `docs/ARCHITECTURE.md`,
       (ten lost to Groq rate limits). Re-run those ten once the daily token
       budget resets and blind-grade the result, and the finding sits on the
       same footing as the headline number instead of one rung below it.
-- [x] Demo video: https://youtu.be/l5-3PPDSHg0 (the track requirements say
-      video **or** document; `docs/SAMPLES.md` provides the document, and the
-      video covers the same ground for a viewer who won't read it).
+- [x] Demo video: https://youtu.be/l5-3PPDSHg0 (`docs/SAMPLES.md` covers the
+      same ground as a document, for a reader who won't watch it).
