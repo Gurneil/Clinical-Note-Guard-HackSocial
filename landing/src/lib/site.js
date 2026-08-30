@@ -5,7 +5,7 @@
 export const GITHUB_USER = "Gurneil";
 
 export const REPO_URL = GITHUB_USER
-  ? `https://github.com/${GITHUB_USER}/Clinical-Note-Guard`
+  ? `https://github.com/${GITHUB_USER}/Clinical-Note-Guard-HackSocial`
   : "";
 
 export const PIPELINE_FILM = "pipeline-flow.mp4";
